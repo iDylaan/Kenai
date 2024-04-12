@@ -37,3 +37,7 @@ pnpm build
 ```sh
 pnpm lint
 ```
+
+## License
+
+Kenai is [MIT licensed](../LICENSE).
