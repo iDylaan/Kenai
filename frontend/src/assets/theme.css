@@ -180,16 +180,16 @@
     --red-700: #b32b23;
     --red-800: #8c221c;
     --red-900: #661814;
-    --primary-50: #fffcf4;
-    --primary-100: #fef0ca;
-    --primary-200: #fde3a1;
-    --primary-300: #fdd777;
-    --primary-400: #fccb4e;
+    --primary-50: #fff4e2;
+    --primary-100: #ffe1b1;
+    --primary-200: #ffce7f;
+    --primary-300: #ffbe57;
+    --primary-400: #ffb338;
     --primary-500: #fca311;
-    --primary-600: #d5a21f;
-    --primary-700: #b08619;
-    --primary-800: #8a6914;
-    --primary-900: #644c0e;
+    --primary-600: #f29500;
+    --primary-700: #ce8612;
+    --primary-800: #9c6815;
+    --primary-900: #704c11;
 }
 
 .p-editor-container .p-editor-toolbar {
