@@ -1427,8 +1427,8 @@
     }
 
     .p-checkbox:not(.p-disabled):has(.p-checkbox-input:hover).p-highlight .p-checkbox-box {
-        border-color: #fcd34d;
-        background: #fcd34d;
+        border-color: #ffb845;
+        background: #ffb845;
         color: #020617;
     }
 
@@ -1456,7 +1456,7 @@
     }
 
     .p-checkbox.p-variant-filled:not(.p-disabled):has(.p-checkbox-input:hover).p-highlight .p-checkbox-box {
-        background: #fcd34d;
+        background: #ffb845;
     }
 
     .p-input-filled .p-checkbox .p-checkbox-box {
@@ -1472,7 +1472,7 @@
     }
 
     .p-input-filled .p-checkbox:not(.p-disabled):has(.p-checkbox-input:hover).p-highlight .p-checkbox-box {
-        background: #fcd34d;
+        background: #ffb845;
     }
 
     .p-chips {
@@ -2223,7 +2223,7 @@
     }
 
     .p-inputswitch:not(.p-disabled):has(.p-inputswitch-input:hover).p-highlight .p-inputswitch-slider {
-        background: #fcd34d;
+        background: #ffb845;
     }
 
     .p-inputswitch:not(.p-disabled):has(.p-inputswitch-input:focus-visible) .p-inputswitch-slider {
@@ -2925,12 +2925,12 @@
     }
 
     .p-radiobutton:not(.p-disabled):has(.p-radiobutton-input:hover).p-highlight .p-radiobutton-box {
-        border-color: #fcd34d;
+        border-color: #ffb845;
         background: #020617;
     }
 
     .p-radiobutton:not(.p-disabled):has(.p-radiobutton-input:hover).p-highlight .p-radiobutton-box .p-radiobutton-icon {
-        background-color: #fcd34d;
+        background-color: #ffb845;
     }
 
     .p-radiobutton:not(.p-disabled):has(.p-radiobutton-input:focus-visible) .p-radiobutton-box {
@@ -3494,9 +3494,9 @@
     }
 
     .p-button:not(:disabled):hover {
-        background: #fcd34d;
+        background: #ffb845;
         color: #020617;
-        border-color: #fcd34d;
+        border-color: #ffb845;
     }
 
     .p-button:not(:disabled):active {
@@ -7900,7 +7900,7 @@
     }
 
     .p-overlaypanel .p-overlaypanel-close:enabled:hover {
-        background: #fcd34d;
+        background: #ffb845;
         color: #020617;
     }
 
@@ -8316,9 +8316,9 @@
     }
 
     .p-fileupload-choose:not(.p-disabled):hover {
-        background: #fcd34d;
+        background: #ffb845;
         color: #020617;
-        border-color: #fcd34d;
+        border-color: #ffb845;
     }
 
     .p-fileupload-choose:not(.p-disabled):active {
