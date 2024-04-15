@@ -1,0 +1,6 @@
+/* TISA FONT */
+@import url('https://fonts.cdnfonts.com/css/tisa-sans-pro');
+
+h1, h3, h3, h4, h5, h6 {
+    font-family: 'Tisa Sans Pro', sans-serif;
+}
