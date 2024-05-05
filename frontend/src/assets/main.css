@@ -8,3 +8,6 @@
 
 /* PrimeVue THEME */
 @import './theme.css';
+
+/* Animate.css */
+@import 'animate.css';
