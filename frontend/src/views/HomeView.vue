@@ -70,7 +70,7 @@ const items = ref([
 
 <style scoped lang="scss">
 #proposito {
-  min-height: 100dvh;
+  min-height: 120dvh;
   widows: 100%;
   border: 1px solid red;
 }
