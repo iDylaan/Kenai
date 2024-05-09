@@ -1,27 +1,33 @@
-import subprocess, json, requests
-from flask import Flask, jsonify, request
+import json, requests, os
+from flask import Flask, jsonify, request, render_template, send_from_directory
 from dotenv import load_dotenv
+from .app_config import Config
 
 
 # Cargar variables de entorno desde .env
 load_dotenv('.env')
 
 ### Cargar App ###
-app = Flask(__name__)
+app = Flask(__name__, static_folder='dist', template_folder='dist')
 
 ### Configuracion de la APP ###
-# app.config.from_object(Config)
+app.config.from_object(Config)
 
-### JWT Config ###
-# jwt = JWTManager(app)
 
-### CORS ###
-# CORS(app)
-    
 ### Cargar el Cliente de Dist creado con VueJs ###
 @app.route('/')
 def index():
-    return {"message": "Hello word"}
+    return render_template('index.html')
+
+
+### Cargar archivos hasheados para el router de VueJs ### 
+@app.route('/<path:filename>')
+def serve_static(filename):
+    root_dir = app.root_path + '/dist/'
+    if os.path.exists(os.path.join(root_dir, filename)):
+        return send_from_directory(root_dir, filename)
+    else:
+        return render_template('index.html')
 
 
 ### Carga de respuesta de un 404 (recurso no encontrado) ###
@@ -57,6 +63,14 @@ def generate_text():
     except Exception as e:
         # Manejar errores y devolver un mensaje de error
         return jsonify({"error": "Failed to generate text", "details": str(e)}), 500
+    
+
+### API ROUTES ###
+# from .app import (
+# )
+
+### BP ###
+# app.register_blueprint(mod_auth, url_prefix='/auth')
 
 ## Llama a la API de Ollama
 def generate(prompt, context, top_k, top_p, temp):
