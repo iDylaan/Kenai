@@ -7,10 +7,10 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    InputNumber: typeof import('primevue/inputnumber')['default']
-    InputText: typeof import('primevue/inputtext')['default']
+    Button: typeof import('primevue/button')['default']
     Navbar: typeof import('./src/components/layout/Navbar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TabMenu: typeof import('primevue/tabmenu')['default']
   }
 }
