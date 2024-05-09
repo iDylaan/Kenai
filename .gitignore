@@ -131,3 +131,13 @@ yarn-error.log
 /.idea
 /*.log
 
+
+.idea/
+.vscode/
+.venv*/
+venv*/
+__pycache__/
+.coverage*
+htmlcov/
+.tox/
+docs/_build/
