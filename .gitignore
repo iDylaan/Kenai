@@ -135,6 +135,9 @@ yarn-error.log
 .idea/
 .vscode/
 .venv*/
+.env.local
+.env.development
+.env.production
 venv*/
 __pycache__/
 .coverage*
