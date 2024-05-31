@@ -1,8 +1,6 @@
 <template>
   <main class="main-container">
-    <section
-      :class="['navbar__container', !navbarExtended ? 'not-extended' : '']"
-    >
+    <section :class="['navbar__container', !navbarExtended ? 'not-extended' : '']">
       <section class="navbar__header">
         <div class="menu-btn__container">
           <Button
@@ -17,61 +15,44 @@
         </div>
 
         <div class="new-btn__container">
-          <Button
-            severity="secondary"
-            size="small"
-            class="new-btn"
-            rounded
-            outlined
-          >
+          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
             <span class="material-icons">add</span>
-            <span
-              class="text animate__animated animate__fadeInLeft"
-              v-if="navbarExtended"
+            <span class="text animate__animated animate__fadeIn" v-if="navbarExtended"
               >New chat</span
             >
           </Button>
         </div>
       </section>
 
-      <section class="navbar__body" v-if="navbarExtended">
-        <span class="reciente-txt animate__animated animate_fadeInUp"
-          >Recent</span
-        >
+      <section
+        class="navbar__body animate__animated animate_fadeIn"
+        v-if="navbarExtended"
+      >
+        <span class="reciente-txt">Recent</span>
 
-        <div class="chats__container animate__animated animate_fadeInUp">
+        <div class="chats__container">
           <Button severity="primary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </Button>
 
           <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </Button>
 
           <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </Button>
 
           <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </Button>
 
           <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </Button>
         </div>
@@ -87,7 +68,41 @@
       <div class="chat__body"></div>
 
       <div class="chat__footer">
-        <InputText type="text" placeholder="Prompt" v-model="prompt" size="large" variant="filled" />
+        <Toolbar class="prompt-tools">
+          <template #start>
+            <Button
+              label="Secondary"
+              severity="secondary"
+              rounded
+              text
+              @click="toggleAttachMenu"
+              aria-haspopup="true"
+              aria-controls="overlay_menu"
+              class="prompt-tool-btn"
+            >
+              <span class="material-icons-outlined chat-icon">attach_file</span>
+            </Button>
+            <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
+          </template>
+
+          <template #center>
+            <Textarea
+              type="text"
+              placeholder="Write a message here"
+              v-model="prompt"
+              size="small"
+              variant="filled"
+              rows="1"
+              @input="[handleInput, autoResize]"
+            />
+          </template>
+
+          <template #end>
+            <Button severity="primary" rounded class="prompt-tool-btn" text>
+              <span class="material-icons-outlined">send</span>
+            </Button>
+          </template>
+        </Toolbar>
       </div>
     </section>
   </main>
@@ -95,20 +110,63 @@
 
 <script setup lang="ts">
 // IMPORTACIONES
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 // COMPONENTES
 import Chat from "@/components/layout/Chat.vue";
 
 // VARIABLES
 const navbarExtended = ref(true);
-const prompt = ref(null);
+const prompt = ref("");
+const menuAttach = ref();
+const maxWords = 100;
+const items = ref([
+  {
+    label: "Options",
+    items: [
+      {
+        label: "Refresh",
+        icon: "pi pi-refresh",
+      },
+      {
+        label: "Export",
+        icon: "pi pi-upload",
+      },
+    ],
+  },
+]);
 
 // FUNCIONES RESERVADAS
+watch(prompt, (newVal) => {
+  const textarea = document.querySelector(".p-inputtextarea") as HTMLTextAreaElement;
+  if (textarea) {
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }
+});
 
 // FUNCIONES
-const toggleNavbarExtended = () =>
-  (navbarExtended.value = !navbarExtended.value);
+const handleInput = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement;
+  const words = target.value.split(/\s+/);
+
+  if (words.length > maxWords) {
+    target.value = words.slice(0, maxWords).join(" ");
+  }
+
+  prompt.value = target.value;
+};
+
+const autoResize = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement;
+  target.style.height = "auto";
+  target.style.height = `${target.scrollHeight}px`;
+};
+
+const toggleAttachMenu = (event: any) => {
+  menuAttach.value.toggle(event);
+};
+const toggleNavbarExtended = () => (navbarExtended.value = !navbarExtended.value);
 </script>
 
 <style scoped lang="scss">
@@ -119,14 +177,78 @@ const toggleNavbarExtended = () =>
 .chat__container {
   height: 100dvh;
   width: 100%;
-  display: ;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 60px 1fr auto;
+  gap: 0px 0px;
+  grid-template-areas:
+    "chat__header"
+    "chat__body"
+    "chat__footer";
+
+  .chat__header {
+    grid-area: chat__header;
+    border: 1px solid blue;
+    margin: 12px;
+  }
+
+  .chat__body {
+    grid-area: chat__body;
+    border: 1px solid red;
+  }
 
   .chat__footer {
-    width: 100%;
-    .p-inputtext.p-inputtext-lg {
+    position: relative;
+    grid-area: chat__footer;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 40px 0px;
+
+    .prompt-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: nowrap;
+      gap: 10px;
+      width: 90%;
+      max-width: 830px;
+      max-height: 236px;
+      border-radius: 3rem;
+      padding: 8px 10px;
+      margin-top: -20px;
+
+      .prompt-tool-btn {
+        display: grid;
+        place-items: center;
+        width: 52px;
+        height: 42px;
+      }
+
+      .p-toolbar-group-center {
+        .p-inputtextarea.p-inputtext.p-component.p-variant-filled {
+          height: 25px;
+          margin-bottom: 10px;
+        }
+      }
+    }
+
+    // Text area del prompt
+
+    .p-inputtextarea.p-inputtext.p-component.p-variant-filled {
       width: 100%;
-      border-radius: 100px;
-      padding: 0.7rem 1.5rem;
+      max-height: 200px;
+      height: 40px;
+      overflow-y: auto;
+      resize: none;
+      font-weight: 500;
+      padding: 0;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.863);
+      outline: none;
+      background-color: transparent;
+      border: none;
     }
   }
 }
@@ -136,7 +258,7 @@ const toggleNavbarExtended = () =>
   height: 100dvh;
   width: 300px;
   background-color: rgba(73, 73, 73, 0.171);
-  transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  transition: width 0.4s ease, opacity 0.3s ease;
 }
 
 .not-extended {
@@ -172,8 +294,8 @@ const toggleNavbarExtended = () =>
       gap: 10px;
       height: 39.14px;
 
-      .animate__animated.animate__fadeInLeft.text {
-        animation-name: fadeInLeft;
+      .animate__animated.animate__fadeIn.text {
+        animation-name: fadeIn;
         animation-duration: 500ms;
         animation-delay: 70ms;
       }
@@ -184,6 +306,12 @@ const toggleNavbarExtended = () =>
       }
     }
   }
+}
+
+.animate__animated.animate_fadeIn.navbar__body {
+  animation-name: fadeIn;
+  animation-duration: 500ms;
+  animation-delay: 300ms;
 }
 
 .navbar__body {
@@ -208,17 +336,6 @@ const toggleNavbarExtended = () =>
         font-size: 0.9rem;
       }
     }
-  }
-
-  .animate__animated.animate_fadeInUp.reciente-txt {
-    animation-name: fadeInUp;
-    animation-duration: 400ms;
-    animation-delay: 300ms;
-  }
-  .animate__animated.animate_fadeInUp.chats__container {
-    animation-name: fadeInUp;
-    animation-duration: 400ms;
-    animation-delay: 350ms;
   }
 
   .reciente-txt {

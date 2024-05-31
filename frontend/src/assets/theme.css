@@ -7442,6 +7442,10 @@
         align-items: center;
     }
 
+    .p-toolbar-group-center {
+        width: 100%;
+    }
+
     .p-toolbar-group-left,
     .p-toolbar-group-right {
         display: flex;
