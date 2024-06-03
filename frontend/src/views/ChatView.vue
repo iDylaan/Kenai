@@ -1,6 +1,8 @@
 <template>
   <main class="main-container">
-    <section :class="['navbar__container', !navbarExtended ? 'not-extended' : '']">
+    <section
+      :class="['navbar__container', !navbarExtended ? 'not-extended' : '']"
+    >
       <section class="navbar__header">
         <div class="menu-btn__container">
           <Button
@@ -15,9 +17,17 @@
         </div>
 
         <div class="new-btn__container">
-          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
+          <Button
+            severity="secondary"
+            size="small"
+            class="new-btn"
+            rounded
+            outlined
+          >
             <span class="material-icons">add</span>
-            <span class="text animate__animated animate__fadeIn" v-if="navbarExtended"
+            <span
+              class="text animate__animated animate__fadeIn"
+              v-if="navbarExtended"
               >New chat</span
             >
           </Button>
@@ -32,27 +42,37 @@
 
         <div class="chats__container">
           <Button severity="primary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </Button>
 
           <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </Button>
 
           <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </Button>
 
           <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </Button>
 
           <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </Button>
         </div>
@@ -68,7 +88,7 @@
       <div class="chat__body"></div>
 
       <div class="chat__footer">
-        <Toolbar class="prompt-tools">
+        <Toolbar class="prompt-tools" id="tools-bar">
           <template #start>
             <Button
               label="Secondary"
@@ -80,7 +100,7 @@
               aria-controls="overlay_menu"
               class="prompt-tool-btn"
             >
-              <span class="material-icons-outlined chat-icon">attach_file</span>
+              <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
             <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
           </template>
@@ -138,10 +158,19 @@ const items = ref([
 
 // FUNCIONES RESERVADAS
 watch(prompt, (newVal) => {
-  const textarea = document.querySelector(".p-inputtextarea") as HTMLTextAreaElement;
+  const textarea = document.querySelector(
+    ".p-inputtextarea"
+  ) as HTMLTextAreaElement;
   if (textarea) {
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight}px`;
+  }
+
+  const promptBar = document.querySelector("#tools-bar") as HTMLDivElement;
+  if (textarea.style.height === "22px") {
+    promptBar.style.borderRadius = "3rem";
+  } else {
+    promptBar.style.borderRadius = "1.6rem";
   }
 });
 
@@ -166,7 +195,8 @@ const autoResize = (event: Event) => {
 const toggleAttachMenu = (event: any) => {
   menuAttach.value.toggle(event);
 };
-const toggleNavbarExtended = () => (navbarExtended.value = !navbarExtended.value);
+const toggleNavbarExtended = () =>
+  (navbarExtended.value = !navbarExtended.value);
 </script>
 
 <style scoped lang="scss">
@@ -188,13 +218,15 @@ const toggleNavbarExtended = () => (navbarExtended.value = !navbarExtended.value
 
   .chat__header {
     grid-area: chat__header;
-    border: 1px solid blue;
+    // border: 1px solid blue;
     margin: 12px;
   }
 
   .chat__body {
     grid-area: chat__body;
-    border: 1px solid red;
+    width: auto;
+    margin: 0px 6dvw;
+    // border: 1px solid red;
   }
 
   .chat__footer {
@@ -215,9 +247,9 @@ const toggleNavbarExtended = () => (navbarExtended.value = !navbarExtended.value
       width: 90%;
       max-width: 830px;
       max-height: 236px;
-      border-radius: 3rem;
       padding: 8px 10px;
       margin-top: -20px;
+      border-radius: 3rem;
 
       .prompt-tool-btn {
         display: grid;
@@ -230,6 +262,7 @@ const toggleNavbarExtended = () => (navbarExtended.value = !navbarExtended.value
         .p-inputtextarea.p-inputtext.p-component.p-variant-filled {
           height: 25px;
           margin-bottom: 10px;
+          border-radius: 0px;
         }
       }
     }

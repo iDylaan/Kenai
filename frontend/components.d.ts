@@ -9,11 +9,11 @@ declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
     Chat: typeof import('./src/components/layout/Chat.vue')['default']
-    InputText: typeof import('primevue/inputtext')['default']
     Menu: typeof import('primevue/menu')['default']
     Navbar: typeof import('./src/components/layout/Navbar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ScrollPanel: typeof import('primevue/scrollpanel')['default']
     TabMenu: typeof import('primevue/tabmenu')['default']
     Textarea: typeof import('primevue/textarea')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
