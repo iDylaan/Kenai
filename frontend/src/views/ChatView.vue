@@ -78,7 +78,21 @@
         </div>
       </section>
 
-      <section class="navbar__footer"></section>
+      <section class="navbar__footer">
+        <Button
+          label="Secondary"
+          severity="secondary"
+          text
+          class="settings-btn"
+          rounded
+          @click="toggleSettingsPopup"
+          aria-haspopup="true"
+          aria-controls="overlay_menu"
+        >
+          <span class="material-icons-outlined chat-icon">settings</span>
+          <span class="text" v-if="navbarExtended">Configuración</span>
+        </Button>
+      </section>
     </section>
 
     <!-- CONTENT AREA -->
@@ -95,14 +109,28 @@
               severity="secondary"
               rounded
               text
-              @click="toggleAttachMenu"
-              aria-haspopup="true"
-              aria-controls="overlay_menu"
               class="prompt-tool-btn"
             >
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
-            <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
+            <Menu
+              ref="menuSettings"
+              id="overlay_menu_settings"
+              :model="settingsItems"
+              :popup="true"
+            >
+              <template #item="{ item, props }">
+                <a
+                  v-ripple
+                  class="flex align-items-center"
+                  v-bind="props.action"
+                >
+                  <span class="material-icons">item.icon</span>
+                  <InputSwitch v-if="item.type === 'switch'" v-model="darkThemeChecked" />
+                  <Dropdown v-if="item.type === 'select'" v-model="siteLanguage" :options="item.children" optionLabel="language" placeholder="Select a Language" />
+                </a>
+              </template>
+            </Menu>
           </template>
 
           <template #center>
@@ -133,28 +161,41 @@
 import { ref, watch } from "vue";
 
 // COMPONENTES
-import Chat from "@/components/layout/Chat.vue";
 
 // VARIABLES
 const navbarExtended = ref(true);
-const prompt = ref("");
-const menuAttach = ref();
-const maxWords = 100;
-const items = ref([
+const menuSettings = ref();
+const darkThemeChecked = ref(false);
+const siteLanguage = ref();
+const settingsItems = ref([
   {
-    label: "Options",
+    label: "Settings",
     items: [
       {
-        label: "Refresh",
-        icon: "pi pi-refresh",
+        label: "Dark theme",
+        icon: "dark_mode",
+        type: "switch"
       },
       {
-        label: "Export",
-        icon: "pi pi-upload",
+        label: "Language",
+        icon: "language",
+        type: "select",
+        children: [
+          {
+            label: "English",
+            icon: "translate",
+          },
+          {
+            label: "Spanish",
+            icon: "translate",
+          },
+        ],
       },
     ],
   },
 ]);
+const prompt = ref("");
+const maxWords = 100;
 
 // FUNCIONES RESERVADAS
 watch(prompt, (newVal) => {
@@ -192,11 +233,12 @@ const autoResize = (event: Event) => {
   target.style.height = `${target.scrollHeight}px`;
 };
 
-const toggleAttachMenu = (event: any) => {
-  menuAttach.value.toggle(event);
-};
 const toggleNavbarExtended = () =>
   (navbarExtended.value = !navbarExtended.value);
+
+const toggleSettingsPopup = (event: any) => {
+  menuSettings.value.toggle(event);
+};
 </script>
 
 <style scoped lang="scss">
@@ -292,6 +334,9 @@ const toggleNavbarExtended = () =>
   width: 300px;
   background-color: rgba(73, 73, 73, 0.171);
   transition: width 0.4s ease, opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .not-extended {
@@ -352,7 +397,7 @@ const toggleNavbarExtended = () =>
   flex-direction: column;
   justify-content: flex-start;
   width: 100%;
-
+  height: 100%;
   .chats__container {
     display: flex;
     flex-direction: column;
@@ -376,6 +421,14 @@ const toggleNavbarExtended = () =>
     font-size: 0.85rem;
     margin-bottom: 4px;
     margin-left: 10px;
+  }
+}
+
+.navbar__footer {
+  .settings-btn {
+    display: flex;
+    width: 100%;
+    gap: 5px;
   }
 }
 </style>
