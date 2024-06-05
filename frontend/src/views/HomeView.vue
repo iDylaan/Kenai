@@ -139,6 +139,7 @@ a {
   width: 100%;
   position: sticky;
   top: 20px;
+  margin-top: calc(30px + 10dvw / 10);
   z-index: 1000;
 }
 
@@ -154,7 +155,7 @@ a {
   width: 100%;
   display: grid;
   place-items: center;
-  margin-top: calc(50px - 10dvw / 2);
+  margin-top: calc(30px - 10dvw / 2) ;
 }
 
 .title__section {
