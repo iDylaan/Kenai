@@ -118,11 +118,11 @@
               id="overlay_menu_settings"
               :model="settingsItems"
               :popup="true"
+              
             >
               <template #item="{ item, props }">
                 <a
                   v-ripple
-                  class="flex align-items-center"
                   v-bind="props.action"
                 >
                   <span class="material-icons">item.icon</span>
@@ -260,7 +260,6 @@ const toggleSettingsPopup = (event: any) => {
 
   .chat__header {
     grid-area: chat__header;
-    // border: 1px solid blue;
     margin: 12px;
   }
 
@@ -268,9 +267,8 @@ const toggleSettingsPopup = (event: any) => {
     grid-area: chat__body;
     width: auto;
     margin: 0px 6dvw;
-    // border: 1px solid red;
   }
-
+  
   .chat__footer {
     position: relative;
     grid-area: chat__footer;
@@ -321,6 +319,7 @@ const toggleSettingsPopup = (event: any) => {
       padding: 0;
       font-size: 1rem;
       color: rgba(255, 255, 255, 0.863);
+      color: #18181b0f;
       outline: none;
       background-color: transparent;
       border: none;

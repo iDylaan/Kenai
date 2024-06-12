@@ -13,6 +13,11 @@ const router = createRouter({
       name: 'chat',
       component: () => import('../views/ChatView.vue')
     },
+    {
+      path: '/:catchAll(.*)',
+      name: 'Error404',
+      component: () => import('@/views/Error404View.vue')
+    },
   ]
 })
 
