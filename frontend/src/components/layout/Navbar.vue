@@ -1,7 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// IMPORTACIONES
+import { ref, watch } from "vue";
+
+// COMPONENTES
+
+// VARIABLES
+
+// FUNCIONES RESERVADAS
+
+// FUNCIONES
+</script>
 
 <template>
-    
+  
 </template>
 
-<style lang="css" scoped></style>
+<style lang="scss" scoped>
+
+</style>

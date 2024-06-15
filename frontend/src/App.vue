@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <RouterView />
+  <div id="app" class="dark-theme">
+    <RouterView />
+  </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+#app {
+}
+
 </style>
