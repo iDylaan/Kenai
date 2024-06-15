@@ -6,11 +6,11 @@ import { ref } from "vue";
 
 // Variables
 const items = ref([
-  { route: '#kenai', label: "Kenai", materialIcon: "home" },
-  { route: '#proposito', label: "Propósito", materialIcon: "adjust" },
-  { route: '#modelo', label: "Modelo", materialIcon: "pets" },
-  { route: '#aplicaciones', label: "Aplicaciones", materialIcon: "grid_view" },
-  { route: '#contenido', label: "Contenido", materialIcon: "layers" },
+  { route: "#kenai", label: "Kenai", materialIcon: "home" },
+  { route: "#proposito", label: "Propósito", materialIcon: "adjust" },
+  { route: "#modelo", label: "Modelo", materialIcon: "pets" },
+  { route: "#aplicaciones", label: "Aplicaciones", materialIcon: "grid_view" },
+  { route: "#contenido", label: "Contenido", materialIcon: "layers" },
 ]);
 
 // Funciones reservadas
@@ -27,15 +27,25 @@ const items = ref([
       </div>
       <div class="title__container">
         <h1>
-          <span class="animate__animated animate__fadeInUp first-title">Bienvenido a</span>
-          <span class="animate__animated animate__fadeInUp second-title" id="kenai_title">Kenai</span>
+          <span class="animate__animated animate__fadeInUp first-title"
+            >Bienvenido a</span
+          >
+          <span class="animate__animated animate__fadeInUp second-title" id="kenai_title"
+            >Kenai</span
+          >
         </h1>
 
-        <div class="get-started__container animate__animated animate__fadeInUp third-title">
-          <Button outlined severity="contrast" class="get-started__btn">
-            <span slot="label">Comenzar</span>
-            <span class="material-icons material-icons-right" slot="icon">arrow_forward</span>
-          </Button>
+        <div
+          class="get-started__container animate__animated animate__fadeInUp third-title"
+        >
+          <router-link to="/chat">
+            <Button outlined severity="contrast" class="get-started__btn">
+              <span slot="label">Comenzar</span>
+              <span class="material-icons material-icons-right" slot="icon"
+                >arrow_forward</span
+              >
+            </Button>
+          </router-link>
         </div>
       </div>
     </section>
@@ -45,14 +55,25 @@ const items = ref([
       <nav class="landing-navbar">
         <TabMenu :model="items" class="nav-tab-menu">
           <template #item="{ item, props }">
-            <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+            <router-link
+              v-if="item.route"
+              v-slot="{ href, navigate }"
+              :to="item.route"
+              custom
+            >
               <a v-ripple :href="href" v-bind="props.action" @click="navigate">
-                <span class="material-icons">{{ item.materialIcon }}</span>
+                <span class="material-icons-outlined">{{ item.materialIcon }}</span>
                 <span v-bind="props.label">{{ item.label }}</span>
               </a>
             </router-link>
-            <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-              <span class="material-icons">{{ item.materialIcon }}</span>
+            <a
+              v-else
+              v-ripple
+              :href="item.url"
+              :target="item.target"
+              v-bind="props.action"
+            >
+              <span class="material-icons-outlined">{{ item.materialIcon }}</span>
               <span v-bind="props.label">{{ item.label }}</span>
             </a>
           </template>
@@ -62,9 +83,7 @@ const items = ref([
     <!-- END NAVBAR -->
 
     <!-- Content -->
-    <section id="proposito">
-
-    </section>
+    <section id="proposito"></section>
   </main>
 </template>
 
@@ -91,6 +110,10 @@ const items = ref([
   }
 }
 
+a {
+  text-decoration: none;
+}
+
 .landing-navbar {
   display: flex;
   justify-content: center;
@@ -106,7 +129,6 @@ const items = ref([
   width: 100%;
 
   ul {
-    
   }
 }
 
@@ -117,6 +139,7 @@ const items = ref([
   width: 100%;
   position: sticky;
   top: 20px;
+  margin-top: calc(30px + 10dvw / 10);
   z-index: 1000;
 }
 
@@ -132,7 +155,7 @@ const items = ref([
   width: 100%;
   display: grid;
   place-items: center;
-  margin-top: calc(50px - 10dvw / 2);
+  margin-top: calc(30px - 10dvw / 2) ;
 }
 
 .title__section {
