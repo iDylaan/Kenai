@@ -28,7 +28,7 @@
             <span
               class="text animate__animated animate__fadeIn"
               v-if="navbarExtended"
-              >New chat</span
+              >{{ $t('chat.new_chat') }}</span
             >
           </Button>
         </div>
@@ -38,43 +38,67 @@
         class="navbar__body animate__animated animate_fadeIn"
         v-if="navbarExtended"
       >
-        <span class="reciente-txt">Recent</span>
-
+        <span class="reciente-txt">{{ $t('chat.recent') }}</span>
         <div class="chats__container">
-          <Button severity="primary" class="chat-btn">
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="primary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
             <span class="material-icons-outlined chat-icon"
               >mark_chat_unread</span
             >
             <span class="text">Chat</span>
-          </Button>
+          </SplitButton>
 
-          <Button severity="secondary" class="chat-btn">
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
             <span class="material-icons-outlined chat-icon"
               >mark_chat_unread</span
             >
             <span class="text">Chat</span>
-          </Button>
+          </SplitButton>
 
-          <Button severity="secondary" class="chat-btn">
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
             <span class="material-icons-outlined chat-icon"
               >mark_chat_unread</span
             >
             <span class="text">Chat</span>
-          </Button>
+          </SplitButton>
 
-          <Button severity="secondary" class="chat-btn">
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
             <span class="material-icons-outlined chat-icon"
               >mark_chat_unread</span
             >
             <span class="text">Chat</span>
-          </Button>
-
-          <Button severity="secondary" class="chat-btn">
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
-            <span class="text">Chat</span>
-          </Button>
+          </SplitButton>
         </div>
       </section>
 
@@ -90,7 +114,7 @@
           aria-controls="overlay_menu"
         >
           <span class="material-icons-outlined chat-icon">settings</span>
-          <span class="text" v-if="navbarExtended">Configuración</span>
+          <span class="text" v-if="navbarExtended">{{ $t('chat.settings') }}</span>
         </Button>
       </section>
     </section>
@@ -118,16 +142,24 @@
               id="overlay_menu_settings"
               :model="settingsItems"
               :popup="true"
-              
             >
-              <template #item="{ item, props }">
-                <a
-                  v-ripple
-                  v-bind="props.action"
-                >
-                  <span class="material-icons">item.icon</span>
-                  <InputSwitch v-if="item.type === 'switch'" v-model="darkThemeChecked" />
-                  <Dropdown v-if="item.type === 'select'" v-model="siteLanguage" :options="item.children" optionLabel="language" placeholder="Select a Language" />
+              <template #item="{ item, props }" class="config-option">
+                <a v-ripple v-bind="props.action" @click.stop>
+                  <template v-if="item.type === 'button'" class="config-option">
+                    <span>{{ item.label }}</span>
+                  </template>
+                  <template v-else-if="item.type === 'switch'" class="config-option">
+                    <span>{{ item.label }}</span>
+                    <InputSwitch v-model="darkThemeChecked" />
+                  </template>
+                  <template v-else-if="item.type === 'select'" class="config-option">
+                    <span>{{ item.label }}</span>
+                    <Dropdown
+                      v-model="siteLanguage"
+                      :options="item.children"
+                      optionLabel="label"
+                    />
+                  </template>
                 </a>
               </template>
             </Menu>
@@ -136,7 +168,7 @@
           <template #center>
             <Textarea
               type="text"
-              placeholder="Write a message here"
+              :placeholder="t('chat.type_a_message')"
               v-model="prompt"
               size="small"
               variant="filled"
@@ -159,34 +191,63 @@
 <script setup lang="ts">
 // IMPORTACIONES
 import { ref, watch } from "vue";
+import { useI18n } from 'vue-i18n';
+// import { useToast } from "primevue/usetoast";
 
 // COMPONENTES
 
 // VARIABLES
 const navbarExtended = ref(true);
+const { t } = useI18n();
+// const toast = useToast();
 const menuSettings = ref();
 const darkThemeChecked = ref(false);
 const siteLanguage = ref();
+const chatOptions = ref([
+  {
+    label: t('chat.rename'),
+    icon: "pi pi-pencil",
+    command: () => {
+      // toast.add({
+      //   severity: "success",
+      //   summary: "Updated",
+      //   detail: "Data Updated",
+      //   life: 3000,
+      // });
+    },
+  },
+  {
+    label: t('chat.delete'),
+    icon: "pi pi-times",
+    command: () => {
+      // toast.add({
+      //   severity: "warn",
+      //   summary: "Delete",
+      //   detail: "Data Deleted",
+      //   life: 3000,
+      // });
+    },
+  },
+]);
 const settingsItems = ref([
   {
-    label: "Settings",
     items: [
       {
-        label: "Dark theme",
+        label: t('chat.dark_theme'),
         icon: "dark_mode",
-        type: "switch"
+        type: "switch",
       },
       {
-        label: "Language",
+        label: t('chat.language'),
         icon: "language",
         type: "select",
         children: [
           {
-            label: "English",
+            label: t('chat.english'),
             icon: "translate",
           },
           {
-            label: "Spanish",
+            label: t('chat.spanish'),
             icon: "translate",
           },
         ],
@@ -239,6 +300,10 @@ const toggleNavbarExtended = () =>
 const toggleSettingsPopup = (event: any) => {
   menuSettings.value.toggle(event);
 };
+
+const switchChat = (id_chat: number) => {
+  console.log(id_chat);
+};
 </script>
 
 <style scoped lang="scss">
@@ -268,7 +333,7 @@ const toggleSettingsPopup = (event: any) => {
     width: auto;
     margin: 0px 6dvw;
   }
-  
+
   .chat__footer {
     position: relative;
     grid-area: chat__footer;
@@ -319,7 +384,6 @@ const toggleSettingsPopup = (event: any) => {
       padding: 0;
       font-size: 1rem;
       color: rgba(255, 255, 255, 0.863);
-      color: #18181b0f;
       outline: none;
       background-color: transparent;
       border: none;
@@ -404,14 +468,8 @@ const toggleSettingsPopup = (event: any) => {
     width: 100%;
     gap: 10px;
 
-    .chat-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      .chat-icon {
-        font-size: 0.9rem;
-      }
+    .chat-icon {
+      font-size: 0.9rem;
     }
   }
 
@@ -428,6 +486,13 @@ const toggleSettingsPopup = (event: any) => {
     display: flex;
     width: 100%;
     gap: 5px;
+  }
+
+  .p-menu .p-menuitem>.p-menuitem-content .p-menuitem-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
   }
 }
 </style>

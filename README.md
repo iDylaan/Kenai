@@ -130,3 +130,98 @@ gunicorn -c gunicorn_config.py APP:app
 ```sh
 kill #### 
 ```
+
+## NGINX
+1. Instalar Nginx
+```sh
+sudo dnf install nginx -y
+```
+2. Instanciar Nginx
+```sh
+sudo systemctl start nginx
+sudo systemctl enable nginx
+```
+3. En la ruta `/etc/nginx/conf.d/` crear un archivo `.conf` con el nombre del proyecto en este caso queda como `/etc/nginx/conf.d/kenai.conf`
+4. Dentro del archivo `kenai.conf` agregar la siguiente configuracion con el comando 
+```sh
+sudo vi /etc/nginx/conf.d/kenai.conf
+```
+Y agregamos el siguiente codigo, para insertar hay que presionar 'i', una vez diga insert, pegamos el codigo y para guardar presionamos Esc, y escribimos :wq! para guardar y damos Enter.
+```sh
+server {
+    listen 80;
+    server_name 140.84.168.186;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+5. Cada vez que se realicen cambios dentro de este archivo de configuracion hay que aplicar los cambios con el siguiente comando
+```sh
+sudo nginx -t
+```
+6. Configurar Nginx para que se ejecute automaticamente
+```sh
+sudo systemctl daemon-reload
+```
+7. Reiniciar Nginx
+```sh
+sudo systemctl restart nginx
+```
+
+## Configuracion de SELinux
+1. Desactivar temporalmente SELinux
+```sh
+sudo setenforce 0
+```
+2. Reiniciar NGinx
+```sh
+sudo systemctl restart nginx
+```
+3. Configurar SELinux para permitir Nginx conexiones de red
+```sh
+sudo setsebool -P httpd_can_network_connect 1
+```
+
+## Firewall
+1. Verificar reglas de firewall
+```sh
+sudo firewall-cmd --list-all
+```
+2. Crear regla de firewall interno
+```sh
+sudo firewall-cmd --permanent --zone=public --add-service=http
+sudo firewall-cmd --reload
+```
+3. Permitir conexiones al puerto 5000
+```sh
+sudo firewall-cmd --permanent --add-port=5000/tcp
+sudo firewall-cmd --reload
+```
+
+## Reinicio de Servicios
+Para reiniciar todos los servicios se pueden ejecutar los siguientes comandos para realizar lo siguiente
+1. Asegurarse que la configuracion de nginx es valida y luego reiniciar
+```sh
+sudo nginx -t
+sudo systemctl restart nginx
+```
+2. Recargar el daemon de systemd
+```sh
+sudo systemctl daemon-reload
+```
+3. Verificar los status de los servicios
+```sh
+sudo systemctl status nginx
+```
+
+
+
+
+
+
