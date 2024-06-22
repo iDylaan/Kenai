@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 // Importaciones
 import { ref } from "vue";
 
