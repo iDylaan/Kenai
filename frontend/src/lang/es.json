@@ -11,7 +11,7 @@
     "dark_theme": "Tema oscuro",
     "language": "Lenguaje"
   },
-  "prime-ui": {
+  "prime_ui": {
     "accept": "Aceptar",
     "reject": "Rechazar",
     "startsWith": "Comienza con",

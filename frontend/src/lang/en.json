@@ -11,7 +11,7 @@
     "dark_theme": "Dark theme",
     "language": "Language"
   },
-  "prime-ui": {
+  "prime_ui": {
     "accept": "Accept",
     "reject": "Reject",
     "startsWith": "Starts with",
