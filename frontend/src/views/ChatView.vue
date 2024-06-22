@@ -1,118 +1,53 @@
 <template>
   <main class="main-container">
-    <section
-      :class="['navbar__container', !navbarExtended ? 'not-extended' : '']"
-    >
+    <section :class="['navbar__container', !navbarExtended ? 'not-extended' : '']">
       <section class="navbar__header">
         <div class="menu-btn__container">
-          <Button
-            severity="secondary"
-            size="small"
-            text
-            rounded
-            @click="toggleNavbarExtended"
-          >
+          <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended">
             <span class="material-icons menu-icon">menu</span>
           </Button>
         </div>
 
         <div class="new-btn__container">
-          <Button
-            severity="secondary"
-            size="small"
-            class="new-btn"
-            rounded
-            outlined
-          >
+          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
             <span class="material-icons">add</span>
-            <span
-              class="text animate__animated animate__fadeIn"
-              v-if="navbarExtended"
-              >{{ $t('chat.new_chat') }}</span
-            >
+            <span class="text animate__animated animate__fadeIn" v-if="navbarExtended">{{ $t('chat.new_chat') }}</span>
           </Button>
         </div>
       </section>
 
-      <section
-        class="navbar__body animate__animated animate_fadeIn"
-        v-if="navbarExtended"
-      >
+      <section class="navbar__body animate__animated animate_fadeIn" v-if="navbarExtended">
         <span class="reciente-txt">{{ $t('chat.recent') }}</span>
         <div class="chats__container">
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="primary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
         </div>
       </section>
 
       <section class="navbar__footer">
-        <Button
-          label="Secondary"
-          severity="secondary"
-          text
-          class="settings-btn"
-          rounded
-          @click="toggleSettingsPopup"
-          aria-haspopup="true"
-          aria-controls="overlay_menu"
-        >
+        <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
+          aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
           <span class="text" v-if="navbarExtended">{{ $t('chat.settings') }}</span>
         </Button>
@@ -128,37 +63,26 @@
       <div class="chat__footer">
         <Toolbar class="prompt-tools" id="tools-bar">
           <template #start>
-            <Button
-              label="Secondary"
-              severity="secondary"
-              rounded
-              text
-              class="prompt-tool-btn"
-            >
+            <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn">
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
-            <Menu
-              ref="menuSettings"
-              id="overlay_menu_settings"
-              :model="settingsItems"
-              :popup="true"
-            >
+            <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
               <template #item="{ item, props }" class="config-option">
-                <a v-ripple v-bind="props.action" @click.stop>
+                <a v-bind="props.action" @click.stop>
                   <template v-if="item.type === 'button'" class="config-option">
-                    <span>{{ item.label }}</span>
+                    <span>{{ $t('chat.' + item.label) }}</span>
                   </template>
                   <template v-else-if="item.type === 'switch'" class="config-option">
-                    <span>{{ item.label }}</span>
+                    <span>{{ $t('chat.' + item.label) }}</span>
                     <InputSwitch v-model="darkThemeChecked" />
                   </template>
                   <template v-else-if="item.type === 'select'" class="config-option">
-                    <span>{{ item.label }}</span>
-                    <Dropdown
-                      v-model="siteLanguage"
-                      :options="item.children"
-                      optionLabel="label"
-                    />
+                    <span>{{ $t('chat.' + item.label) }}</span>
+                    <Dropdown v-model="siteLanguage" :options="item.children" optionLabel="label" @change="handleLanguageChange">
+                      <template #item="{ option }">
+                        <span>{{ $t('chat.' + option.label) }}</span>
+                      </template>
+                    </Dropdown>
                   </template>
                 </a>
               </template>
@@ -166,15 +90,8 @@
           </template>
 
           <template #center>
-            <Textarea
-              type="text"
-              :placeholder="t('chat.type_a_message')"
-              v-model="prompt"
-              size="small"
-              variant="filled"
-              rows="1"
-              @input="[handleInput, autoResize]"
-            />
+            <Textarea type="text" :placeholder="$t('chat.type_a_message')" v-model="prompt" size="small" variant="filled"
+              rows="1" @input="[handleInput, autoResize]" />
           </template>
 
           <template #end>
@@ -188,123 +105,111 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 // IMPORTACIONES
-import { ref, watch } from "vue";
-import { useI18n } from 'vue-i18n';
-// import { useToast } from "primevue/usetoast";
+import { ref, watch } from 'vue';
 
-// COMPONENTES
+// Inyectar la instancia de 'app'
 
 // VARIABLES
 const navbarExtended = ref(true);
-const { t } = useI18n();
-// const toast = useToast();
-const menuSettings = ref();
 const darkThemeChecked = ref(false);
-const siteLanguage = ref();
+const menuSettings = ref(null);
 const chatOptions = ref([
   {
-    label: t('chat.rename'),
-    icon: "pi pi-pencil",
-    command: () => {
-      // toast.add({
-      //   severity: "success",
-      //   summary: "Updated",
-      //   detail: "Data Updated",
-      //   life: 3000,
-      // });
-    },
+    label: "rename",
+    icon: 'pi pi-pencil',
+    command: () => {},
   },
   {
-    label: t('chat.delete'),
-    icon: "pi pi-times",
-    command: () => {
-      // toast.add({
-      //   severity: "warn",
-      //   summary: "Delete",
-      //   detail: "Data Deleted",
-      //   life: 3000,
-      // });
-    },
+    label: "delete",
+    icon: 'pi pi-times',
+    command: () => {},
   },
 ]);
 const settingsItems = ref([
   {
     items: [
       {
-        label: t('chat.dark_theme'),
-        icon: "dark_mode",
-        type: "switch",
+        label: "dark_theme",
+        icon: 'dark_mode',
+        type: 'switch',
       },
       {
-        label: t('chat.language'),
-        icon: "language",
-        type: "select",
+        label: "language",
+        icon: 'language',
+        type: 'select',
         children: [
           {
-            label: t('chat.english'),
-            icon: "translate",
+            label: "english",
+            icon: 'translate',
+            lang_code: 'en',
           },
           {
-            label: t('chat.spanish'),
-            icon: "translate",
+            label: "spanish",
+            icon: 'translate',
+            lang_code: 'es',
           },
         ],
       },
     ],
   },
 ]);
-const prompt = ref("");
+const prompt = ref('');
 const maxWords = 100;
 
 // FUNCIONES RESERVADAS
 watch(prompt, (newVal) => {
-  const textarea = document.querySelector(
-    ".p-inputtextarea"
-  ) as HTMLTextAreaElement;
+  const textarea = document.querySelector('.p-inputtextarea');
   if (textarea) {
-    textarea.style.height = "auto";
+    textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
   }
 
-  const promptBar = document.querySelector("#tools-bar") as HTMLDivElement;
-  if (textarea.style.height === "22px") {
-    promptBar.style.borderRadius = "3rem";
+  const promptBar = document.querySelector('#tools-bar');
+  if (textarea.style.height === '22px') {
+    promptBar.style.borderRadius = '3rem';
   } else {
-    promptBar.style.borderRadius = "1.6rem";
+    promptBar.style.borderRadius = '1.6rem';
   }
 });
 
 // FUNCIONES
-const handleInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
+const handleInput = (event) => {
+  const target = event.target;
   const words = target.value.split(/\s+/);
 
   if (words.length > maxWords) {
-    target.value = words.slice(0, maxWords).join(" ");
+    target.value = words.slice(0, maxWords).join(' ');
   }
 
   prompt.value = target.value;
 };
 
-const autoResize = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  target.style.height = "auto";
+const autoResize = (event) => {
+  const target = event.target;
+  target.style.height = 'auto';
   target.style.height = `${target.scrollHeight}px`;
 };
 
-const toggleNavbarExtended = () =>
-  (navbarExtended.value = !navbarExtended.value);
+const toggleNavbarExtended = () => {
+  navbarExtended.value = !navbarExtended.value;
+};
 
-const toggleSettingsPopup = (event: any) => {
+const toggleSettingsPopup = (event) => {
   menuSettings.value.toggle(event);
 };
 
-const switchChat = (id_chat: number) => {
+const switchChat = (id_chat) => {
   console.log(id_chat);
 };
+
+const handleLanguageChange = (event) => {
+  // Cambiar el lenguaje
+
+};
 </script>
+
 
 <style scoped lang="scss">
 .main-container {
@@ -461,6 +366,7 @@ const switchChat = (id_chat: number) => {
   justify-content: flex-start;
   width: 100%;
   height: 100%;
+
   .chats__container {
     display: flex;
     flex-direction: column;
@@ -496,3 +402,4 @@ const switchChat = (id_chat: number) => {
   }
 }
 </style>
+

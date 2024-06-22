@@ -131,97 +131,90 @@ gunicorn -c gunicorn_config.py APP:app
 kill #### 
 ```
 
-## NGINX
-1. Instalar Nginx
+## Apache
+Primero necesitamos instanciar todo el entorno con Apache para eso necesitamos realizar las siguientes configuraciones
+1. Instalar Epel
 ```sh
-sudo dnf install nginx -y
+sudo dnf install epel-release
+sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 ```
-2. Instanciar Nginx
+2. Instalar apache y mod_ssl
 ```sh
-sudo systemctl start nginx
-sudo systemctl enable nginx
+sudo dnf -y install httpd mod_ssl
+sudo dnf install mod_proxy mod_proxy_http -y
 ```
-3. En la ruta `/etc/nginx/conf.d/` crear un archivo `.conf` con el nombre del proyecto en este caso queda como `/etc/nginx/conf.d/kenai.conf`
-4. Dentro del archivo `kenai.conf` agregar la siguiente configuracion con el comando 
+3. Habilitar e Iniciar Apache
 ```sh
-sudo vi /etc/nginx/conf.d/kenai.conf
+sudo systemctl enable httpd
+sudo systemctl start httpd
 ```
-Y agregamos el siguiente codigo, para insertar hay que presionar 'i', una vez diga insert, pegamos el codigo y para guardar presionamos Esc, y escribimos :wq! para guardar y damos Enter.
+4. Proxy
 ```sh
-server {
-    listen 80;
-    server_name 140.84.168.186;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
+sudo sed -i '/LoadModule proxy_module/s/^#//g' /etc/httpd/conf.modules.d/00-proxy.conf
+sudo sed -i '/LoadModule proxy_http_module/s/^#//g' /etc/httpd/conf.modules.d/00-proxy.conf
 ```
-5. Cada vez que se realicen cambios dentro de este archivo de configuracion hay que aplicar los cambios con el siguiente comando
+5. Herramientas de SELinux
 ```sh
-sudo nginx -t
-```
-6. Configurar Nginx para que se ejecute automaticamente
-```sh
-sudo systemctl daemon-reload
-```
-7. Reiniciar Nginx
-```sh
-sudo systemctl restart nginx
+sudo dnf install policycoreutils-python-utils -y
 ```
 
-## Configuracion de SELinux
-1. Desactivar temporalmente SELinux
+### Configuración
+Para empezar a realizar la configuración necesitams crear un archivo `.conf` para el proyecto llamado `kenai.conf`
+1. Creamos el archivo de configuracion `.conf`
 ```sh
-sudo setenforce 0
+sudo vi /etc/httpd/conf.d/kenai.conf
 ```
-2. Reiniciar NGinx
+1. Agregamos la siguiente configuracion
 ```sh
-sudo systemctl restart nginx
-```
-3. Configurar SELinux para permitir Nginx conexiones de red
-```sh
-sudo setsebool -P httpd_can_network_connect 1
-```
+<VirtualHost *:80>
+    ServerName ikenai.site
+    ServerAlias www.ikenai.site
+    ServerAdmin webmaster@localhost
 
-## Firewall
-1. Verificar reglas de firewall
-```sh
-sudo firewall-cmd --list-all
+    # Proxy settings
+    ProxyPreserveHost On
+    ProxyRequests Off
+    ProxyPass / http://127.0.0.1:5000/
+    ProxyPassReverse / http://127.0.0.1:5000/
+
+    ErrorLog /var/log/httpd/error.log
+    CustomLog /var/log/httpd/access.log combined
+
+    # Rewrite rules to redirect HTTP to HTTPS
+    RewriteEngine on
+    RewriteCond %{SERVER_NAME} =ikenai.site [OR]
+    RewriteCond %{SERVER_NAME} =www.ikenai.site
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName 159.54.149.184
+
+    # Proxy settings
+    ProxyPreserveHost On
+    ProxyRequests Off
+    ProxyPass / http://127.0.0.1:5000/
+    ProxyPassReverse / http://127.0.0.1:5000/
+
+    ErrorLog /var/log/httpd/error.log
+    CustomLog /var/log/httpd/access.log combined
+</VirtualHost>
 ```
-2. Crear regla de firewall interno
+4. Comprobar la configuracion colocada
+```sh
+sudo apachectl configtest
+```
+5. Crear regla de firewall interno
 ```sh
 sudo firewall-cmd --permanent --zone=public --add-service=http
-sudo firewall-cmd --reload
-```
-3. Permitir conexiones al puerto 5000
-```sh
 sudo firewall-cmd --permanent --add-port=5000/tcp
 sudo firewall-cmd --reload
 ```
-
-## Reinicio de Servicios
-Para reiniciar todos los servicios se pueden ejecutar los siguientes comandos para realizar lo siguiente
-1. Asegurarse que la configuracion de nginx es valida y luego reiniciar
+6. Permitir conexiones proxy con SELinux
 ```sh
-sudo nginx -t
-sudo systemctl restart nginx
+sudo setsebool -P httpd_can_network_connect on
 ```
-2. Recargar el daemon de systemd
+7. Reiniciar el servicio
 ```sh
-sudo systemctl daemon-reload
+sudo systemctl restart httpd
 ```
-3. Verificar los status de los servicios
-```sh
-sudo systemctl status nginx
-```
-
-
-
-
-
-
