@@ -4424,6 +4424,10 @@
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         border-right: 0 none;
+
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .p-splitbutton-menubutton,
@@ -7442,6 +7446,10 @@
         align-items: center;
     }
 
+    .p-toolbar-group-center {
+        width: 100%;
+    }
+
     .p-toolbar-group-left,
     .p-toolbar-group-right {
         display: flex;
@@ -9227,6 +9235,10 @@
         color: #ffffff;
         padding: 0.5rem 0.75rem;
         user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
     }
 
     .p-menu .p-menuitem>.p-menuitem-content .p-menuitem-link .p-menuitem-text {
@@ -10061,10 +10073,10 @@
 
     .p-tabmenu::-webkit-scrollbar {
         display: none;
-    }
+    }   
 
     .p-tabmenu .p-tabmenu-nav {
-        background: #18181b;
+        background: #18181b0f;
         border: 1px solid #3f3f46;
         border-width: 0 0 1px 0;
     }
@@ -10077,16 +10089,19 @@
         border: solid #3f3f46;
         border-width: 0 0 1px 0;
         border-color: transparent transparent #3f3f46 transparent;
-        background: #18181b;
+        background: #27273082;
+        backdrop-filter: blur(5px);
         color: #a1a1aa;
         padding: 1rem 1.125rem;
         font-weight: 600;
-        border-top-right-radius: 6px;
-        border-top-left-radius: 6px;
         transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
         margin: 0 0 -1px 0;
         outline-color: transparent;
-    }
+        -webkit-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
+        -moz-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
+        -ms-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
+        -o-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
+}
 
     .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link .p-menuitem-icon {
         margin-right: 0.5rem;

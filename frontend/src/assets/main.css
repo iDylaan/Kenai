@@ -4,6 +4,10 @@
 /* TISA FONT */
 @import url('https://fonts.cdnfonts.com/css/tisa-sans-pro');
 
+/* Material Icons */
+@import 'material-icons/iconfont/material-icons.css';
+
+/* Reseter */
 @import './reset.css';
 
 /* PrimeVue THEME */

@@ -144,3 +144,9 @@ __pycache__/
 htmlcov/
 .tox/
 docs/_build/
+/ssh-keys
+
+/backend/gunicorn_config.py
+/backend/gunilogs/*
+/backend/gunilogs/
+/backend/gunilogs
