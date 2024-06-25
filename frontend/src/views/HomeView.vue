@@ -27,23 +27,15 @@ const items = ref([
       </div>
       <div class="title__container">
         <h1>
-          <span class="animate__animated animate__fadeInUp first-title"
-            >Bienvenido a</span
-          >
-          <span class="animate__animated animate__fadeInUp second-title" id="kenai_title"
-            >Kenai</span
-          >
+          <span class="animate__animated animate__fadeInUp first-title">Bienvenido a</span>
+          <span class="animate__animated animate__fadeInUp second-title" id="kenai_title">Kenai</span>
         </h1>
 
-        <div
-          class="get-started__container animate__animated animate__fadeInUp third-title"
-        >
+        <div class="get-started__container animate__animated animate__fadeInUp third-title">
           <router-link to="/chat">
             <Button outlined severity="contrast" class="get-started__btn">
               <span slot="label">Comenzar</span>
-              <span class="material-icons material-icons-right" slot="icon"
-                >arrow_forward</span
-              >
+              <span class="material-icons material-icons-right" slot="icon">arrow_forward</span>
             </Button>
           </router-link>
         </div>
@@ -55,24 +47,13 @@ const items = ref([
       <nav class="landing-navbar">
         <TabMenu :model="items" class="nav-tab-menu">
           <template #item="{ item, props }">
-            <router-link
-              v-if="item.route"
-              v-slot="{ href, navigate }"
-              :to="item.route"
-              custom
-            >
+            <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
               <a v-ripple :href="href" v-bind="props.action" @click="navigate">
                 <span class="material-icons-outlined">{{ item.materialIcon }}</span>
                 <span v-bind="props.label">{{ item.label }}</span>
               </a>
             </router-link>
-            <a
-              v-else
-              v-ripple
-              :href="item.url"
-              :target="item.target"
-              v-bind="props.action"
-            >
+            <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
               <span class="material-icons-outlined">{{ item.materialIcon }}</span>
               <span v-bind="props.label">{{ item.label }}</span>
             </a>
@@ -128,8 +109,7 @@ a {
 .nav-tab-menu {
   width: 100%;
 
-  ul {
-  }
+  ul {}
 }
 
 .nav__container {
@@ -155,7 +135,7 @@ a {
   width: 100%;
   display: grid;
   place-items: center;
-  margin-top: calc(30px - 10dvw / 2) ;
+  margin-top: calc(30px - 10dvw / 2);
 }
 
 .title__section {
@@ -206,7 +186,32 @@ a {
   font-size: min(max(80px, 13vw), 160px);
   color: orange;
   font-weight: 600;
+  background: linear-gradient(270deg, #fca311, #fcb243, #fc9943, #fc8243, #fca311);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  animation: gradientRotation 5s linear infinite, textGlow 2s ease-in-out infinite alternate;
 }
+
+@keyframes gradientRotation {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 400% 50%;
+  }
+}
+
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 5px #fca21117, 0 0 10px #fca2111a, 0 0 15px #fcb24310, 0 0 20px #fc994317, 0 0 25px #fc81431c, 0 0 30px #fca21110;
+  }
+  100% {
+    text-shadow: 0 0 10px #fca21118, 0 0 20px #fca21121, 0 0 30px #fcb2431c, 0 0 40px #fc99431e, 0 0 50px #fc814318, 0 0 60px #fca21123;
+  }
+}
+
 
 .title-lights {
   position: absolute;

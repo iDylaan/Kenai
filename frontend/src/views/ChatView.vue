@@ -51,14 +51,82 @@
           <span class="material-icons-outlined chat-icon">settings</span>
           <span class="text" v-if="navbarExtended">{{ $t('chat.settings') }}</span>
         </Button>
+        <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
+          <template #item="{ item, props }" class="config-option">
+            <a v-bind="props.action" @click.stop>
+              <template v-if="item.type === 'button'" class="config-option">
+                <span>{{ $t('chat.' + item.label) }}</span>
+              </template>
+              <template v-else-if="item.type === 'switch'" class="config-option">
+                <span>{{ $t('chat.' + item.label) }}</span>
+                <InputSwitch v-model="darkThemeChecked" />
+              </template>
+              <template v-else-if="item.type === 'select'" class="config-option">
+                <span>{{ $t('chat.' + item.label) }}</span>
+                <Dropdown v-model="siteLanguage" :options="item.children" optionLabel="label"
+                  @change="handleLanguageChange">
+                  <template #item="{ option }">
+                    <span>{{ $t('chat.' + option.label) }}</span>
+                  </template>
+                </Dropdown>
+              </template>
+            </a>
+          </template>
+        </Menu>
       </section>
     </section>
 
     <!-- CONTENT AREA -->
     <section class="chat__container">
-      <div class="chat__header"></div>
+      <div class="chat__header">
+        <h1>KenAI</h1>
 
-      <div class="chat__body"></div>
+        <picture class="user-image__container">
+          <img id="user-image" src="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png" alt="Image" />
+        </picture>
+      </div>
+
+      <div class="chat__body">
+        <div class="messages__container">
+
+          <div class="message__container user-message__container">
+            <Fieldset class="user-message">
+              <template #legend>
+                <div class="top-fieldset-user">
+                  <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png" shape="circle" />
+                  <span class="font-bold">Amy Elsner</span>
+                </div>
+              </template>
+              <p class="m-0">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+                ex
+                ea commodo
+                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                pariatur.
+                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
+                laborum.
+              </p>
+            </Fieldset>
+          </div>
+
+
+          <div class="message__container">
+            <Fieldset class="message">
+              <template #legend>
+                <div class="top-fieldset">
+                  <Avatar :image="kenaiAvatar" />
+                  <span class="font-bold">KenAI</span>
+                </div>
+              </template>
+              <p class="m-0">
+                {{ kenaiPromptResponse }}
+              </p>
+            </Fieldset>
+          </div>
+
+        </div>
+      </div>
 
       <div class="chat__footer">
         <Toolbar class="prompt-tools" id="tools-bar">
@@ -66,36 +134,16 @@
             <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn">
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
-            <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
-              <template #item="{ item, props }" class="config-option">
-                <a v-bind="props.action" @click.stop>
-                  <template v-if="item.type === 'button'" class="config-option">
-                    <span>{{ $t('chat.' + item.label) }}</span>
-                  </template>
-                  <template v-else-if="item.type === 'switch'" class="config-option">
-                    <span>{{ $t('chat.' + item.label) }}</span>
-                    <InputSwitch v-model="darkThemeChecked" />
-                  </template>
-                  <template v-else-if="item.type === 'select'" class="config-option">
-                    <span>{{ $t('chat.' + item.label) }}</span>
-                    <Dropdown v-model="siteLanguage" :options="item.children" optionLabel="label" @change="handleLanguageChange">
-                      <template #item="{ option }">
-                        <span>{{ $t('chat.' + option.label) }}</span>
-                      </template>
-                    </Dropdown>
-                  </template>
-                </a>
-              </template>
-            </Menu>
           </template>
 
           <template #center>
-            <Textarea type="text" :placeholder="$t('chat.type_a_message')" v-model="prompt" size="small" variant="filled"
-              rows="1" @input="[handleInput, autoResize]" />
+            <Textarea type="text" @input="handleInput" :placeholder="$t('chat.type_a_message')" v-model="prompt"
+              size="small" variant="filled" rows="1" />
+            <div class="char-counter">{{ charCount }}/{{ promptMaxLenght }}</div>
           </template>
 
           <template #end>
-            <Button severity="primary" rounded class="prompt-tool-btn" text>
+            <Button severity="primary" rounded class="prompt-tool-btn" text @click="handleSendPrompt">
               <span class="material-icons-outlined">send</span>
             </Button>
           </template>
@@ -107,24 +155,28 @@
 
 <script setup>
 // IMPORTACIONES
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
+import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
+import { sendPrompt } from "@/api/kenai.js";
 
 // Inyectar la instancia de 'app'
 
 // VARIABLES
+const kenaiPromptResponse = ref("");
+const promptFetching = ref(false);
 const navbarExtended = ref(true);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
 const chatOptions = ref([
   {
-    label: "rename",
+    label: "Rename",
     icon: 'pi pi-pencil',
-    command: () => {},
+    command: () => { },
   },
   {
-    label: "delete",
+    label: "Delete",
     icon: 'pi pi-times',
-    command: () => {},
+    command: () => { },
   },
 ]);
 const settingsItems = ref([
@@ -141,12 +193,12 @@ const settingsItems = ref([
         type: 'select',
         children: [
           {
-            label: "english",
+            label: "English",
             icon: 'translate',
             lang_code: 'en',
           },
           {
-            label: "spanish",
+            label: "Spanish",
             icon: 'translate',
             lang_code: 'es',
           },
@@ -156,7 +208,7 @@ const settingsItems = ref([
   },
 ]);
 const prompt = ref('');
-const maxWords = 100;
+const promptMaxLenght = 300;
 
 // FUNCIONES RESERVADAS
 watch(prompt, (newVal) => {
@@ -175,22 +227,38 @@ watch(prompt, (newVal) => {
 });
 
 // FUNCIONES
-const handleInput = (event) => {
-  const target = event.target;
-  const words = target.value.split(/\s+/);
+const printMessageWithDelay = async (message) => {
+  kenaiPromptResponse.value += message;
+  await new Promise((resolve) => setTimeout(resolve, 50));
+};
+const handleSendPrompt = async () => {
+  if (prompt.value.length !== 0) {
+    try {
+      promptFetching.value = true;
+      kenaiPromptResponse.value = '';
+      const kenaiResponse = await sendPrompt(prompt.value);
 
-  if (words.length > maxWords) {
-    target.value = words.slice(0, maxWords).join(' ');
+      for (const response of kenaiResponse.responses) {
+        await printMessageWithDelay(response.message_generated);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      promptFetching.value = false;
+    }
   }
+}
 
-  prompt.value = target.value;
+const handleInput = (event) => {
+  const inputText = event.target.value;
+  if (inputText.length > promptMaxLenght) {
+    prompt.value = inputText.slice(0, promptMaxLenght);
+    event.target.value = prompt.value;
+  } else {
+    prompt.value = inputText;
+  }
 };
-
-const autoResize = (event) => {
-  const target = event.target;
-  target.style.height = 'auto';
-  target.style.height = `${target.scrollHeight}px`;
-};
+const charCount = computed(() => prompt.value.length);
 
 const toggleNavbarExtended = () => {
   navbarExtended.value = !navbarExtended.value;
@@ -206,7 +274,6 @@ const switchChat = (id_chat) => {
 
 const handleLanguageChange = (event) => {
   // Cambiar el lenguaje
-
 };
 </script>
 
@@ -231,12 +298,110 @@ const handleLanguageChange = (event) => {
   .chat__header {
     grid-area: chat__header;
     margin: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+
+    .user-image__container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      #user-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 100px;
+        object-fit: cover;
+      }
+    }
   }
 
   .chat__body {
     grid-area: chat__body;
-    width: auto;
-    margin: 0px 6dvw;
+    overflow-y: auto;
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+
+
+    .messages__container {
+      max-width: 900px;
+    }
+
+    .user-message__container {
+      padding-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .message__container {
+      margin: 15px auto;
+      max-width: 95%;
+
+      .message {
+        max-width: 95%;
+      }
+
+
+      .user-message {
+        max-width: 95%;
+        position: relative;
+
+        p {
+          margin-top: 30px;
+        }
+      }
+
+      .top-fieldset {
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+      }
+
+      .top-fieldset-user {
+        position: absolute;
+        top: -20px;
+        right: 10px;
+        background-color: #18181b;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+        border-radius: 10px;
+        height: 38px;
+      }
+    }
+  }
+
+  @media (min-width: 1800px) {
+    .messages__container {
+      width: 880px;
+    }
+  }
+
+  @media (max-width: 1800px) {
+    .messages__container {
+      margin: 0px calc(18dvw);
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .messages__container {
+      margin: 0px calc(15dvw);
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .messages__container {
+      margin: 0px calc(10dvw);
+    }
+  }
+
+  @media (max-width: 800px) {
+    .messages__container {
+      margin: 0px calc(5dvw);
+    }
   }
 
   .chat__footer {
@@ -248,8 +413,10 @@ const handleLanguageChange = (event) => {
     justify-content: flex-end;
     padding: 40px 0px;
 
+
     .prompt-tools {
       display: flex;
+      position: relative;
       justify-content: space-between;
       align-items: flex-end;
       flex-wrap: nowrap;
@@ -292,6 +459,15 @@ const handleLanguageChange = (event) => {
       outline: none;
       background-color: transparent;
       border: none;
+    }
+
+    .char-counter {
+      position: absolute;
+      bottom: 0px;
+      right: 80px;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 600;
     }
   }
 }
@@ -402,4 +578,3 @@ const handleLanguageChange = (event) => {
   }
 }
 </style>
-
