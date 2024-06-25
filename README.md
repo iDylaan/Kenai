@@ -218,3 +218,11 @@ sudo setsebool -P httpd_can_network_connect on
 ```sh
 sudo systemctl restart httpd
 ```
+
+## Servicio de ollama
+1. Ejecutar el reload del daemon
+sudo systemctl daemon-reload
+2. Habilitar el servicio de ollama
+sudo systemctl enable ollama
+3. Iniciar el servicio
+sudo systemctl start ollama
