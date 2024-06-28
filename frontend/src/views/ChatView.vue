@@ -119,9 +119,9 @@
                   <span class="font-bold">KenAI</span>
                 </div>
               </template>
-              <p class="m-0">
-                {{ kenaiPromptResponse }}
-              </p>
+              <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
+                animationDuration=".5s" aria-label="Custom ProgressSpinner" v-if="promptFetching" />
+              <div class="response" v-html="renderedResponse" v-else></div>
             </Fieldset>
           </div>
 
@@ -131,19 +131,21 @@
       <div class="chat__footer">
         <Toolbar class="prompt-tools" id="tools-bar">
           <template #start>
-            <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn">
+            <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn"
+              :disabled="promptFetching">
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
           </template>
 
           <template #center>
             <Textarea type="text" @input="handleInput" :placeholder="$t('chat.type_a_message')" v-model="prompt"
-              size="small" variant="filled" rows="1" />
+              :disabled="promptFetching" size="small" variant="filled" rows="1" />
             <div class="char-counter">{{ charCount }}/{{ promptMaxLenght }}</div>
           </template>
 
           <template #end>
-            <Button severity="primary" rounded class="prompt-tool-btn" text @click="handleSendPrompt">
+            <Button severity="primary" rounded class="prompt-tool-btn" text @click="handleSendPrompt"
+              :disabled="promptFetching">
               <span class="material-icons-outlined">send</span>
             </Button>
           </template>
@@ -158,6 +160,8 @@
 import { ref, watch, computed } from 'vue';
 import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 import { sendPrompt } from "@/api/kenai.js";
+import { marked } from 'marked';
+const renderedResponse = computed(() => marked(kenaiPromptResponse.value));
 
 // Inyectar la instancia de 'app'
 
@@ -214,9 +218,13 @@ const promptMaxLenght = 300;
 watch(prompt, (newVal) => {
   const textarea = document.querySelector('.p-inputtextarea');
   if (textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  }
+        if (newVal === '') {
+          textarea.style.height = '22px';
+        } else {
+          textarea.style.height = 'auto';
+          textarea.style.height = `${textarea.scrollHeight}px`;
+        }
+      }
 
   const promptBar = document.querySelector('#tools-bar');
   if (textarea.style.height === '22px') {
@@ -229,15 +237,18 @@ watch(prompt, (newVal) => {
 // FUNCIONES
 const printMessageWithDelay = async (message) => {
   kenaiPromptResponse.value += message;
-  await new Promise((resolve) => setTimeout(resolve, 50));
+  await new Promise((resolve) => setTimeout(resolve, 30));
 };
 const handleSendPrompt = async () => {
   if (prompt.value.length !== 0) {
     try {
       promptFetching.value = true;
+      const userPrompt = prompt.value;
+      prompt.value = '';
       kenaiPromptResponse.value = '';
-      const kenaiResponse = await sendPrompt(prompt.value);
 
+      const kenaiResponse = await sendPrompt(userPrompt);
+      promptFetching.value = false;
       for (const response of kenaiResponse.responses) {
         await printMessageWithDelay(response.message_generated);
       }
