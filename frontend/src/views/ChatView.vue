@@ -371,15 +371,16 @@
                   severity="error"
                   >{{ chat.kenai.errorMessage }}</InlineMessage
                 >
-                <div
+                <p
                   class="response"
+                  v-html="lastRenderedResponse"
+                  v-else-if="chat.index === lastChatIndex"
+                ></p>
+                <p
+                  class="response"
+                  v-else
                   v-html="chat.kenai.renderResponse"
-                  v-else-if="
-                    !chat.kenai.loading &&
-                    !chat.kenai.error &&
-                    chat.kenai.renderResponse
-                  "
-                ></div>
+                ></p>
               </Fieldset>
             </div>
           </div>
@@ -454,6 +455,7 @@ const navbarExtended = ref(true);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
 const lastChatIndex = ref(0);
+const lastRenderedResponse = ref("");
 const chatOptions = ref([
   {
     label: "Rename",
@@ -539,7 +541,7 @@ const toggleMobileNavbar = () => {
 };
 
 const printMessageWithDelay = async (message) => {
-  chatHistory.value[lastChatIndex.value].kenai.response += message;
+  lastRenderedResponse.value += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
 };
 const handleSendPrompt = async () => {
@@ -560,13 +562,14 @@ const handleSendPrompt = async () => {
           respondedAt: null,
           error: false,
           errorMessage: "",
-          renderResponse: computed(() => marked(chatRow.kenai.response)),
+          renderResponse: "",
         },
       };
       chatHistory.value.push(chatRow);
 
       // Limpieza de UI
       prompt.value = "";
+      lastRenderedResponse.value = "";
 
       // Enviar la petición al servidor
       const kenaiResponse = await sendPrompt(userPrompt);
@@ -575,7 +578,9 @@ const handleSendPrompt = async () => {
       for (const response of kenaiResponse.responses) {
         await printMessageWithDelay(response.message_generated);
       }
-
+      chatHistory.value[lastChatIndex.value].kenai.renderResponse = marked(
+        chatHistory.value[lastChatIndex.value].kenai.response,
+      );
       chatHistory.value[lastChatIndex.value].kenai.respondedAt = new Date();
       chatHistory.value[lastChatIndex.value].kenai.loading = false;
 
