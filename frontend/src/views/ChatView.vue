@@ -444,8 +444,6 @@ const navbarExtended = ref(true);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
 const lastChatIndex = ref(0);
-const lastResponse = ref("");
-const lastRenderedResponse = computed(() => marked(lastResponse.value));
 const chatOptions = ref([
   {
     label: "Rename",
@@ -531,7 +529,7 @@ const toggleMobileNavbar = () => {
 };
 
 const printMessageWithDelay = async (chatRow, message) => {
-  chatRow.kenai.renderedResponse += message;
+  chatRow.kenai.renderedResponse += marked(message);
   await new Promise((resolve) => setTimeout(resolve, 30));
 };
 
@@ -567,6 +565,7 @@ const handleSendPrompt = async () => {
       chatRow.kenai.response = kenaiResponse.responses
         .map((r) => r.message_generated)
         .join("");
+      console.log(chatRow.kenai.response);
 
       for (const response of kenaiResponse.responses) {
         await printMessageWithDelay(chatRow, response.message_generated);
