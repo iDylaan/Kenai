@@ -378,7 +378,7 @@
                 ></p>
                 <p
                   class="response"
-                  v-else
+                  v-if="chat.index < lastChatIndex"
                   v-html="chat.kenai.renderResponse"
                 ></p>
               </Fieldset>
@@ -455,7 +455,8 @@ const navbarExtended = ref(true);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
 const lastChatIndex = ref(0);
-const lastRenderedResponse = ref("");
+const lastResponse = ref("");
+const lastRenderedResponse = computed(() => marked(lastResponse.value));
 const chatOptions = ref([
   {
     label: "Rename",
@@ -541,7 +542,7 @@ const toggleMobileNavbar = () => {
 };
 
 const printMessageWithDelay = async (message) => {
-  lastRenderedResponse.value += message;
+  lastResponse.value += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
 };
 const handleSendPrompt = async () => {
@@ -574,15 +575,17 @@ const handleSendPrompt = async () => {
       // Enviar la petición al servidor
       const kenaiResponse = await sendPrompt(userPrompt);
 
+      // Detener la carga de la petición
+      chatHistory.value[lastChatIndex.value].kenai.loading = false;
+      chatHistory.value[lastChatIndex.value].kenai.respondedAt = new Date();
+      chatHistory.value[lastChatIndex.value].kenai.renderResponse = marked(
+        chatHistory.value[lastChatIndex.value].kenai.response,
+      );
+
       // Empezar a construir la respuesta de forma procedural
       for (const response of kenaiResponse.responses) {
         await printMessageWithDelay(response.message_generated);
       }
-      chatHistory.value[lastChatIndex.value].kenai.renderResponse = marked(
-        chatHistory.value[lastChatIndex.value].kenai.response,
-      );
-      chatHistory.value[lastChatIndex.value].kenai.respondedAt = new Date();
-      chatHistory.value[lastChatIndex.value].kenai.loading = false;
 
       lastChatIndex.value++;
     } catch (error) {
