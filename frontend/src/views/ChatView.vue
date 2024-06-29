@@ -359,22 +359,24 @@
                   </div>
                 </template>
                 <ProgressSpinner
+                  v-if="chat.kenai.loading"
                   style="width: 50px; height: 50px"
                   strokeWidth="8"
                   fill="var(--surface-ground)"
                   animationDuration=".5s"
                   aria-label="Custom ProgressSpinner"
-                  v-if="chat.kenai.loading"
                 />
-                <InlineMessage
-                  v-if="chat.kenai.error"
-                  severity="error"
-                  >{{ chat.kenai.errorMessage }}</InlineMessage
-                >
+                <InlineMessage v-if="chat.kenai.error" severity="error">{{
+                  chat.kenai.errorMessage
+                }}</InlineMessage>
                 <p
                   class="response"
+                  v-if="
+                    !chat.kenai.loading &&
+                    !chat.kenai.error &&
+                    chat.index === lastChatIndex - 1
+                  "
                   v-html="lastRenderedResponse"
-                  v-if="chat.index === lastChatIndex && !chat.kenai.loading && chat.kenai.error"
                 ></p>
                 <p
                   class="response"
@@ -571,6 +573,7 @@ const handleSendPrompt = async () => {
       // Limpieza de UI
       prompt.value = "";
       lastRenderedResponse.value = "";
+      lastResponse.value = "";
 
       // Enviar la petición al servidor
       const kenaiResponse = await sendPrompt(userPrompt);
@@ -579,7 +582,7 @@ const handleSendPrompt = async () => {
       chatHistory.value[lastChatIndex.value].kenai.loading = false;
       chatHistory.value[lastChatIndex.value].kenai.respondedAt = new Date();
       chatHistory.value[lastChatIndex.value].kenai.renderResponse = marked(
-        chatHistory.value[lastChatIndex.value].kenai.response,
+        chatHistory.value[lastChatIndex.value].kenai.response
       );
 
       // Empezar a construir la respuesta de forma procedural
@@ -590,7 +593,8 @@ const handleSendPrompt = async () => {
       lastChatIndex.value++;
     } catch (error) {
       chatHistory.value[lastChatIndex.value].kenai.error = true;
-      chatHistory.value[lastChatIndex.value].kenai.errorMessage = error.message || 'An error occurred';
+      chatHistory.value[lastChatIndex.value].kenai.errorMessage =
+        error.message || "An error occurred";
       chatHistory.value[lastChatIndex.value].kenai.loading = false;
       console.log(error.message);
     } finally {
