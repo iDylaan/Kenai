@@ -171,7 +171,8 @@
       </div>
 
       <div class="chat__body">
-        <div class="messages__container">
+
+        <div class="messages__container" v-for="(chat, index) in chatHistory" :key="index">
           <div class="message__container user-message__container">
             <Fieldset class="user-message">
               <template #legend>
@@ -181,13 +182,7 @@
                 </div>
               </template>
               <p class="m-0">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
+                {{ chat.user.message }}
               </p>
             </Fieldset>
           </div>
@@ -201,10 +196,12 @@
                 </div>
               </template>
               <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
-                animationDuration=".5s" aria-label="Custom ProgressSpinner" v-if="promptFetching" />
-              <div class="response" v-html="renderedResponse" v-else></div>
+                animationDuration=".5s" aria-label="Custom ProgressSpinner" v-if="chat.kenai.loading" />
+              <div class="response" v-html="chat.kenai.response" v-else></div>
             </Fieldset>
           </div>
+
+
         </div>
       </div>
 
@@ -341,8 +338,8 @@ const toggleMobileNavbar = () => {
   visibleMobileNavbar.value = !visibleMobileNavbar.value;
 };
 
-const printMessageWithDelay = async (message) => {
-  kenaiPromptResponse.value += message;
+const printMessageWithDelay = async (message, index) => {
+  chatHistory[index].kenai.response += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
 };
 const handleSendPrompt = async () => {
@@ -351,7 +348,7 @@ const handleSendPrompt = async () => {
       promptFetching.value = true;
       const userPrompt = prompt.value;
       const chatRow = {
-        index: lastChatIndex.value + 1,
+        index: lastChatIndex.value,
         user: {
           message: userPrompt,
           username: "Anonymous",
@@ -363,20 +360,22 @@ const handleSendPrompt = async () => {
           respondedAt: null,
         }
       };
+      chatHistory.value.push(chatRow);
 
       // Limpieza de UI
       prompt.value = "";
 
       // Enviar la petición al servidor
       const kenaiResponse = await sendPrompt(userPrompt);
-      promptFetching.value = false;
+      chat.kenai.loading = false;
       
 
       // Empezar a construir la respuesta de forma procedural
-      
       for (const response of kenaiResponse.responses) {
-        await printMessageWithDelay(response.message_generated);
+        await printMessageWithDelay(response.message_generated, lastChatIndex.value);
       }
+
+      lastChatIndex.value++;
     } catch (error) {
       console.log(error);
     } finally {
@@ -501,6 +500,7 @@ const handleLanguageChange = (event) => {
     .message__container {
       margin: 15px auto;
       max-width: 95%;
+      min-width: 85%;
 
       .message {
         max-width: 95%;
