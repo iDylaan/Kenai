@@ -374,12 +374,12 @@
                 <p
                   class="response"
                   v-html="lastRenderedResponse"
-                  v-else-if="chat.index === lastChatIndex"
+                  v-if="chat.index === lastChatIndex && !chat.kenai.loading && chat.kenai.error"
                 ></p>
                 <p
                   class="response"
-                  v-if="chat.index < lastChatIndex"
-                  v-html="chat.kenai.renderResponse"
+                  v-else
+                  v-html="marked(chat.kenai.response)"
                 ></p>
               </Fieldset>
             </div>
