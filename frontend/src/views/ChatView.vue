@@ -345,12 +345,9 @@
                       image="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png"
                       shape="circle"
                     />
-                    <span class="font-bold">User</span>
                   </div>
                 </template>
-                <p class="m-0">
-                  {{ chat.user.message }}
-                </p>
+                <p v-html="chat.user.message" class="message-content"></p>
               </Fieldset>
             </div>
 
@@ -359,7 +356,6 @@
                 <template #legend>
                   <div class="top-fieldset">
                     <Avatar :image="kenaiAvatar" />
-                    <span class="font-bold">KenAI</span>
                   </div>
                 </template>
                 <ProgressSpinner
@@ -370,7 +366,20 @@
                   aria-label="Custom ProgressSpinner"
                   v-if="chat.kenai.loading"
                 />
-                <div class="response" v-html="chat.kenai.response" v-else></div>
+                <InlineMessage
+                  v-if="chat.kenai.error"
+                  severity="error"
+                  >{{ chat.kenai.errorMessage }}</InlineMessage
+                >
+                <div
+                  class="response"
+                  v-html="chat.kenai.renderResponse"
+                  v-else-if="
+                    !chat.kenai.loading &&
+                    !chat.kenai.error &&
+                    chat.kenai.renderResponse
+                  "
+                ></div>
               </Fieldset>
             </div>
           </div>
@@ -433,7 +442,6 @@ import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 import { sendPrompt } from "@/api/kenai.js";
 import { marked } from "marked";
-const renderedResponse = computed(() => marked(kenaiPromptResponse.value));
 
 // Inyectar la instancia de 'app'
 
@@ -530,15 +538,15 @@ const toggleMobileNavbar = () => {
   visibleMobileNavbar.value = !visibleMobileNavbar.value;
 };
 
-const printMessageWithDelay = async (message, index) => {
-  chatHistory[index].kenai.response += message;
+const printMessageWithDelay = async (message) => {
+  chatHistory.value[lastChatIndex.value].kenai.response += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
 };
 const handleSendPrompt = async () => {
   if (prompt.value.length !== 0) {
     try {
       promptFetching.value = true;
-      const userPrompt = prompt.value;
+      const userPrompt = prompt.value.replace(/\n/g, "<br>");
       const chatRow = {
         index: lastChatIndex.value,
         user: {
@@ -550,6 +558,9 @@ const handleSendPrompt = async () => {
           response: "",
           loading: true,
           respondedAt: null,
+          error: false,
+          errorMessage: "",
+          renderResponse: computed(() => marked(chatRow.kenai.response)),
         },
       };
       chatHistory.value.push(chatRow);
@@ -559,19 +570,21 @@ const handleSendPrompt = async () => {
 
       // Enviar la petición al servidor
       const kenaiResponse = await sendPrompt(userPrompt);
-      chat.kenai.loading = false;
 
       // Empezar a construir la respuesta de forma procedural
       for (const response of kenaiResponse.responses) {
-        await printMessageWithDelay(
-          response.message_generated,
-          lastChatIndex.value
-        );
+        await printMessageWithDelay(response.message_generated);
       }
+
+      chatHistory.value[lastChatIndex.value].kenai.respondedAt = new Date();
+      chatHistory.value[lastChatIndex.value].kenai.loading = false;
 
       lastChatIndex.value++;
     } catch (error) {
-      console.log(error);
+      chatHistory.value[lastChatIndex.value].kenai.error = true;
+      chatHistory.value[lastChatIndex.value].kenai.errorMessage = error.message || 'An error occurred';
+      chatHistory.value[lastChatIndex.value].kenai.loading = false;
+      console.log(error.message);
     } finally {
       promptFetching.value = false;
     }
@@ -676,19 +689,25 @@ const handleLanguageChange = (event) => {
   .chat__body {
     grid-area: chat__body;
     overflow-y: auto;
-    width: 100%;
     display: flex;
     align-items: baseline;
     justify-content: center;
 
     .messages__container {
       max-width: 900px;
+      width: 95%;
     }
 
     .user-message__container {
+      width: 95%;
       padding-top: 20px;
       display: flex;
       justify-content: flex-end;
+
+      .message-content {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
     }
 
     .message__container {
@@ -701,18 +720,21 @@ const handleLanguageChange = (event) => {
       }
 
       .user-message {
-        max-width: 95%;
+        max-width: 75%;
+        min-width: 75px;
+
         position: relative;
 
         p {
           margin-top: 30px;
+          text-align: left;
         }
       }
 
       .top-fieldset {
         display: flex;
         align-items: center;
-        padding-left: 10px;
+        padding: 0px 10px;
       }
 
       .top-fieldset-user {
@@ -722,8 +744,8 @@ const handleLanguageChange = (event) => {
         background-color: #18181b;
         display: flex;
         align-items: center;
-        padding-left: 10px;
-        border-radius: 10px;
+        padding: 0px 10px;
+        border-radius: 6px;
         height: 38px;
       }
     }

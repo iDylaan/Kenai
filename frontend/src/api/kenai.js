@@ -16,6 +16,6 @@ export async function sendPrompt(prompt) {
         if (result.success) return result.data;
         else throw new Error(result.error.message);
     } catch (error) {
-        throw new Error(error);
+        throw new Error(error.message);
     }
 }
