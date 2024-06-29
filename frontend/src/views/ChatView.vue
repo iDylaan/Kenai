@@ -369,20 +369,7 @@
                 <InlineMessage v-if="chat.kenai.error" severity="error">{{
                   chat.kenai.errorMessage
                 }}</InlineMessage>
-                <p
-                  class="response"
-                  v-if="
-                    !chat.kenai.loading &&
-                    !chat.kenai.error &&
-                    chat.index === lastChatIndex - 1
-                  "
-                  v-html="lastRenderedResponse"
-                ></p>
-                <p
-                  class="response"
-                  v-else
-                  v-html="marked(chat.kenai.response)"
-                ></p>
+                <p class="response" v-html="chat.kenai.renderedResponse"></p>
               </Fieldset>
             </div>
           </div>
@@ -441,7 +428,7 @@
 
 <script setup>
 // IMPORTACIONES
-import { ref, watch, computed, onMounted, onUnmounted } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted, reactive } from "vue";
 import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 import { sendPrompt } from "@/api/kenai.js";
 import { marked } from "marked";
@@ -543,60 +530,54 @@ const toggleMobileNavbar = () => {
   visibleMobileNavbar.value = !visibleMobileNavbar.value;
 };
 
-const printMessageWithDelay = async (message) => {
-  lastResponse.value += message;
+const printMessageWithDelay = async (chatRow, message) => {
+  chatRow.kenai.renderedResponse += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
 };
+
 const handleSendPrompt = async () => {
   if (prompt.value.length !== 0) {
+    promptFetching.value = true;
+
+    const userPrompt = prompt.value.replace(/\n/g, "<br>");
+    const chatRow = reactive({
+      index: lastChatIndex.value,
+      user: {
+        message: userPrompt,
+        username: "Anonymous",
+        sentAt: new Date(),
+      },
+      kenai: {
+        response: "",
+        renderedResponse: "",
+        loading: true,
+        respondedAt: null,
+        error: false,
+        errorMessage: "",
+      },
+    });
+    chatHistory.value.push(chatRow);
+    prompt.value = "";
+
     try {
-      promptFetching.value = true;
-      const userPrompt = prompt.value.replace(/\n/g, "<br>");
-      const chatRow = {
-        index: lastChatIndex.value,
-        user: {
-          message: userPrompt,
-          username: "Anonymous",
-          sentAt: new Date(),
-        },
-        kenai: {
-          response: "",
-          loading: true,
-          respondedAt: null,
-          error: false,
-          errorMessage: "",
-          renderResponse: "",
-        },
-      };
-      chatHistory.value.push(chatRow);
-
-      // Limpieza de UI
-      prompt.value = "";
-      lastRenderedResponse.value = "";
-      lastResponse.value = "";
-
-      // Enviar la petición al servidor
       const kenaiResponse = await sendPrompt(userPrompt);
 
-      // Detener la carga de la petición
-      chatHistory.value[lastChatIndex.value].kenai.loading = false;
-      chatHistory.value[lastChatIndex.value].kenai.respondedAt = new Date();
-      chatHistory.value[lastChatIndex.value].kenai.renderResponse = marked(
-        chatHistory.value[lastChatIndex.value].kenai.response
-      );
+      chatRow.kenai.loading = false;
+      chatRow.kenai.respondedAt = new Date();
+      chatRow.kenai.response = kenaiResponse.responses
+        .map((r) => r.message_generated)
+        .join("");
 
-      // Empezar a construir la respuesta de forma procedural
       for (const response of kenaiResponse.responses) {
-        await printMessageWithDelay(response.message_generated);
+        await printMessageWithDelay(chatRow, response.message_generated);
       }
 
       lastChatIndex.value++;
     } catch (error) {
-      chatHistory.value[lastChatIndex.value].kenai.error = true;
-      chatHistory.value[lastChatIndex.value].kenai.errorMessage =
-        error.message || "An error occurred";
-      chatHistory.value[lastChatIndex.value].kenai.loading = false;
-      console.log(error.message);
+      chatRow.kenai.error = true;
+      chatRow.kenai.errorMessage = error.message || "An error occurred";
+      chatRow.kenai.loading = false;
+      console.error(error.message);
     } finally {
       promptFetching.value = false;
     }
