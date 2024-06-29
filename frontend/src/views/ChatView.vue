@@ -1,28 +1,16 @@
 <template>
   <main class="main-container">
-    <Sidebar
-      v-model:visible="visibleMobileNavbar"
-      class="mobile-navbar"
-      v-if="isMobile"
-    >
+    <Sidebar v-model:visible="visibleMobileNavbar" class="mobile-navbar" v-if="isMobile">
       <template #header>
         <div class="mobile-navbar__header">
           <Avatar :image="kenaiAvatar" />
-          <span :style="[{ 'font-size': '1.2rem', fontWeight: '500' }]"
-            >KenAI</span
-          >
+          <span :style="[{ 'font-size': '1.2rem', fontWeight: '500' }]">KenAI</span>
         </div>
       </template>
 
       <section class="navbar__header">
         <div class="new-btn__container">
-          <Button
-            severity="secondary"
-            size="small"
-            class="new-btn"
-            rounded
-            outlined
-          >
+          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn">{{
               $t("chat.new_chat")
@@ -34,111 +22,52 @@
       <section class="navbar__body animate__animated animate_fadeIn">
         <span class="reciente-txt">{{ $t("chat.recent") }}</span>
         <div class="chats__container">
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="primary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
         </div>
       </section>
 
       <section class="navbar__footer">
-        <Button
-          label="Secondary"
-          severity="secondary"
-          text
-          class="settings-btn"
-          rounded
-          @click="toggleSettingsPopup"
-          aria-haspopup="true"
-          aria-controls="overlay_menu"
-        >
+        <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
+          aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
           <span class="text">{{ $t("chat.settings") }}</span>
         </Button>
-        <Menu
-          ref="menuSettings"
-          id="overlay_menu_settings"
-          :model="settingsItems"
-          :popup="true"
-        >
+        <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
           <template #item="{ item, props }" class="config-option">
             <a v-bind="props.action" @click.stop>
               <template v-if="item.type === 'button'" class="config-option">
                 <span>{{ $t("chat." + item.label) }}</span>
               </template>
-              <template
-                v-else-if="item.type === 'switch'"
-                class="config-option"
-              >
+              <template v-else-if="item.type === 'switch'" class="config-option">
                 <span>{{ $t("chat." + item.label) }}</span>
                 <InputSwitch v-model="darkThemeChecked" />
               </template>
-              <template
-                v-else-if="item.type === 'select'"
-                class="config-option"
-              >
+              <template v-else-if="item.type === 'select'" class="config-option">
                 <span>{{ $t("chat." + item.label) }}</span>
-                <Dropdown
-                  v-model="siteLanguage"
-                  :options="item.children"
-                  optionLabel="label"
-                  @change="handleLanguageChange"
-                >
+                <Dropdown v-model="siteLanguage" :options="item.children" optionLabel="label"
+                  @change="handleLanguageChange">
                   <template #item="{ option }">
                     <span>{{ $t("chat." + option.label) }}</span>
                   </template>
@@ -150,154 +79,73 @@
       </section>
     </Sidebar>
 
-    <section
-      :class="['navbar__container', !navbarExtended ? 'not-extended' : '']"
-      v-if="!isMobile"
-    >
+    <section :class="['navbar__container', !navbarExtended ? 'not-extended' : '']" v-if="!isMobile">
       <section class="navbar__header">
         <div class="menu-btn__container">
-          <Button
-            severity="secondary"
-            size="small"
-            text
-            rounded
-            @click="toggleNavbarExtended"
-          >
+          <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended">
             <span class="material-icons menu-icon">menu</span>
           </Button>
         </div>
 
         <div class="new-btn__container">
-          <Button
-            severity="secondary"
-            size="small"
-            class="new-btn"
-            rounded
-            outlined
-          >
+          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
             <span class="material-icons">add</span>
-            <span
-              class="text animate__animated animate__fadeIn"
-              v-if="navbarExtended"
-              >{{ $t("chat.new_chat") }}</span
-            >
+            <span class="text animate__animated animate__fadeIn" v-if="navbarExtended">{{ $t("chat.new_chat") }}</span>
           </Button>
         </div>
       </section>
 
-      <section
-        class="navbar__body animate__animated animate_fadeIn"
-        v-if="navbarExtended"
-      >
+      <section class="navbar__body animate__animated animate_fadeIn" v-if="navbarExtended">
         <span class="reciente-txt">{{ $t("chat.recent") }}</span>
         <div class="chats__container">
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="primary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton
-            label="Save"
-            icon="pi pi-check"
-            severity="secondary"
-            class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v"
-            @click="switchChat"
-            :model="chatOptions"
-          >
-            <span class="material-icons-outlined chat-icon"
-              >mark_chat_unread</span
-            >
+          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text">Chat</span>
           </SplitButton>
         </div>
       </section>
 
       <section class="navbar__footer">
-        <Button
-          label="Secondary"
-          severity="secondary"
-          text
-          class="settings-btn"
-          rounded
-          @click="toggleSettingsPopup"
-          aria-haspopup="true"
-          aria-controls="overlay_menu"
-        >
+        <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
+          aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
           <span class="text" v-if="navbarExtended">{{
             $t("chat.settings")
           }}</span>
         </Button>
-        <Menu
-          ref="menuSettings"
-          id="overlay_menu_settings"
-          :model="settingsItems"
-          :popup="true"
-        >
+        <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
           <template #item="{ item, props }" class="config-option">
             <a v-bind="props.action" @click.stop>
               <template v-if="item.type === 'button'" class="config-option">
                 <span>{{ $t("chat." + item.label) }}</span>
               </template>
-              <template
-                v-else-if="item.type === 'switch'"
-                class="config-option"
-              >
+              <template v-else-if="item.type === 'switch'" class="config-option">
                 <span>{{ $t("chat." + item.label) }}</span>
                 <InputSwitch v-model="darkThemeChecked" />
               </template>
-              <template
-                v-else-if="item.type === 'select'"
-                class="config-option"
-              >
+              <template v-else-if="item.type === 'select'" class="config-option">
                 <span>{{ $t("chat." + item.label) }}</span>
-                <Dropdown
-                  v-model="siteLanguage"
-                  :options="item.children"
-                  optionLabel="label"
-                  @change="handleLanguageChange"
-                >
+                <Dropdown v-model="siteLanguage" :options="item.children" optionLabel="label"
+                  @change="handleLanguageChange">
                   <template #item="{ option }">
                     <span>{{ $t("chat." + option.label) }}</span>
                   </template>
@@ -313,24 +161,12 @@
     <section class="chat__container">
       <div class="chat__header">
         <h1 v-if="!isMobile">KenAI</h1>
-        <Button
-          v-else
-          @click="toggleMobileNavbar"
-          severity="secondary"
-          text
-          rounded
-          aria-label="Menu"
-          size="large"
-        >
+        <Button v-else @click="toggleMobileNavbar" severity="secondary" text rounded aria-label="Menu" size="large">
           <span class="material-icons menu-icon">menu</span>
         </Button>
 
         <picture class="user-image__container">
-          <img
-            id="user-image"
-            src="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png"
-            alt="Image"
-          />
+          <img id="user-image" src="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png" alt="Image" />
         </picture>
       </div>
 
@@ -340,10 +176,7 @@
             <Fieldset class="user-message">
               <template #legend>
                 <div class="top-fieldset-user">
-                  <Avatar
-                    image="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png"
-                    shape="circle"
-                  />
+                  <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png" shape="circle" />
                   <span class="font-bold">User</span>
                 </div>
               </template>
@@ -367,14 +200,8 @@
                   <span class="font-bold">KenAI</span>
                 </div>
               </template>
-              <ProgressSpinner
-                style="width: 50px; height: 50px"
-                strokeWidth="8"
-                fill="var(--surface-ground)"
-                animationDuration=".5s"
-                aria-label="Custom ProgressSpinner"
-                v-if="promptFetching"
-              />
+              <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
+                animationDuration=".5s" aria-label="Custom ProgressSpinner" v-if="promptFetching" />
               <div class="response" v-html="renderedResponse" v-else></div>
             </Fieldset>
           </div>
@@ -384,43 +211,24 @@
       <div class="chat__footer">
         <Toolbar class="prompt-tools" id="tools-bar">
           <template #start>
-            <Button
-              label="Secondary"
-              severity="secondary"
-              rounded
-              text
-              class="prompt-tool-btn"
-              :disabled="promptFetching"
-            >
+            <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn"
+              :disabled="promptFetching">
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
           </template>
 
           <template #center>
-            <Textarea
-              type="text"
-              @input="handleInput"
-              :placeholder="$t('chat.type_a_message')"
-              v-model="prompt"
-              :disabled="promptFetching"
-              size="small"
-              variant="filled"
-              rows="1"
-            />
+            <Textarea type="text" @input="handleInput" @keydown.enter="handleEnter"
+              :placeholder="$t('chat.type_a_message')" v-model="prompt" :disabled="promptFetching" size="small"
+              variant="filled" rows="1" />
             <div class="char-counter">
               {{ charCount }}/{{ promptMaxLenght }}
             </div>
           </template>
 
           <template #end>
-            <Button
-              severity="primary"
-              rounded
-              class="prompt-tool-btn"
-              text
-              @click="handleSendPrompt"
-              :disabled="promptFetching"
-            >
+            <Button severity="primary" rounded class="prompt-tool-btn" text @click="handleSendPrompt"
+              :disabled="promptFetching">
               <span class="material-icons-outlined">send</span>
             </Button>
           </template>
@@ -444,21 +252,21 @@ const renderedResponse = computed(() => marked(kenaiPromptResponse.value));
 const windowWidth = ref(window.innerWidth);
 const visibleMobileNavbar = ref(false);
 const isMobile = ref(windowWidth.value < 800);
-const kenaiPromptResponse = ref("");
 const promptFetching = ref(false);
 const navbarExtended = ref(true);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
+const lastChatIndex = ref(0);
 const chatOptions = ref([
   {
     label: "Rename",
     icon: "pi pi-pencil",
-    command: () => {},
+    command: () => { },
   },
   {
     label: "Delete",
     icon: "pi pi-times",
-    command: () => {},
+    command: () => { },
   },
 ]);
 const settingsItems = ref([
@@ -490,6 +298,7 @@ const settingsItems = ref([
   },
 ]);
 const prompt = ref("");
+const chatHistory = ref([]);
 const promptMaxLenght = 300;
 
 // FUNCIONES RESERVADAS
@@ -541,11 +350,30 @@ const handleSendPrompt = async () => {
     try {
       promptFetching.value = true;
       const userPrompt = prompt.value;
-      prompt.value = "";
-      kenaiPromptResponse.value = "";
+      const chatRow = {
+        index: lastChatIndex.value + 1,
+        user: {
+          message: userPrompt,
+          username: "Anonymous",
+          sentAt: new Date(),
+        },
+        kenai: {
+          response: '',
+          loading: true,
+          respondedAt: null,
+        }
+      };
 
+      // Limpieza de UI
+      prompt.value = "";
+
+      // Enviar la petición al servidor
       const kenaiResponse = await sendPrompt(userPrompt);
       promptFetching.value = false;
+      
+
+      // Empezar a construir la respuesta de forma procedural
+      
       for (const response of kenaiResponse.responses) {
         await printMessageWithDelay(response.message_generated);
       }
@@ -554,6 +382,13 @@ const handleSendPrompt = async () => {
     } finally {
       promptFetching.value = false;
     }
+  }
+};
+
+const handleEnter = (event) => {
+  if (!event.shiftKey) {
+    event.preventDefault();
+    handleSendPrompt()
   }
 };
 
@@ -596,7 +431,7 @@ const handleLanguageChange = (event) => {
     flex-direction: column;
     justify-content: flex-start;
     width: 100%;
-    height: calc(100dvh - 183px);
+    height: calc(100dvh - 185px);
   }
 }
 
@@ -901,7 +736,7 @@ const handleLanguageChange = (event) => {
     gap: 5px;
   }
 
-  .p-menu .p-menuitem > .p-menuitem-content .p-menuitem-link {
+  .p-menu .p-menuitem>.p-menuitem-content .p-menuitem-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
