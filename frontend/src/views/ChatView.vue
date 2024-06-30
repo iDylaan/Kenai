@@ -369,7 +369,7 @@
                 <InlineMessage v-if="chat.kenai.error" severity="error">{{
                   chat.kenai.errorMessage
                 }}</InlineMessage>
-                <p class="response" v-html="chat.kenai.renderedResponse"></p>
+                <p class="response" v-html="marked(chat.kenai.renderedResponse)"></p>
               </Fieldset>
             </div>
           </div>
@@ -529,7 +529,7 @@ const toggleMobileNavbar = () => {
 };
 
 const printMessageWithDelay = async (chatRow, message) => {
-  chatRow.kenai.renderedResponse += marked(message);
+  chatRow.kenai.renderedResponse += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
 };
 
