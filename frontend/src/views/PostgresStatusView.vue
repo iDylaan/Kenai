@@ -11,7 +11,6 @@ const nodes = ref([]);
 onMounted(async () => {
   try {
     pglData.value = await getPGLData();
-    console.log(pglData.value);
 
     pglData.value.tables.forEach((table, tIndex) => {
       const node = {
