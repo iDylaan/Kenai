@@ -14,6 +14,11 @@ const router = createRouter({
       component: () => import('@/views/ChatView.vue')
     },
     {
+      path: '/postgres-status',
+      name: 'postgres-status',
+      component: () => import('@/views/PostgresStatusView.vue')
+    },
+    {
       path: '/sso',
       name: 'sso',
       component: () => import('@/views/SSOView.vue')

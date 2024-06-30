@@ -3,21 +3,27 @@ import sys
 import json
 from flask import Blueprint, jsonify, request
 from app.modules.utils.misc import handleResponse, handleErrorResponse 
+from langchain_community.llms import Ollama
+
 
 mod = Blueprint('kenai', __name__, url_prefix='/kenai')
+
 
 MODEL_URL = 'http://localhost:11434/api/generate'
 HEADERS = {
     'Content-Type': 'application/json'
 }
 MODEL_NAME = 'kenai'
+llm = Ollama(model=MODEL_NAME)
 
 
 @mod.route('/generate', methods=['POST'])
 def generate_text():
     try:
+        
         data = request.get_json()
         prompt = data.get('prompt', '')
+        print(llm.invoke(prompt, stop=['<|eot_id|>']))
 
         response = requests.post(MODEL_URL, headers=HEADERS, data=json.dumps({
             "model": MODEL_NAME,
