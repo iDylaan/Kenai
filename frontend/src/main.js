@@ -12,6 +12,7 @@ import "material-icons/iconfont/material-icons.css";
 
 import App from './App.vue';
 import router from './router';
+import vue3GoogleLogin from 'vue3-google-login';
 
 const app = createApp(App);
 
@@ -21,10 +22,15 @@ const primevueConfig = {
     locale: getLocale(),
 };
 
+const CLIENT_ID = "1026982493501-dtfakdlnkf309l7a5gv80acqacqj80l7.apps.googleusercontent.com";
+
 app.use(createPinia());
 app.use(router);
 app.use(i18n);
 app.use(PrimeVue, primevueConfig);
+app.use(vue3GoogleLogin, {
+    clientId: CLIENT_ID,
+});
 app.mount('#app');
 
 watch(
