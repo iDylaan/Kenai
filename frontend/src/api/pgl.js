@@ -6,7 +6,7 @@ export async function getPGLData() {
                 'Content-Type': 'application/json'
             }
         })
-        if (!response.ok) throw new Error("Error en la petición");
+        if (!response.ok) throw new Error(response.statusText);
 
         const result = await response.json();
 

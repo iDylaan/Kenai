@@ -2,57 +2,46 @@ import requests
 import sys
 import json
 from flask import Blueprint, jsonify, request
-from app.modules.utils.misc import handleResponse, handleErrorResponse 
+from app.modules.utils.misc import handleResponse, handleErrorResponse
 from langchain_community.llms import Ollama
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_community.chat_message_histories import ChatMessageHistory
 
 
 mod = Blueprint('kenai', __name__, url_prefix='/kenai')
 
 
-MODEL_URL = 'http://localhost:11434/api/generate'
-HEADERS = {
-    'Content-Type': 'application/json'
-}
-MODEL_NAME = 'kenai'
-llm = Ollama(model=MODEL_NAME)
 
+MODEL_NAME = 'kenai'
+kenai = Ollama(model=MODEL_NAME)
 
 @mod.route('/generate', methods=['POST'])
 def generate_text():
     try:
-        
         data = request.get_json()
-        prompt = data.get('prompt', '')
-        print(llm.invoke(prompt, stop=['<|eot_id|>']))
+        user = data.get('user', False)
+        raw_prompt = data.get('prompt', '')
+        
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                ( "system", "Let's practice english" if not user else f"You're talking with {user}, let's practice english",),
+                MessagesPlaceholder(variable_name="messages"),
+            ]
+        )
 
-        response = requests.post(MODEL_URL, headers=HEADERS, data=json.dumps({
-            "model": MODEL_NAME,
-            "prompt": prompt
-        }))
+        chain = prompt | kenai
 
-        response_text = response.text
+        history = ChatMessageHistory()
+        history.add_user_message(raw_prompt)
+        kenai_stream_response = []
+        for chunks in chain.stream({"messages": history.messages, "user_input": raw_prompt}):
+            kenai_stream_response.append(chunks)
+        kenai_response = ''.join(kenai_stream_response)
+        history.add_ai_message(kenai_response)
 
-        lines = response_text.strip().split('\n')
-        response_data = [json.loads(line) for line in lines if line.strip()]
-
-         # Separar los mensajes
-        done_messages = []
-        incomplete_messages = []
-
-        for message in response_data:
-            if message.get('done'):
-                done_messages.append(message)
-            else:
-                incomplete_messages.append({
-                    'model': message.get('model'),
-                    'created_at': message.get('created_at'),
-                    'message_generated': message.get('response'),
-                    'done': message.get('done')
-                })
         return handleResponse({
-            "responses": incomplete_messages,
-            "resume": done_messages 
+            "response": kenai_stream_response
         })
     except Exception as e:
         print('Ha ocurrido un error en @create_solicitud/{} en la linea {}'.format(e, sys.exc_info()[-1].tb_lineno))
-        handleErrorResponse("Error interno en el servidor")
+        handleErrorResponse(e)

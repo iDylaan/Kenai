@@ -562,13 +562,11 @@ const handleSendPrompt = async () => {
 
       chatRow.kenai.loading = false;
       chatRow.kenai.respondedAt = new Date();
-      chatRow.kenai.response = kenaiResponse.responses
-        .map((r) => r.message_generated)
-        .join("");
+      chatRow.kenai.response = kenaiResponse.response.map((r) => r);
       console.log(chatRow.kenai.response);
 
-      for (const response of kenaiResponse.responses) {
-        await printMessageWithDelay(chatRow, response.message_generated);
+      for (const text of kenaiResponse.response) {
+        await printMessageWithDelay(chatRow, text);
       }
 
       lastChatIndex.value++;

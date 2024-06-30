@@ -9,7 +9,8 @@ export async function sendPrompt(prompt) {
                 prompt: prompt
             })
         })
-        if (!response.ok) throw new Error("Error en la petición");
+
+        if (!response.ok) throw new Error(response.statusText);
 
         const result = await response.json();
 
