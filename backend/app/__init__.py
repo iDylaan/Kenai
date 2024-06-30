@@ -42,8 +42,10 @@ def page_not_found(e):
 
 ### MODULES ###
 from .modules import (
-    mod_kenai
+    mod_kenai,
+    mod_postgres,
 )
 
 ### BP ###
 app.register_blueprint(mod_kenai)
+app.register_blueprint(mod_postgres)
