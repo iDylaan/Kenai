@@ -1,1 +1,0 @@
-import{s as t}from"./button.esm-BWulUAqd.js";import{o,c as s,i as a,j as c,a as n,y as r}from"./index-DCE9E-lw.js";import"./baseicon.esm-DmdQ3XWk.js";const l=n("h1",null,"Test",-1),f={__name:"TestView",setup(_){return console.log("Hola mundo"),(i,m)=>{const e=t;return o(),s("div",null,[l,a(e,null,{default:c(()=>[r("Test")]),_:1})])}}};export{f as default};
