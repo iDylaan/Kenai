@@ -1,72 +1,305 @@
 <template>
   <main class="main-container">
-    <section :class="['navbar__container', !navbarExtended ? 'not-extended' : '']">
-      <section class="navbar__header">
-        <div class="menu-btn__container">
-          <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended">
-            <span class="material-icons menu-icon">menu</span>
-          </Button>
+    <Sidebar
+      v-model:visible="visibleMobileNavbar"
+      class="mobile-navbar"
+      v-if="isMobile"
+    >
+      <template #header>
+        <div class="mobile-navbar__header">
+          <Avatar :image="kenaiAvatar" />
+          <span :style="[{ 'font-size': '1.2rem', fontWeight: '500' }]"
+            >KenAI</span
+          >
         </div>
+      </template>
 
+      <section class="navbar__header">
         <div class="new-btn__container">
-          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
+          <Button
+            severity="secondary"
+            size="small"
+            class="new-btn"
+            rounded
+            outlined
+          >
             <span class="material-icons">add</span>
-            <span class="text animate__animated animate__fadeIn" v-if="navbarExtended">{{ $t('chat.new_chat') }}</span>
+            <span class="text animate__animated animate__fadeIn">{{
+              $t("chat.new_chat")
+            }}</span>
           </Button>
         </div>
       </section>
 
-      <section class="navbar__body animate__animated animate_fadeIn" v-if="navbarExtended">
-        <span class="reciente-txt">{{ $t('chat.recent') }}</span>
+      <section class="navbar__body animate__animated animate_fadeIn">
+        <span class="reciente-txt">{{ $t("chat.recent") }}</span>
         <div class="chats__container">
-          <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="primary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </SplitButton>
 
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
             <span class="text">Chat</span>
           </SplitButton>
         </div>
       </section>
 
       <section class="navbar__footer">
-        <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
-          aria-haspopup="true" aria-controls="overlay_menu">
+        <Button
+          label="Secondary"
+          severity="secondary"
+          text
+          class="settings-btn"
+          rounded
+          @click="toggleSettingsPopup"
+          aria-haspopup="true"
+          aria-controls="overlay_menu"
+        >
           <span class="material-icons-outlined chat-icon">settings</span>
-          <span class="text" v-if="navbarExtended">{{ $t('chat.settings') }}</span>
+          <span class="text">{{ $t("chat.settings") }}</span>
         </Button>
-        <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
+        <Menu
+          ref="menuSettings"
+          id="overlay_menu_settings"
+          :model="settingsItems"
+          :popup="true"
+        >
           <template #item="{ item, props }" class="config-option">
             <a v-bind="props.action" @click.stop>
               <template v-if="item.type === 'button'" class="config-option">
-                <span>{{ $t('chat.' + item.label) }}</span>
+                <span>{{ $t("chat." + item.label) }}</span>
               </template>
-              <template v-else-if="item.type === 'switch'" class="config-option">
-                <span>{{ $t('chat.' + item.label) }}</span>
+              <template
+                v-else-if="item.type === 'switch'"
+                class="config-option"
+              >
+                <span>{{ $t("chat." + item.label) }}</span>
                 <InputSwitch v-model="darkThemeChecked" />
               </template>
-              <template v-else-if="item.type === 'select'" class="config-option">
-                <span>{{ $t('chat.' + item.label) }}</span>
-                <Dropdown v-model="siteLanguage" :options="item.children" optionLabel="label"
-                  @change="handleLanguageChange">
+              <template
+                v-else-if="item.type === 'select'"
+                class="config-option"
+              >
+                <span>{{ $t("chat." + item.label) }}</span>
+                <Dropdown
+                  v-model="siteLanguage"
+                  :options="item.children"
+                  optionLabel="label"
+                  @change="handleLanguageChange"
+                >
                   <template #item="{ option }">
-                    <span>{{ $t('chat.' + option.label) }}</span>
+                    <span>{{ $t("chat." + option.label) }}</span>
+                  </template>
+                </Dropdown>
+              </template>
+            </a>
+          </template>
+        </Menu>
+      </section>
+    </Sidebar>
+
+    <section
+      :class="['navbar__container', !navbarExtended ? 'not-extended' : '']"
+      v-if="!isMobile"
+    >
+      <section class="navbar__header">
+        <div class="menu-btn__container">
+          <Button
+            severity="secondary"
+            size="small"
+            text
+            rounded
+            @click="toggleNavbarExtended"
+          >
+            <span class="material-icons menu-icon">menu</span>
+          </Button>
+        </div>
+
+        <div class="new-btn__container">
+          <Button
+            severity="secondary"
+            size="small"
+            class="new-btn"
+            rounded
+            outlined
+          >
+            <span class="material-icons">add</span>
+            <span
+              class="text animate__animated animate__fadeIn"
+              v-if="navbarExtended"
+              >{{ $t("chat.new_chat") }}</span
+            >
+          </Button>
+        </div>
+      </section>
+
+      <section
+        class="navbar__body animate__animated animate_fadeIn"
+        v-if="navbarExtended"
+      >
+        <span class="reciente-txt">{{ $t("chat.recent") }}</span>
+        <div class="chats__container">
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="primary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
+            <span class="text">Chat</span>
+          </SplitButton>
+
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
+            <span class="text">Chat</span>
+          </SplitButton>
+
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
+            <span class="text">Chat</span>
+          </SplitButton>
+
+          <SplitButton
+            label="Save"
+            icon="pi pi-check"
+            severity="secondary"
+            class="chat-btn"
+            menuButtonIcon="pi pi-ellipsis-v"
+            @click="switchChat"
+            :model="chatOptions"
+          >
+            <span class="material-icons-outlined chat-icon"
+              >mark_chat_unread</span
+            >
+            <span class="text">Chat</span>
+          </SplitButton>
+        </div>
+      </section>
+
+      <section class="navbar__footer">
+        <Button
+          label="Secondary"
+          severity="secondary"
+          text
+          class="settings-btn"
+          rounded
+          @click="toggleSettingsPopup"
+          aria-haspopup="true"
+          aria-controls="overlay_menu"
+        >
+          <span class="material-icons-outlined chat-icon">settings</span>
+          <span class="text" v-if="navbarExtended">{{
+            $t("chat.settings")
+          }}</span>
+        </Button>
+        <Menu
+          ref="menuSettings"
+          id="overlay_menu_settings"
+          :model="settingsItems"
+          :popup="true"
+        >
+          <template #item="{ item, props }" class="config-option">
+            <a v-bind="props.action" @click.stop>
+              <template v-if="item.type === 'button'" class="config-option">
+                <span>{{ $t("chat." + item.label) }}</span>
+              </template>
+              <template
+                v-else-if="item.type === 'switch'"
+                class="config-option"
+              >
+                <span>{{ $t("chat." + item.label) }}</span>
+                <InputSwitch v-model="darkThemeChecked" />
+              </template>
+              <template
+                v-else-if="item.type === 'select'"
+                class="config-option"
+              >
+                <span>{{ $t("chat." + item.label) }}</span>
+                <Dropdown
+                  v-model="siteLanguage"
+                  :options="item.children"
+                  optionLabel="label"
+                  @change="handleLanguageChange"
+                >
+                  <template #item="{ option }">
+                    <span>{{ $t("chat." + option.label) }}</span>
                   </template>
                 </Dropdown>
               </template>
@@ -79,73 +312,111 @@
     <!-- CONTENT AREA -->
     <section class="chat__container">
       <div class="chat__header">
-        <h1>KenAI</h1>
+        <h1 v-if="!isMobile">KenAI</h1>
+        <Button
+          v-else
+          @click="toggleMobileNavbar"
+          severity="secondary"
+          text
+          rounded
+          aria-label="Menu"
+          size="large"
+        >
+          <span class="material-icons menu-icon">menu</span>
+        </Button>
 
         <picture class="user-image__container">
-          <img id="user-image" src="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png" alt="Image" />
+          <img
+            id="user-image"
+            src="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png"
+            alt="Image"
+          />
         </picture>
       </div>
 
       <div class="chat__body">
         <div class="messages__container">
+          <div v-for="(chat, index) in chatHistory" :key="index">
+            <div class="message__container user-message__container">
+              <Fieldset class="user-message">
+                <template #legend>
+                  <div class="top-fieldset-user">
+                    <Avatar
+                      image="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png"
+                      shape="circle"
+                    />
+                  </div>
+                </template>
+                <p v-html="chat.user.message" class="message-content"></p>
+              </Fieldset>
+            </div>
 
-          <div class="message__container user-message__container">
-            <Fieldset class="user-message">
-              <template #legend>
-                <div class="top-fieldset-user">
-                  <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png" shape="circle" />
-                  <span class="font-bold">Amy Elsner</span>
-                </div>
-              </template>
-              <p class="m-0">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex
-                ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                pariatur.
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                laborum.
-              </p>
-            </Fieldset>
+            <div class="message__container">
+              <Fieldset class="message">
+                <template #legend>
+                  <div class="top-fieldset">
+                    <Avatar :image="kenaiAvatar" />
+                  </div>
+                </template>
+                <ProgressSpinner
+                  v-if="chat.kenai.loading"
+                  style="width: 50px; height: 50px"
+                  strokeWidth="8"
+                  fill="var(--surface-ground)"
+                  animationDuration=".5s"
+                  aria-label="Custom ProgressSpinner"
+                />
+                <InlineMessage v-if="chat.kenai.error" severity="error">{{
+                  chat.kenai.errorMessage
+                }}</InlineMessage>
+                <p class="response" v-html="marked(chat.kenai.renderedResponse)"></p>
+              </Fieldset>
+            </div>
           </div>
-
-
-          <div class="message__container">
-            <Fieldset class="message">
-              <template #legend>
-                <div class="top-fieldset">
-                  <Avatar :image="kenaiAvatar" />
-                  <span class="font-bold">KenAI</span>
-                </div>
-              </template>
-              <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
-                animationDuration=".5s" aria-label="Custom ProgressSpinner" v-if="promptFetching" />
-              <div class="response" v-html="renderedResponse" v-else></div>
-            </Fieldset>
-          </div>
-
         </div>
       </div>
 
       <div class="chat__footer">
         <Toolbar class="prompt-tools" id="tools-bar">
           <template #start>
-            <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn"
-              :disabled="promptFetching">
+            <Button
+              label="Secondary"
+              severity="secondary"
+              rounded
+              text
+              class="prompt-tool-btn"
+              :disabled="promptFetching"
+            >
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
           </template>
 
           <template #center>
-            <Textarea type="text" @input="handleInput" :placeholder="$t('chat.type_a_message')" v-model="prompt"
-              :disabled="promptFetching" size="small" variant="filled" rows="1" />
-            <div class="char-counter">{{ charCount }}/{{ promptMaxLenght }}</div>
+            <Textarea
+              type="text"
+              @input="handleInput"
+              @keydown.enter="handleEnter"
+              :placeholder="$t('chat.type_a_message')"
+              v-model="prompt"
+              :disabled="promptFetching"
+              size="small"
+              variant="filled"
+              rows="1"
+            />
+            <div class="char-counter">
+              {{ charCount }}/{{ promptMaxLenght }}
+            </div>
           </template>
 
           <template #end>
-            <Button severity="primary" rounded class="prompt-tool-btn" text @click="handleSendPrompt"
-              :disabled="promptFetching">
+            <Button
+              severity="primary"
+              rounded
+              class="prompt-tool-btn"
+              text
+              @click="handleSendPrompt"
+              :disabled="promptFetching"
+            >
               <span class="material-icons-outlined">send</span>
             </Button>
           </template>
@@ -157,30 +428,32 @@
 
 <script setup>
 // IMPORTACIONES
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, onUnmounted, reactive } from "vue";
 import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 import { sendPrompt } from "@/api/kenai.js";
-import { marked } from 'marked';
-const renderedResponse = computed(() => marked(kenaiPromptResponse.value));
+import { marked } from "marked";
 
 // Inyectar la instancia de 'app'
 
 // VARIABLES
-const kenaiPromptResponse = ref("");
+const windowWidth = ref(window.innerWidth);
+const visibleMobileNavbar = ref(false);
+const isMobile = ref(windowWidth.value < 800);
 const promptFetching = ref(false);
 const navbarExtended = ref(true);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
+const lastChatIndex = ref(0);
 const chatOptions = ref([
   {
     label: "Rename",
-    icon: 'pi pi-pencil',
-    command: () => { },
+    icon: "pi pi-pencil",
+    command: () => {},
   },
   {
     label: "Delete",
-    icon: 'pi pi-times',
-    command: () => { },
+    icon: "pi pi-times",
+    command: () => {},
   },
 ]);
 const settingsItems = ref([
@@ -188,77 +461,132 @@ const settingsItems = ref([
     items: [
       {
         label: "dark_theme",
-        icon: 'dark_mode',
-        type: 'switch',
+        icon: "dark_mode",
+        type: "switch",
       },
       {
         label: "language",
-        icon: 'language',
-        type: 'select',
+        icon: "language",
+        type: "select",
         children: [
           {
             label: "English",
-            icon: 'translate',
-            lang_code: 'en',
+            icon: "translate",
+            lang_code: "en",
           },
           {
             label: "Spanish",
-            icon: 'translate',
-            lang_code: 'es',
+            icon: "translate",
+            lang_code: "es",
           },
         ],
       },
     ],
   },
 ]);
-const prompt = ref('');
+const prompt = ref("");
+const chatHistory = ref([]);
 const promptMaxLenght = 300;
 
 // FUNCIONES RESERVADAS
-watch(prompt, (newVal) => {
-  const textarea = document.querySelector('.p-inputtextarea');
-  if (textarea) {
-        if (newVal === '') {
-          textarea.style.height = '22px';
-        } else {
-          textarea.style.height = 'auto';
-          textarea.style.height = `${textarea.scrollHeight}px`;
-        }
-      }
+onMounted(() => {
+  window.addEventListener("resize", updateWidth);
+});
 
-  const promptBar = document.querySelector('#tools-bar');
-  if (textarea.style.height === '22px') {
-    promptBar.style.borderRadius = '3rem';
+onUnmounted(() => {
+  window.removeEventListener("resize", updateWidth);
+});
+
+watch(prompt, (newVal) => {
+  const textarea = document.querySelector(".p-inputtextarea");
+  if (textarea) {
+    if (newVal === "") {
+      textarea.style.height = "22px";
+    } else {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }
+
+  const promptBar = document.querySelector("#tools-bar");
+  if (textarea.style.height === "22px") {
+    promptBar.style.borderRadius = "3rem";
   } else {
-    promptBar.style.borderRadius = '1.6rem';
+    promptBar.style.borderRadius = "1.6rem";
   }
 });
 
+watch(windowWidth, (newWidth) => {
+  isMobile.value = newWidth < 800;
+});
+
 // FUNCIONES
-const printMessageWithDelay = async (message) => {
-  kenaiPromptResponse.value += message;
+const updateWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
+const toggleMobileNavbar = () => {
+  visibleMobileNavbar.value = !visibleMobileNavbar.value;
+};
+
+const printMessageWithDelay = async (chatRow, message) => {
+  chatRow.kenai.renderedResponse += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
 };
+
 const handleSendPrompt = async () => {
   if (prompt.value.length !== 0) {
-    try {
-      promptFetching.value = true;
-      const userPrompt = prompt.value;
-      prompt.value = '';
-      kenaiPromptResponse.value = '';
+    promptFetching.value = true;
 
+    const userPrompt = prompt.value.replace(/\n/g, "<br>");
+    const chatRow = reactive({
+      index: lastChatIndex.value,
+      user: {
+        message: userPrompt,
+        username: "Anonymous",
+        sentAt: new Date(),
+      },
+      kenai: {
+        response: "",
+        renderedResponse: "",
+        loading: true,
+        respondedAt: null,
+        error: false,
+        errorMessage: "",
+      },
+    });
+    chatHistory.value.push(chatRow);
+    prompt.value = "";
+
+    try {
       const kenaiResponse = await sendPrompt(userPrompt);
-      promptFetching.value = false;
-      for (const response of kenaiResponse.responses) {
-        await printMessageWithDelay(response.message_generated);
+
+      chatRow.kenai.loading = false;
+      chatRow.kenai.respondedAt = new Date();
+      chatRow.kenai.response = kenaiResponse.response.map((r) => r);
+      console.log(chatRow.kenai.response);
+
+      for (const text of kenaiResponse.response) {
+        await printMessageWithDelay(chatRow, text);
       }
+
+      lastChatIndex.value++;
     } catch (error) {
-      console.log(error);
+      chatRow.kenai.error = true;
+      chatRow.kenai.errorMessage = error.message || "An error occurred";
+      chatRow.kenai.loading = false;
+      console.error(error.message);
     } finally {
       promptFetching.value = false;
     }
   }
-}
+};
+
+const handleEnter = (event) => {
+  if (!event.shiftKey) {
+    event.preventDefault();
+    handleSendPrompt();
+  }
+};
 
 const handleInput = (event) => {
   const inputText = event.target.value;
@@ -288,10 +616,30 @@ const handleLanguageChange = (event) => {
 };
 </script>
 
-
 <style scoped lang="scss">
 .main-container {
   display: flex;
+}
+
+.mobile-navbar {
+  .navbar__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    height: calc(100dvh - 185px);
+  }
+}
+
+.open-mobile-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .menu-icon {
+    color: white;
+    margin-left: -10px;
+  }
 }
 
 .chat__container {
@@ -331,44 +679,52 @@ const handleLanguageChange = (event) => {
   .chat__body {
     grid-area: chat__body;
     overflow-y: auto;
-    width: 100%;
     display: flex;
     align-items: baseline;
     justify-content: center;
 
-
     .messages__container {
       max-width: 900px;
+      width: 95%;
     }
 
     .user-message__container {
+      width: 95%;
       padding-top: 20px;
       display: flex;
       justify-content: flex-end;
+
+      .message-content {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
     }
 
     .message__container {
       margin: 15px auto;
       max-width: 95%;
+      min-width: 85%;
 
       .message {
         max-width: 95%;
       }
 
-
       .user-message {
-        max-width: 95%;
+        max-width: 75%;
+        min-width: 75px;
+
         position: relative;
 
         p {
           margin-top: 30px;
+          text-align: left;
         }
       }
 
       .top-fieldset {
         display: flex;
         align-items: center;
-        padding-left: 10px;
+        padding: 0px 10px;
       }
 
       .top-fieldset-user {
@@ -378,8 +734,8 @@ const handleLanguageChange = (event) => {
         background-color: #18181b;
         display: flex;
         align-items: center;
-        padding-left: 10px;
-        border-radius: 10px;
+        padding: 0px 10px;
+        border-radius: 6px;
         height: 38px;
       }
     }
@@ -423,7 +779,6 @@ const handleLanguageChange = (event) => {
     align-items: center;
     justify-content: flex-end;
     padding: 40px 0px;
-
 
     .prompt-tools {
       display: flex;
@@ -496,6 +851,12 @@ const handleLanguageChange = (event) => {
 
 .not-extended {
   width: 80px;
+}
+
+.mobile-navbar__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .navbar__header {
@@ -581,7 +942,7 @@ const handleLanguageChange = (event) => {
     gap: 5px;
   }
 
-  .p-menu .p-menuitem>.p-menuitem-content .p-menuitem-link {
+  .p-menu .p-menuitem > .p-menuitem-content .p-menuitem-link {
     display: flex;
     align-items: center;
     justify-content: space-between;

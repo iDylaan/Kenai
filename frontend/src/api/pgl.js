@@ -1,15 +1,11 @@
-export async function sendPrompt(prompt) {
+export async function getPGLData() {
     try {
-        const response = await fetch('/kenai/generate', {
-            method: 'POST',
+        const response = await fetch('/postgres/status', {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                prompt: prompt
-            })
+            }
         })
-
         if (!response.ok) throw new Error(response.statusText);
 
         const result = await response.json();
