@@ -143,6 +143,7 @@ a {
   width: 100%;
   margin: 0 auto;
   min-height: 70vh;
+  overflow-y: visible;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -198,6 +199,7 @@ a {
   0% {
     background-position: 0% 50%;
   }
+
   100% {
     background-position: 400% 50%;
   }
@@ -207,6 +209,7 @@ a {
   0% {
     text-shadow: 0 0 5px #fca21117, 0 0 10px #fca2111a, 0 0 15px #fcb24310, 0 0 20px #fc994317, 0 0 25px #fc81431c, 0 0 30px #fca21110;
   }
+
   100% {
     text-shadow: 0 0 10px #fca21118, 0 0 20px #fca21121, 0 0 30px #fcb2431c, 0 0 40px #fc99431e, 0 0 50px #fc814318, 0 0 60px #fca21123;
   }
@@ -222,5 +225,18 @@ a {
   z-index: -1;
   background: radial-gradient(circle, #416bc031 0%, transparent 50%);
   transform: rotate(0deg);
+}
+
+@media (width >=1024px) {
+  .title-lights {
+    position: absolute;
+    top: -250%;
+    left: -20%;
+    width: 140%;
+    height: 500%;
+    z-index: -1;
+    background: radial-gradient(circle, #416bc031 0%, transparent 50%);
+    transform: rotate(0deg);
+  }
 }
 </style>
