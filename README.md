@@ -226,3 +226,65 @@ sudo systemctl daemon-reload
 sudo systemctl enable ollama
 3. Iniciar el servicio
 sudo systemctl start ollama
+
+## PostgreSQL
+Para la inicialización y configuración de postgresql en su versión 12 realizaremos los siguientes pasos
+1. Instalar PostgreSQL desde el repositorio RPM
+```sh
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+```
+2. Deshabilitar el built-in en el modulo de postgres
+```sh
+sudo dnf -qy module disable postgresql
+```
+3. Instalar PostgreSQL Server
+```sh
+sudo dnf install -y postgresql12-server
+```
+4. Inicializar los servicios de postgres para un inicio automático
+```sh
+sudo /usr/pgsql-12/bin/postgresql-12-setup initdb
+sudo systemctl enable postgresql-12
+sudo systemctl start postgresql-12
+```
+5. Acceder a postgres
+```sh
+sudo -u postgres psql
+```
+6. Crear la base de datos y los usuarios
+```sh
+CREATE DATABASE kenai;
+CREATE USER kenai WITH PASSWORD 'Password';
+GRANT ALL PRIVILEGES ON DATABASE kenai TO kenai;
+\q
+```
+8. Actualizar el inicio dentro de la configuración de postgresql
+```sh
+sudo vi /var/lib/pgsql/12/data/pg_hba.conf
+```
+9. Dentro modificar este segmento de METHOD para que quede igual a lo siguiente
+```sh
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     md5
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+# ! Agregar esta linea debajo
+# Allow local connections for postgres user with peer authentication
+local   all             postgres                                peer
+
+```
+9. Reiniciar PostgreSQL
+```
+sudo systemctl restart postgresql-12
+```
+10. Ingresar al usuario kenai en la base de datos kenai
+```sh
+psql -U kenai -d kenai -W
+```
+11. Escribir la contraseña correspondiente
+12. Crear las tablas necesarias dentro de su base de datos y salir del usuario kenai con \q
+13. Colocar las credenciales en un .env ubicado en la carpeta raiz del proyecto de Kenai
