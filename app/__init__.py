@@ -1,18 +1,43 @@
-import json, requests, os
+import os, logging
 from flask import Flask, jsonify, request, render_template, send_from_directory
 from werkzeug.exceptions import HTTPException
 from dotenv import load_dotenv
 from .app_config import Config
+from flask_cors import CORS
+from flask_talisman import Talisman
 
-
-# Cargar variables de entorno desde .env
-load_dotenv('.env')
 
 ### Cargar App ###
 app = Flask(__name__, static_folder='dist', template_folder='dist')
 
 ### Configuracion de la APP ###
 app.config.from_object(Config)
+
+### CORS ###
+CORS(app)
+
+#### Configuracion Cabeceras Talisman (SEC) ####
+csp = {
+    'default-src': [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.cdnfonts.com/css/tisa-sans-pro",
+        "https://accounts.google.com/gsi/client"
+    ],
+    'img-src': "'self' data:;"
+}
+talisman = Talisman(app, content_security_policy=csp)
+talisman.frame_options = 'SAMEORIGIN'
+talisman.strict_transport_security = True
+talisman.session_cookie_secure = True
+talisman.session_cookie_http_only = True
+talisman.force_https = True
+talisman.force_file_save = True
+
+### Carga logger ###
+from app.modules.utils.misc import init_logger
+init_logger()
+logging.info("App Starting...")
 
 ### Carga de respuesta de un 404 (recurso no encontrado) ###
 @app.errorhandler(404)

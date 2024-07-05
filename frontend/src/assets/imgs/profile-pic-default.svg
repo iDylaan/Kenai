@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512"
+    height="512" x="0" y="0" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" xml:space="preserve"
+    class="">
+    <g>
+        <circle cx="256" cy="128" r="128" fill="#808080" opacity="1" data-original="#808080" class=""></circle>
+        <path
+            d="M256 298.667c-105.99.118-191.882 86.01-192 192C64 502.449 73.551 512 85.333 512h341.333c11.782 0 21.333-9.551 21.333-21.333-.117-105.99-86.009-191.883-191.999-192z"
+            fill="#808080" opacity="1" data-original="#808080" class=""></path>
+    </g>
+</svg>
