@@ -96,5 +96,5 @@ def generate_text_alexa():
 
 def escape_special_characters(text):
     text = text.replace('\n\n', ' ').replace('\n', ' ')
-    text = re.sub(r'[^a-zA-Z0-9\s.,!?\'-]', '', text)
+    text = re.sub(r'[^a-zA-Z0-9\s.,!?\'áéíóúÁÉÍÓÚñÑ-]', '', text)
     return text
