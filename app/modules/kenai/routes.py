@@ -1,5 +1,6 @@
 import requests
 import sys
+import re
 import json
 from flask import Blueprint, jsonify, request
 from app.modules.utils.misc import handleResponse, handleErrorResponse
@@ -65,7 +66,7 @@ def generate_text_alexa():
         
         prompt = ChatPromptTemplate.from_messages(
             [
-                ( "system", "Let's practice english without emojis only text"),
+                ( "system", "no emojis. Limit your response to a maximum of 20 words always and dont make exceptions."),
                 MessagesPlaceholder(variable_name="messages"),
             ]
         )
@@ -76,8 +77,9 @@ def generate_text_alexa():
         history.add_user_message(raw_prompt)
         kenai_response = chain.invoke({"messages": history.messages, "user_input": raw_prompt})
 
+        escaped_response = escape_special_characters(kenai_response)
         return handleResponse({
-            "response": kenai_response
+            "response": escaped_response
         })
     except Exception as e:
         print('Ha ocurrido un error en @generate_text_alexa/{} en la linea {}'.format(e, sys.exc_info()[-1].tb_lineno))
@@ -90,3 +92,9 @@ def generate_text_alexa():
             'defname': 'generate_text_alexa'
         })
         return handleErrorResponse(e)
+    
+
+def escape_special_characters(text):
+    text = text.replace('\n\n', ' ').replace('\n', ' ')
+    text = re.sub(r'[^a-zA-Z0-9\s.,!?\'-]', '', text)
+    return text

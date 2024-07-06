@@ -65,18 +65,18 @@ git clone https://github.com/iDylaan/Kenai.git
 ![Alt text](./readme-images/image-5.png)
 
 ## Python
-Es necesario instalar la versión de Python 3.8, para ejecutamos el siguiente comando
+Es necesario instalar la versión de Python 3.12, para ejecutamos el siguiente comando
 ```sh
-sudo dnf install python3.8
+sudo dnf install python3.12
 ```
 Para comprobar que es correcta la instalación ejecutamos el siguiente comando
 ```sh
-python3.8 --version
+python3.12 --version
 ```
 ![Alt text](./readme-images/image-6.png)
 Para comprobar la versión de pip es necesario ejecutar el siguiente comando
 ```sh
-python3.8 -m pip --version
+python3.12 -m pip --version
 ```
 ![Alt text](./readme-images/image-7.png)
 
@@ -93,43 +93,31 @@ python3.8 -m virtualenv venv
 ```sh
 source venv/bin/activate
 ```
-4. Accedemos el backend con `cd backend/` e instalamos las dependencias con
+4. Instalamos las dependencias con
 ```sh
 pip install -r requirements.txt
 ```
 
-## GUNICORN
-1. Instalar GUNICORN
+## Flask SEGUNDO PLANO
+Para poder mantener nuestra aplicación ejecutandose en segundo plano y mantener una sesión donde podamos ver los logs, y el monitoreo continuo de nuestro servidor, así como darlo de baja manualmente cuando requiramos instalar una nueva versión se siguen los siguientes pasos.
+1. Instalar screen
 ```sh
-pip install gunicorn
+sudo dnf install screen
 ```
-2. Crear el archivo `gunicorn_config.py` y dentro colocar la siguiente configuración
+2. Crear un screen para la sesión de flask
 ```sh
-wsgi_app = "APP:app"
-bind = "0.0.0.0:5000"
-backlog = 2048
-workers = 1
-worker_class = 'sync'
-worker_connections = 1000
-keep_alive = 2
-timeout = 30
-daemon = True
-
-accesslog = '/home/opc/Kenai/backend/gunilogs/gunicorn-access.log'
-errorlog = '/home/opc/Kenai/backend/gunilogs/gunicorn-error.log'
-pidfile = '/home/opc/Kenai/backend/gunilogs/gunicorn.pid'
-reload = False
+screen -S flask_session
 ```
-3. Crear el directorio `/gunilogs`
-4. Para inciar el servidor con GUNICORN ejecutar el siguiente comando
+3. Iniciar el servidor con wgsi en APP.py
 ```sh
-gunicorn -c gunicorn_config.py APP:app
+python APP.py
 ```
-5. Para terminar el servidor con GUNICORN hay que acceder al archivo `/gunilogs/gunicorn.pid` para copia el id que se encuentra dentro
-6. Una vez copiado el id ejecutamos el siguiente comando donde #### es el id que copiamos
+4. Para salir de la sesión del screen presionamos la siguiente combinación de comandos `Ctrl+A` seguido de `D`
+5. Para recuperar la sesión del screen lo realizamos con el siguiente comando
 ```sh
-kill #### 
+screen -r flask_session
 ```
+6. Para detener el servicio de WGSI utilizamos el comando de `Ctrl+C`
 
 ## Apache
 Primero necesitamos instanciar todo el entorno con Apache para eso necesitamos realizar las siguientes configuraciones
@@ -158,6 +146,20 @@ sudo sed -i '/LoadModule proxy_http_module/s/^#//g' /etc/httpd/conf.modules.d/00
 sudo dnf install policycoreutils-python-utils -y
 ```
 
+### Certbot
+1. Instalar las siguientes dependencias
+```sh
+sudo dnf -y install certbot python3-certbot-apache
+```
+2. Instalar OpenSSL
+```sh
+sudo dnf -y install openssl
+```
+3. Ejecutar el Certbot
+```sh
+sudo certbot --apache -d ikenai.site -d www.ikenai.site
+```
+
 ### Configuración
 Para empezar a realizar la configuración necesitams crear un archivo `.conf` para el proyecto llamado `kenai.conf`
 1. Creamos el archivo de configuracion `.conf`
@@ -180,15 +182,23 @@ sudo vi /etc/httpd/conf.d/kenai.conf
     ErrorLog /var/log/httpd/error.log
     CustomLog /var/log/httpd/access.log combined
 
-    # Rewrite rules to redirect HTTP to HTTPS
+    # Redirect HTTP to HTTPS
     RewriteEngine on
-    RewriteCond %{SERVER_NAME} =ikenai.site [OR]
-    RewriteCond %{SERVER_NAME} =www.ikenai.site
-    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]
 </VirtualHost>
-
-<VirtualHost *:80>
-    ServerName 159.54.149.184
+```
+2. Configuración SSL
+```sh
+sudo vi /etc/httpd/conf.d/kenai-le-ssl.conf
+```
+3. Agregar la siguiente configuración
+```sh
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName ikenai.site
+    ServerAlias www.ikenai.site
+    ServerAdmin webmaster@localhost
 
     # Proxy settings
     ProxyPreserveHost On
@@ -198,7 +208,18 @@ sudo vi /etc/httpd/conf.d/kenai.conf
 
     ErrorLog /var/log/httpd/error.log
     CustomLog /var/log/httpd/access.log combined
+
+    SSLCertificateFile /etc/letsencrypt/live/ikenai.site/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/ikenai.site/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+
+    <IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteCond %{HTTPS} off
+        RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    </IfModule>
 </VirtualHost>
+</IfModule>
 ```
 4. Comprobar la configuracion colocada
 ```sh
@@ -207,6 +228,7 @@ sudo apachectl configtest
 5. Crear regla de firewall interno
 ```sh
 sudo firewall-cmd --permanent --zone=public --add-service=http
+sudo firewall-cmd --permanent --zone=public --add-service=https
 sudo firewall-cmd --permanent --add-port=5000/tcp
 sudo firewall-cmd --reload
 ```
@@ -226,3 +248,65 @@ sudo systemctl daemon-reload
 sudo systemctl enable ollama
 3. Iniciar el servicio
 sudo systemctl start ollama
+
+## PostgreSQL
+Para la inicialización y configuración de postgresql en su versión 12 realizaremos los siguientes pasos
+1. Instalar PostgreSQL desde el repositorio RPM
+```sh
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+```
+2. Deshabilitar el built-in en el modulo de postgres
+```sh
+sudo dnf -qy module disable postgresql
+```
+3. Instalar PostgreSQL Server
+```sh
+sudo dnf install -y postgresql12-server
+```
+4. Inicializar los servicios de postgres para un inicio automático
+```sh
+sudo /usr/pgsql-12/bin/postgresql-12-setup initdb
+sudo systemctl enable postgresql-12
+sudo systemctl start postgresql-12
+```
+5. Acceder a postgres
+```sh
+sudo -u postgres psql
+```
+6. Crear la base de datos y los usuarios
+```sh
+CREATE DATABASE kenai;
+CREATE USER kenai WITH PASSWORD 'Password';
+GRANT ALL PRIVILEGES ON DATABASE kenai TO kenai;
+\q
+```
+8. Actualizar el inicio dentro de la configuración de postgresql
+```sh
+sudo vi /var/lib/pgsql/12/data/pg_hba.conf
+```
+9. Dentro modificar este segmento de METHOD para que quede igual a lo siguiente
+```sh
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     md5
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+# ! Agregar esta linea debajo
+# Allow local connections for postgres user with peer authentication
+local   all             postgres                                peer
+
+```
+9. Reiniciar PostgreSQL
+```
+sudo systemctl restart postgresql-12
+```
+10. Ingresar al usuario kenai en la base de datos kenai
+```sh
+psql -U kenai -d kenai -W
+```
+11. Escribir la contraseña correspondiente
+12. Crear las tablas necesarias dentro de su base de datos y salir del usuario kenai con \q
+13. Colocar las credenciales en un .env ubicado en la carpeta raiz del proyecto de Kenai
