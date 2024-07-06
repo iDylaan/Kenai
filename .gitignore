@@ -7,7 +7,6 @@ jspm_packages/
 bower_components/
 
 # Salida de compilación
-/dist/
 /dist-ssr/
 /build/
 /build/Release/
@@ -67,7 +66,6 @@ pids/
 /.next/
 /out/
 .nuxt/
-.vuepress/dist/
 .docusaurus/
 .serverless/
 .fusebox/
@@ -115,11 +113,9 @@ yarn-error.log
 .DS_Store
 
 # NestJS
-/backend/dist
 /backend/.env
 
 # Vue.js
-/frontend/dist
 /frontend/node_modules
 /frontend/.env.local
 /frontend/.env.development.local
