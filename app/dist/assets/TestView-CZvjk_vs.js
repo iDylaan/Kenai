@@ -1,0 +1,1 @@
+import{s as t}from"./button.esm-Do-DfzKI.js";import{o,c as s,i as a,j as c,a as n,u as r}from"./index-DET4aNsS.js";import"./basecomponent.esm-JWnRpRyX.js";const l=n("h1",null,"Test",-1),f={__name:"TestView",setup(_){return console.log("Hola mundo"),(u,i)=>{const e=t;return o(),s("div",null,[l,a(e,null,{default:c(()=>[r("Test")]),_:1})])}}};export{f as default};
