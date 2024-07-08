@@ -1,9 +1,9 @@
 import os, logging
 from flask import Flask, jsonify, request, render_template, send_from_directory
 from werkzeug.exceptions import HTTPException
-from dotenv import load_dotenv
 from .app_config import Config
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from flask_talisman import Talisman
 
 
@@ -15,6 +15,9 @@ app.config.from_object(Config)
 
 ### CORS ###
 CORS(app)
+
+### JWT Config ###
+jwt = JWTManager(app)
 
 #### Configuracion Cabeceras Talisman (SEC) ####
 # csp = {
@@ -108,8 +111,10 @@ def serve_static(filename):
 from .modules import (
     mod_kenai,
     mod_postgres,
+    mod_auth
 )
 
 ### BP ###
 app.register_blueprint(mod_kenai)
+app.register_blueprint(mod_auth)
 app.register_blueprint(mod_postgres)

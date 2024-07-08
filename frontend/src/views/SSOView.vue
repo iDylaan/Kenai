@@ -1,6 +1,6 @@
 <script setup>
 // IMPORTACIONES
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { GoogleLogin } from "vue3-google-login";
 import { decodeCredential } from 'vue3-google-login'
 import { useSessionStore } from "@/stores/session";
@@ -8,23 +8,24 @@ import { useSessionStore } from "@/stores/session";
 // VARIABLES
 const store = useSessionStore();
 const loading = ref(false);
-const authed = ref(false);
 
 // FUNCIONES
+onMounted(() => {
+    store.loadSession();
+})
+
 const callback = async (response) => {
     loading.value = true;
     const userData = decodeCredential(response.credential);
     try {
-        const authResult = await store.login(userData);
-        authed.value = authResult;
+        await store.login(userData);
     } catch (error) {
         console.log(error);
     } finally {
         loading.value = false;
-
     }
 };
-</script>
+</script>   
 
 <template>
 
@@ -36,10 +37,11 @@ const callback = async (response) => {
             </section>
 
             <section class="form__container">
-                <GoogleLogin :callback="callback" />
-                <div class="authed__container" v-if="authed">
-                    {{ store.user.name }}
-                    <Avatar :src="store.user.imageUrl" alt="User Avatar" />
+                <GoogleLogin :callback="callback" v-if="!store.isAuthenticated" />
+                <Button v-if="store.isAuthenticated" @click="store.logout()">Logout</Button>
+                <div class="authed__container" v-if="store.isAuthenticated">
+                    {{ store.user.given_name }}
+                    <Avatar :image="store.user.picture" alt="User Avatar" round />
                 </div>
             </section>
 
@@ -91,6 +93,8 @@ const callback = async (response) => {
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-direction: column;
+        gap: 20px;
     }
 }
 </style>

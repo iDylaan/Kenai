@@ -1,11 +1,13 @@
 drop table if exists users, footprints, chats, prompts;
 
 CREATE TABLE users (
-  id_user SERIAL primary key,
-  email VARCHAR UNIQUE,
-  password VARCHAR NOT NULL,
+  id_user SERIAL PRIMARY KEY,
+  email VARCHAR UNIQUE NOT NULL,
+  password VARCHAR,
   image VARCHAR,
-  name VARCHAR NOT NULL,
+  name VARCHAR,
+  family_name VARCHAR,
+  given_name VARCHAR,
   last_connection TIMESTAMP,
   created_at TIMESTAMP default (CURRENT_TIMESTAMP),
   active_session_id VARCHAR,

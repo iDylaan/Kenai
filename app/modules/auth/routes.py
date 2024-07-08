@@ -23,39 +23,37 @@ def google_auth():
         # Aquí puedes registrar o actualizar el usuario en tu base de datos
         user = {
             'email': data.get('email', None),
-            'given_name': data.get('given_name', None),
-            'family_name': data.get('family_name', None),
             'name': data.get('name', None),
             'picture': data.get('picture', None),
+            'family_name': data.get('family_name', None),
+            'given_name': data.get('given_name', None)
         }
-
-        user_in_db = qry(SQL_S.GET_USER_IS_EXISTING, {'email': user['email']}, True)
-
-        if bool(int(user_in_db['count'])):
-            user['id'] = user_in_db['id']
-        else:
-            rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_USER, user)
-            if rows_affected == 0:
-                raise Exception("No se pudo insertar el usuario en la base de datos")
-            else:
-                user['id'] = id_of_new_row
 
         # Asignar session variables
         session_id = str(uuid.uuid4())
         ip_address = request.remote_addr
         browser = request.user_agent.string
+        user_payload = {**user, 'session_id': session_id, 'ip_address': ip_address, 'browser': browser}
 
+        user_in_db = qry(SQL_S.GET_USER_IS_EXISTING, {'email': user['email']})
+
+        if bool(len(user_in_db)):
+            user_in_db = user_in_db[0]
+            user['id'] = user_in_db['id']
+        else:
+            rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_USER, user_payload)
+            if rows_affected == 0:
+                raise Exception("No se pudo insertar el usuario en la base de datos")
+            else:
+                user['id'] = id_of_new_row
 
         # Generar JWT
-        user_payload = {**user, 'session_id': session_id, 'ip_address': ip_address, 'browser': browser}
-        print(user_payload)
         access_token = gen_jwt(user_payload)
-        print('Token generado:', access_token)
 
         return handleResponse({
             'user': user, 
             'token': access_token
-        }), 200
+        })
     except Exception as e:
         print('Ha ocurrido un error en @google_auth/{} en la linea {}'.format(e,
               sys.exc_info()[-1].tb_lineno))
