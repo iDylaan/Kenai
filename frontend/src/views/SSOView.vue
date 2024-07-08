@@ -41,7 +41,7 @@ const callback = async (response) => {
                 <Button v-if="store.isAuthenticated" @click="store.logout()">Logout</Button>
                 <div class="authed__container" v-if="store.isAuthenticated">
                     {{ store.user.given_name }}
-                    <Avatar :image="store.user.picture" alt="User Avatar" round />
+                    <Avatar :image="store.user.picture" alt="User Avatar" shape="circle" />
                 </div>
             </section>
 
