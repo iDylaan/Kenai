@@ -25,6 +25,7 @@ export default defineConfig({
     port: 8080
   },
   build: {
-    outDir: '../app/dist'
+    outDir: '../app/dist',
+    emptyOutDir: true,
   }
 })

@@ -12081,7 +12081,7 @@
     }
 
     .p-skeleton:after {
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(252, 163, 17, 0.2), rgba(255, 255, 255, 0));
     }
 
     .p-tag {

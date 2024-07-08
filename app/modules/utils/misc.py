@@ -1,9 +1,11 @@
-import socket, os, logging
+import socket, os, logging, jwt
 import datetime
 from flask import jsonify
 from werkzeug.utils import secure_filename
-from app import app
+from datetime import timedelta
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt, create_access_token, verify_jwt_in_request
 from pathlib import Path
+from app import app
 
 
 def handleErrorResponse(message, code=500):
@@ -59,3 +61,20 @@ def logging_error(error_info):
         f'línea {error_info["lineno"]}'
     )
     logging.error(error_message)
+
+
+def gen_jwt(payload):
+    try:
+        return create_access_token(identity=payload, expires_delta=datetime.timedelta(hours=(24 * 7)))
+    except Exception as e:
+        print("Ha ocurrido un error en @misc.gen_jwt/: {} en la linea {}".format(e, e.__traceback__.tb_lineno))
+        
+        
+def verify_jwt_token(token):
+    try:
+        decoded_token = jwt.decode(token, app.config.get('JWT_SECRET_KEY'), algorithms=['HS256'])
+        return decoded_token
+    except jwt.exceptions.ExpiredSignatureError:
+        return 'Sesión expirada. Vuelve a iniciar sesión.'
+    except jwt.exceptions.InvalidTokenError:
+        return 'Token no válido. Vuelve a iniciar sesión.'
