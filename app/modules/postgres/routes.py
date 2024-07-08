@@ -1,6 +1,6 @@
 import sys
-from flask import Blueprint, jsonify, request
-from app.modules.utils.misc import handleResponse, handleErrorResponse
+from flask import Blueprint
+from app.modules.utils.misc import handleResponse, handleErrorResponse, logging_error
 from app.modules.conf.conf_postgres import qry
 from .sql_strings import Sql_Strings as SQL_S
 
@@ -31,4 +31,12 @@ def postgres_status():
     except Exception as e:
         print('Ha ocurrido un error en @postgres_status/{} en la linea {}'.format(e,
               sys.exc_info()[-1].tb_lineno))
-        handleErrorResponse("Error interno en el servidor")
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        logging_error({
+            'fname': str(exc_tb.tb_frame.f_code.co_filename),
+            'exc_type': str(exc_type),
+            'lineno': str(exc_tb.tb_lineno),
+            'error': str(e),
+            'defname': 'postgres_status'
+        })
+        return handleErrorResponse(e)

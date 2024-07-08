@@ -19,3 +19,6 @@ class Config:
     
     ### LOGS DIR ###
     APP_LOG_DIR = os.getenv('APP_LOG_DIR')
+
+    ### JWT ###
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
