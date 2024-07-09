@@ -72,9 +72,11 @@ def gen_jwt(payload):
         
 def verify_jwt_token(token):
     try:
-        decoded_token = jwt.decode(token, app.config.get('JWT_SECRET_KEY'), algorithms=['HS256'])
-        return decoded_token
+        jwt.decode(token, app.config.get('JWT_SECRET_KEY'), algorithms=['HS256'])
+        return True
     except jwt.exceptions.ExpiredSignatureError:
-        return 'Sesión expirada. Vuelve a iniciar sesión.'
+        return False
     except jwt.exceptions.InvalidTokenError:
-        return 'Token no válido. Vuelve a iniciar sesión.'
+        return False
+    except Exception as e:
+        return False
