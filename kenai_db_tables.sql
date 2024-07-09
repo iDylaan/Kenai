@@ -15,12 +15,6 @@ CREATE TABLE users (
   last_connection_browser VARCHAR
 );
 
-CREATE TABLE footprints (
-  id_footprint SERIAL PRIMARY KEY,
-  footprint BYTEA NOT NULL,
-  id_user INT references users(id_user)
-);
-
 CREATE table chats (
   id_chat SERIAL PRIMARY KEY,
   id_user INT references users(id_user),

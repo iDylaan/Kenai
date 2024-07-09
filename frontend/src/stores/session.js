@@ -47,41 +47,42 @@ export const useSessionStore = defineStore('session', () => {
         localStorage.removeItem('kenai_user');
     };
 
-    const loadSession = () => {
+    const loadSession = async () => {
         const storedUser = localStorage.getItem('kenai_user');
         const storedToken = localStorage.getItem('kenai_token');
 
         if (storedUser && storedToken) {
-            user.value = JSON.parse(storedUser);
             token.value = storedToken;
-            // validateSession();
+            const isValid = await validateSession();
+            if (isValid) {
+                user.value = JSON.parse(storedUser);
+            }
         }
     };
 
     const validateSession = async () => {
         try {
-            const response = await fetch('http://localhost:5000/auth/validate', {
-                method: 'POST',
+            const response = await fetch('http://localhost:5000/auth/jwt_check', {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token.value}`
                 }
             });
-
-            if (!response.ok) {
-                logout();
-                throw new Error('Token no válido');
-            }
+            
+            if (!response.ok) throw new Error(response.statusText);
 
             const result = await response.json();
 
-            if (!result.valid) {
-                logout();
-                throw new Error('Token no válido');
-            }
+            if (!result.success) throw new Error(result.error.message);
+
+            if (!result.data.valid) throw new Error('La sesión ha expirado. Inicia sesión nuevamente.');
+
+            return true;
         } catch (error) {
-            console.error('Error al validar la sesión:', error);
+            console.error('Error al validar la sesión:', error.message);
             logout();
+            return false;
         }
     };
 

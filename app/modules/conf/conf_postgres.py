@@ -30,6 +30,7 @@ def qry(query, params=None, fetchone=False):
         return result
     except Exception as e:
         raise Exception(f'Error al ejecutar consulta en qry/{str(e)}')
+    
 def qry_bulk(query, params_tuple):
     results = []
     try:
@@ -58,6 +59,8 @@ def qry_bulk(query, params_tuple):
         conn.close()
 
     return results
+
+
 def sql(sql, params=None):
     try:
         conn = psycopg2.connect(
@@ -118,6 +121,8 @@ def execute_sql_script(sql_script):
     except Exception as e:
         conn.rollback()
         raise Exception(f"Error al ejecutar el script SQL: {e}")
+    
+
 def sqlv2(sql, params=None, return_id=False):
     try:
         conn = psycopg2.connect(
@@ -137,12 +142,14 @@ def sqlv2(sql, params=None, return_id=False):
         rows_affected = cursor.rowcount
         id_of_new_row = None
 
-        if return_id:
+        if return_id and bool(rows_affected):
             result = cursor.fetchone()
             if result is not None:
                 id_of_new_row = result[0]
             else:
                 raise Exception("No results to fetch")
+        else:
+            raise Exception("No rows affected")
 
         conn.commit()
         cursor.close()

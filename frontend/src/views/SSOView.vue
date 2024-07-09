@@ -5,13 +5,26 @@ import { GoogleLogin } from "vue3-google-login";
 import { decodeCredential } from 'vue3-google-login'
 import { useSessionStore } from "@/stores/session";
 
+// COMPONENTES
+import PageLoader from "@/components/layout/PageLoader.vue";
+
 // VARIABLES
 const store = useSessionStore();
 const loading = ref(false);
+const pageLoading = ref(false);
 
 // FUNCIONES
-onMounted(() => {
-    store.loadSession();
+onMounted(async () => {
+    pageLoading.value = true;
+    try {
+        await store.loadSession();
+    } catch (error) {
+        console.log(error);
+    } finally {
+        setTimeout(() => {
+            pageLoading.value = false;
+        }, 1000);
+    }
 })
 
 const callback = async (response) => {
@@ -29,6 +42,8 @@ const callback = async (response) => {
 
 <template>
 
+    <PageLoader :loading="pageLoading" />
+
     <main class="sso-main">
         <div class="sso__container">
             <section class="title__container">
@@ -41,7 +56,7 @@ const callback = async (response) => {
                 <Button v-if="store.isAuthenticated" @click="store.logout()">Logout</Button>
                 <div class="authed__container" v-if="store.isAuthenticated">
                     {{ store.user.given_name }}
-                    <Avatar :image="store.user.picture" alt="User Avatar" round />
+                    <Avatar :image="store.user.picture" alt="User Avatar" shape="circle" />
                 </div>
             </section>
 
