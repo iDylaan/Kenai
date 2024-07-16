@@ -2,6 +2,8 @@ import './assets/main.css';
 
 import i18n, { getLocale } from './i18n';
 
+import './registerServiceWorker';
+
 import { createApp, watch } from 'vue';
 import { createPinia } from 'pinia';
 
@@ -22,6 +24,7 @@ const primevueConfig = {
     locale: getLocale(),
 };
 
+// const CLIENT_ID = import.meta.env.CLIENT_ID;
 const CLIENT_ID = "1026982493501-dtfakdlnkf309l7a5gv80acqacqj80l7.apps.googleusercontent.com";
 
 app.use(createPinia());

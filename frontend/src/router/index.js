@@ -19,16 +19,6 @@ const router = createRouter({
       component: () => import('@/views/PostgresStatusView.vue')
     },
     {
-      path: '/sso',
-      name: 'sso',
-      component: () => import('@/views/SSOView.vue')
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: () => import('@/views/TestView.vue')
-    },
-    {
       path: '/:catchAll(.*)',
       name: 'Error404',
       component: () => import('@/views/Error404View.vue')

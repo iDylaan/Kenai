@@ -227,7 +227,7 @@ a {
   transform: rotate(0deg);
 }
 
-@media (width >=1024px) {
+@media (width >= 1024px) {
   .title-lights {
     position: absolute;
     top: -250%;

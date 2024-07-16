@@ -1,6 +1,8 @@
 <template>
+  <PageLoader :loading="pageLoading" />
+
   <main class="main-container">
-    <Sidebar v-model:visible="visibleMobileNavbar" class="mobile-navbar" v-if="isMobile">
+    <Sidebar v-model:visible="navbarStore.extended" class="mobile-navbar" v-if="mobileStore.isMobile">
       <template #header>
         <div class="mobile-navbar__header">
           <Avatar :image="kenaiAvatar" />
@@ -10,7 +12,8 @@
 
       <section class="navbar__header">
         <div class="new-btn__container">
-          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
+          <Button severity="secondary" :disabled="!sessionStore.isAuthenticated" size="small" class="new-btn" rounded
+            outlined>
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn">{{
               $t("chat.new_chat")
@@ -20,8 +23,8 @@
       </section>
 
       <section class="navbar__body animate__animated animate_fadeIn">
-        <span class="reciente-txt">{{ $t("chat.recent") }}</span>
-        <div class="chats__container">
+        <span class="reciente-txt" v-if="sessionStore.isAuthenticated">{{ $t("chat.recent") }}</span>
+        <div class="chats__container" v-if="sessionStore.isAuthenticated">
           <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
             menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
@@ -79,7 +82,7 @@
       </section>
     </Sidebar>
 
-    <section :class="['navbar__container', !navbarExtended ? 'not-extended' : '']" v-if="!isMobile">
+    <section :class="['navbar__container', !navbarStore.extended ? 'not-extended' : '']" v-if="!mobileStore.isMobile">
       <section class="navbar__header">
         <div class="menu-btn__container">
           <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended">
@@ -88,16 +91,26 @@
         </div>
 
         <div class="new-btn__container">
-          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
+          <Skeleton height="40px" borderRadius="100px" v-if="pageLoading"></Skeleton>
+
+          <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else
+            :disabled="!sessionStore.isAuthenticated">
             <span class="material-icons">add</span>
-            <span class="text animate__animated animate__fadeIn" v-if="navbarExtended">{{ $t("chat.new_chat") }}</span>
+            <span class="text animate__animated animate__fadeIn" v-if="navbarStore.extended">{{ $t("chat.new_chat")
+              }}</span>
           </Button>
         </div>
       </section>
 
-      <section class="navbar__body animate__animated animate_fadeIn" v-if="navbarExtended">
-        <span class="reciente-txt">{{ $t("chat.recent") }}</span>
-        <div class="chats__container">
+      <section class="navbar__body animate__animated animate_fadeIn" v-if="navbarStore.extended">
+        <span class="reciente-txt" v-if="sessionStore.isAuthenticated">{{ $t("chat.recent") }}</span>
+        <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && pageLoading">
+          <Skeleton height="40px"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
+        </div>
+        <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading">
           <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
             menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
@@ -128,7 +141,7 @@
         <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
           aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
-          <span class="text" v-if="navbarExtended">{{
+          <span class="text" v-if="navbarStore.extended">{{
             $t("chat.settings")
           }}</span>
         </Button>
@@ -160,15 +173,21 @@
     <!-- CONTENT AREA -->
     <section class="chat__container">
       <div class="chat__header">
-        <h1 v-if="!isMobile">KenAI</h1>
+        <h1 v-if="!mobileStore.isMobile">KenAI</h1>
         <Button v-else @click="toggleMobileNavbar" severity="secondary" text rounded aria-label="Menu" size="large">
           <span class="material-icons menu-icon">menu</span>
         </Button>
 
-        <Button severity="secondary" text rounded :style="[{ 'padding': '5px' }]">
-          <!-- TODO: validar si hay imagen de usuario colocarla, de lo contrario colocar el defaultAvatar -->
-          <Avatar :image="defaultAvatar" size="default" shape="circle" />
-        </Button>
+        <div class="profile__container">
+          <Skeleton shape="circle" size="3rem" v-if="pageLoading"></Skeleton>
+          <Button severity="secondary" text rounded :style="[{ 'padding': '5px' }]" v-else>
+            <Avatar :image="sessionStore.isAuthenticated ? sessionStore.user.picture : defaultAvatar" size="default"
+              shape="circle" @click="toggle" />
+          </Button>
+          <OverlayPanel ref="op" showCloseIcon :style="[{ width: mobileStore.isMobile ? '100dvw' : '436px' }]">
+            <GoogleLogin />
+          </OverlayPanel>
+        </div>
       </div>
 
       <div class="chat__body">
@@ -178,7 +197,8 @@
               <Fieldset class="user-message">
                 <template #legend>
                   <div class="top-fieldset-user">
-                    <Avatar :image="defaultAvatar" shape="circle" />
+                    <Avatar :image="sessionStore.isAuthenticated ? sessionStore.user.picture : defaultAvatar"
+                      shape="circle" />
                   </div>
                 </template>
                 <p v-html="chat.user.message" class="message-content"></p>
@@ -211,14 +231,16 @@
       <div class="chat__footer">
         <Toolbar class="prompt-tools" id="tools-bar">
           <template #start>
+            <Skeleton shape="circle" size="42px" v-if="pageLoading"></Skeleton>
             <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn"
-              :disabled="promptFetching">
+              :disabled="promptFetching" v-else>
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
           </template>
 
           <template #center>
-            <Textarea type="text" @input="handleInput" @keydown.enter="handleEnter"
+            <Skeleton height="35px" style="margin-bottom: 7px;" v-if="pageLoading"></Skeleton>
+            <Textarea type="text" @input="handleInput" v-else @keydown.enter="handleEnter"
               :placeholder="$t('chat.type_a_message')" v-model="prompt" :disabled="promptFetching" size="small"
               variant="filled" rows="1" />
             <div class="char-counter">
@@ -227,7 +249,8 @@
           </template>
 
           <template #end>
-            <Button severity="primary" rounded class="prompt-tool-btn" text @click="handleSendPrompt"
+            <Skeleton shape="circle" size="42px" v-if="pageLoading"></Skeleton>
+            <Button severity="primary" v-else rounded class="prompt-tool-btn" text @click="handleSendPrompt"
               :disabled="promptFetching">
               <span class="material-icons-outlined">send</span>
             </Button>
@@ -245,16 +268,13 @@ import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 import defaultAvatar from "@/assets/imgs/profile-pic-default.svg";
 import { sendPrompt } from "@/api/kenai.js";
 import { marked } from "marked";
-
-// Inyectar la instancia de 'app'
+import { useSessionStore } from "@/stores/session";
+import { useNavbarStore } from "@/stores/navbar";
+import { useMobileStore } from "@/stores/mobile";
 
 // VARIABLES
-const windowWidth = ref(window.innerWidth);
-const chatID = ref("");
-const visibleMobileNavbar = ref(false);
-const isMobile = ref(windowWidth.value < 800);
+const chatID = ref(null);
 const promptFetching = ref(false);
-const navbarExtended = ref(true);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
 const lastChatIndex = ref(0);
@@ -301,14 +321,41 @@ const settingsItems = ref([
 const prompt = ref("");
 const chatHistory = ref([]);
 const promptMaxLenght = 300;
+const pageLoading = ref(false);
+const sessionStore = useSessionStore();
+const navbarStore = useNavbarStore();
+const mobileStore = useMobileStore();
+const op = ref();
+
+const toggle = (event) => {
+  op.value.toggle(event);
+}
+
+// COMPONENTES
+import PageLoader from "@/components/layout/PageLoader.vue";
+import GoogleLogin from "@/components/GoogleLogin.vue";
 
 // FUNCIONES RESERVADAS
-onMounted(() => {
-  window.addEventListener("resize", updateWidth);
+onMounted(async () => {
+  mobileStore.initWidthWatch();
+  pageLoading.value = true;
+  try {
+    await sessionStore.loadSession();
+    if (sessionStore.isAuthenticated) {
+      console.log(sessionStore.user);
+    }
+    navbarStore.loadNavbar();
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setTimeout(() => {
+      pageLoading.value = false;
+    }, 1000);
+  }
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", updateWidth);
+  mobileStore.destroyWidthWatch();
 });
 
 watch(prompt, (newVal) => {
@@ -330,16 +377,9 @@ watch(prompt, (newVal) => {
   }
 });
 
-watch(windowWidth, (newWidth) => {
-  isMobile.value = newWidth < 800;
-});
-
 // FUNCIONES
-const updateWidth = () => {
-  windowWidth.value = window.innerWidth;
-};
 const toggleMobileNavbar = () => {
-  visibleMobileNavbar.value = !visibleMobileNavbar.value;
+  navbarStore.toggleExtended();
 };
 
 const printMessageWithDelay = async (chatRow, message) => {
@@ -356,7 +396,7 @@ const handleSendPrompt = async () => {
       index: lastChatIndex.value,
       user: {
         message: userPrompt,
-        username: "Anonymous",
+        username: sessionStore.isAuthenticated ? sessionStore.user.give_name : "Anonymous",
         sentAt: new Date(),
       },
       kenai: {
@@ -372,12 +412,18 @@ const handleSendPrompt = async () => {
     prompt.value = "";
 
     try {
-      const kenaiResponse = await sendPrompt(userPrompt);
+      const kenaiResponse = await sendPrompt({
+        prompt: userPrompt,
+        user_id: sessionStore.isAuthenticated ? sessionStore.user.id : null,
+        username: sessionStore.isAuthenticated ? sessionStore.user.username : "Anonymous",
+        chat_id: chatID.value,
+      });
 
       chatRow.kenai.loading = false;
       chatRow.kenai.respondedAt = new Date();
       chatRow.kenai.response = kenaiResponse.response.map((r) => r);
-      console.log(chatRow.kenai.response);
+      chatID.value = kenaiResponse.chat_id;
+      
 
       for (const text of kenaiResponse.response) {
         await printMessageWithDelay(chatRow, text);
@@ -414,7 +460,7 @@ const handleInput = (event) => {
 const charCount = computed(() => prompt.value.length);
 
 const toggleNavbarExtended = () => {
-  navbarExtended.value = !navbarExtended.value;
+  navbarStore.toggleExtended();
 };
 
 const toggleSettingsPopup = (event) => {
