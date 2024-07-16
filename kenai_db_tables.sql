@@ -1,4 +1,4 @@
-drop table if exists users, footprints, chats, prompts;
+DROP TABLE IF EXISTS users, footprints, chats, prompts;
 
 CREATE TABLE users (
   id_user SERIAL PRIMARY KEY,
@@ -9,7 +9,7 @@ CREATE TABLE users (
   family_name VARCHAR,
   given_name VARCHAR,
   last_connection TIMESTAMP,
-  created_at TIMESTAMP default (CURRENT_TIMESTAMP),
+  created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
   active_session_id VARCHAR,
   last_connection_ip INET,
   last_connection_browser VARCHAR
@@ -17,14 +17,14 @@ CREATE TABLE users (
 
 CREATE table chats (
   id_chat SERIAL PRIMARY KEY,
-  id_user INT references users(id_user),
+  id_user INT REFERENCES users(id_user),
   chat_name VARCHAR NOT NULL,
   created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP)
 );
 
 CREATE TABLE prompts (
   id SERIAL PRIMARY KEY,
-  id_chat INT references chats(id_chat),
+  id_chat INT NOT NULL REFERENCES chats(id_chat),
   prompt TEXT NOT NULL,
   response TEXT,
   prompt_timestamp TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),

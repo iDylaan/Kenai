@@ -7848,7 +7848,7 @@
         transition: opacity 0.1s linear;
     }
 
-    .p-overlaypanel:after,
+    /* .p-overlaypanel:after,
     .p-overlaypanel:before {
         bottom: 100%;
         left: calc(var(--overlayArrowLeft, 0) + 1.25rem);
@@ -7857,7 +7857,7 @@
         width: 0;
         position: absolute;
         pointer-events: none;
-    }
+    } */
 
     .p-overlaypanel:after {
         border-width: 8px;
@@ -7884,11 +7884,21 @@
     }
 
     .p-overlaypanel {
-        background: #18181b;
+        background: #282a2c;
         color: #ffffff;
-        border: 1px solid #3f3f46;
-        border-radius: 6px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow:
+            0px 0.5px 1px rgba(0, 0, 0, 0.04),
+            0px 1px 2.2px rgba(0, 0, 0, 0.059),
+            0px 1.7px 3.6px rgba(0, 0, 0, 0.073),
+            0px 2.5px 5.5px rgba(0, 0, 0, 0.084),
+            0px 3.6px 7.9px rgba(0, 0, 0, 0.095),
+            0px 5.1px 11.2px rgba(0, 0, 0, 0.106),
+            0px 7.3px 15.8px rgba(0, 0, 0, 0.117),
+            0px 10.6px 23px rgba(0, 0, 0, 0.131),
+            0px 16.3px 35.4px rgba(0, 0, 0, 0.15),
+            0px 29px 63px rgba(0, 0, 0, 0.19);
     }
 
     .p-overlaypanel .p-overlaypanel-content {
@@ -10073,7 +10083,7 @@
 
     .p-tabmenu::-webkit-scrollbar {
         display: none;
-    }   
+    }
 
     .p-tabmenu .p-tabmenu-nav {
         background: #18181b0f;
@@ -10101,7 +10111,7 @@
         -moz-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
         -ms-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
         -o-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
-}
+    }
 
     .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link .p-menuitem-icon {
         margin-right: 0.5rem;
