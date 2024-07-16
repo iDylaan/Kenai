@@ -22,7 +22,7 @@ export default defineConfig({
       injectRegister: 'auto',
       registerType: 'autoUpdate',
       devOptions: {
-        enabled: true,
+        enabled: false,
       },
       manifest: {
         name: 'KenAI',
@@ -104,34 +104,6 @@ export default defineConfig({
             src: '/icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-          },
-        ],
-        screenshots: [
-          {
-            src: '/screenshots/screenshot1.png',
-            sizes: '640x1136',
-            type: 'image/png',
-          },
-          {
-            src: '/screenshots/screenshot2.png',
-            sizes: '750x1334',
-            type: 'image/png',
-          },
-        ],
-        shortcuts: [
-          {
-            name: 'Shortcut 1',
-            short_name: 'Shortcut1',
-            description: 'Shortcut 1 Description',
-            url: '/shortcut1',
-            icons: [{ src: '/icons/shortcut-icon-192x192.png', sizes: '192x192', type: 'image/png' }],
-          },
-          {
-            name: 'Shortcut 2',
-            short_name: 'Shortcut2',
-            description: 'Shortcut 2 Description',
-            url: '/shortcut2',
-            icons: [{ src: '/icons/shortcut-icon-192x192.png', sizes: '192x192', type: 'image/png' }],
           },
         ],
       },

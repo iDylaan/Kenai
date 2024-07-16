@@ -1,13 +1,11 @@
-export async function sendPrompt(prompt) {
+export async function sendPrompt(promptData) {
     try {
         const response = await fetch('/kenai/generate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                prompt: prompt
-            })
+            body: JSON.stringify(promptData)
         })
 
         if (!response.ok) throw new Error(response.statusText);

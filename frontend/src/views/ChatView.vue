@@ -12,7 +12,8 @@
 
       <section class="navbar__header">
         <div class="new-btn__container">
-          <Button severity="secondary" size="small" class="new-btn" rounded outlined>
+          <Button severity="secondary" :disabled="!sessionStore.isAuthenticated" size="small" class="new-btn" rounded
+            outlined>
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn">{{
               $t("chat.new_chat")
@@ -22,8 +23,8 @@
       </section>
 
       <section class="navbar__body animate__animated animate_fadeIn">
-        <span class="reciente-txt">{{ $t("chat.recent") }}</span>
-        <div class="chats__container">
+        <span class="reciente-txt" v-if="sessionStore.isAuthenticated">{{ $t("chat.recent") }}</span>
+        <div class="chats__container" v-if="sessionStore.isAuthenticated">
           <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
             menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
@@ -92,7 +93,8 @@
         <div class="new-btn__container">
           <Skeleton height="40px" borderRadius="100px" v-if="pageLoading"></Skeleton>
 
-          <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else>
+          <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else
+            :disabled="!sessionStore.isAuthenticated">
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn" v-if="navbarStore.extended">{{ $t("chat.new_chat")
               }}</span>
@@ -101,14 +103,14 @@
       </section>
 
       <section class="navbar__body animate__animated animate_fadeIn" v-if="navbarStore.extended">
-        <span class="reciente-txt">{{ $t("chat.recent") }}</span>
-        <div class="chats-skeleton" v-if="pageLoading">
+        <span class="reciente-txt" v-if="sessionStore.isAuthenticated">{{ $t("chat.recent") }}</span>
+        <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && pageLoading">
           <Skeleton height="40px"></Skeleton>
           <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
           <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
           <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
         </div>
-        <div class="chats__container" v-else>
+        <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading">
           <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
             menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
@@ -271,7 +273,7 @@ import { useNavbarStore } from "@/stores/navbar";
 import { useMobileStore } from "@/stores/mobile";
 
 // VARIABLES
-const chatID = ref("");
+const chatID = ref(null);
 const promptFetching = ref(false);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
@@ -377,7 +379,7 @@ watch(prompt, (newVal) => {
 
 // FUNCIONES
 const toggleMobileNavbar = () => {
-  navbarStore.toggleMobileNavbar();
+  navbarStore.toggleExtended();
 };
 
 const printMessageWithDelay = async (chatRow, message) => {
@@ -394,7 +396,7 @@ const handleSendPrompt = async () => {
       index: lastChatIndex.value,
       user: {
         message: userPrompt,
-        username: "Anonymous",
+        username: sessionStore.isAuthenticated ? sessionStore.user.give_name : "Anonymous",
         sentAt: new Date(),
       },
       kenai: {
@@ -410,12 +412,18 @@ const handleSendPrompt = async () => {
     prompt.value = "";
 
     try {
-      const kenaiResponse = await sendPrompt(userPrompt);
+      const kenaiResponse = await sendPrompt({
+        prompt: userPrompt,
+        user_id: sessionStore.isAuthenticated ? sessionStore.user.id : null,
+        username: sessionStore.isAuthenticated ? sessionStore.user.username : "Anonymous",
+        chat_id: chatID.value,
+      });
 
       chatRow.kenai.loading = false;
       chatRow.kenai.respondedAt = new Date();
       chatRow.kenai.response = kenaiResponse.response.map((r) => r);
-      console.log(chatRow.kenai.response);
+      chatID.value = kenaiResponse.chat_id;
+      
 
       for (const text of kenaiResponse.response) {
         await printMessageWithDelay(chatRow, text);
