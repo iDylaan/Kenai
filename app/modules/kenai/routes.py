@@ -27,6 +27,7 @@ def generate_text():
         user = data.get('username', None)
         chat_id = data.get('chat_id', None)
         raw_prompt = data.get('prompt', '')
+        iteration = 0
 
         # En caso de no tener registrado un chat, generar uno
         db_chat_messages = []
@@ -36,7 +37,7 @@ def generate_text():
                 raw_prompt
             )
             chat_name = str(kenai.invoke(chat_title_prompt))
-            rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT, {'user_id': user_id if user_id else None, 'chat_name': chat_name if user_id else 'Annonymous - {}'.format(chat_name)}, True)
+            rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT, {'user_id': user_id if user_id else None, 'chat_name': chat_name if user_id else 'Anonymous - {}'.format(chat_name)}, True)
             if rows_affected == 0:
                 return handleErrorResponse("No se pudo crear el chat", 500)
             chat_id = id_of_new_row
@@ -49,6 +50,8 @@ def generate_text():
             # Obtener los mensajes del chat
             db_chat_messages = qry(SQL_S.GET_CHAT_MESSAGES, {'chat_id': chat_id})
 
+            iteration = int(db_chat_messages[0]['iteration']) + 1
+
 
         # Agregar historial de mensajes
         history = ChatMessageHistory()
@@ -58,7 +61,7 @@ def generate_text():
                 history.add_ai_message(message['response'])
 
         # Registrar el mensaje el la base de datos
-        rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT_MESSAGE, {'chat_id': chat_id, 'prompt': raw_prompt}, True)
+        rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT_MESSAGE, {'chat_id': chat_id, 'prompt': raw_prompt, 'iteration': iteration}, True)
 
         if not rows_affected:
             return handleErrorResponse("Error interno, intentalo nuevamente", 500)

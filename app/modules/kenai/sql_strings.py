@@ -15,8 +15,8 @@ class Sql_Strings():
 
     INSERT_NEW_CHAT_MESSAGE = (
         """
-        INSERT INTO prompts (id_chat, prompt)
-        VALUES (%(chat_id)s, %(prompt)s)
+        INSERT INTO prompts (id_chat, prompt, iteration)
+        VALUES (%(chat_id)s, %(prompt)s, %(iteration)s)
         RETURNING id
         """
     )
@@ -30,7 +30,7 @@ class Sql_Strings():
 
     GET_CHAT_MESSAGES = (
         '''
-        SELECT prompt, response
+        SELECT prompt, response, iteration
         FROM prompts
         WHERE id_chat = %(chat_id)s
         ORDER BY id DESC
