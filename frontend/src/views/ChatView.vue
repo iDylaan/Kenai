@@ -12,8 +12,9 @@
 
       <section class="navbar__header">
         <div class="new-btn__container">
-          <Button severity="secondary" :disabled="!sessionStore.isAuthenticated" size="small" class="new-btn" rounded
-            outlined>
+          <Button severity="secondary" @click="chatStore.newChat()"
+            :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null" size="small"
+            class="new-btn" rounded outlined>
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn">{{
               $t("chat.new_chat")
@@ -23,30 +24,20 @@
       </section>
 
       <section class="navbar__body animate__animated animate_fadeIn">
-        <span class="reciente-txt" v-if="sessionStore.isAuthenticated">{{ $t("chat.recent") }}</span>
-        <div class="chats__container" v-if="sessionStore.isAuthenticated">
-          <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+        <span class="reciente-txt" v-if="sessionStore.isAuthenticated && chatStore.chats.length">{{ $t("chat.recent")
+          }}</span>
+        <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && (pageLoading || chatStore.loading)">
+          <Skeleton height="40px"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
+        </div>
+        <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading && !chatStore.loading">
+          <SplitButton v-for="chat in chatStore.chats" :key="chat.id_chat" icon="pi pi-check" :severity="chat.id_chat === chatStore.getActiveChatID() ? 'primary' : 'secondary'
+            " class="chat-btn" menuButtonIcon="pi pi-ellipsis-v" @click="chatStore.updateChatMessages(chat.id_chat)"
+            :model="chatOptions">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
-            <span class="text">Chat</span>
-          </SplitButton>
-
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
-            <span class="text">Chat</span>
-          </SplitButton>
-
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
-            <span class="text">Chat</span>
-          </SplitButton>
-
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
-            <span class="text">Chat</span>
+            <span class="text chat-name">{{ chat.chat_name }}</span>
           </SplitButton>
         </div>
       </section>
@@ -94,7 +85,7 @@
           <Skeleton height="40px" borderRadius="100px" v-if="pageLoading"></Skeleton>
 
           <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else
-            :disabled="!sessionStore.isAuthenticated">
+            :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null" @click="chatStore.newChat()">
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn" v-if="navbarStore.extended">{{ $t("chat.new_chat")
               }}</span>
@@ -103,36 +94,20 @@
       </section>
 
       <section class="navbar__body animate__animated animate_fadeIn" v-if="navbarStore.extended">
-        <span class="reciente-txt" v-if="sessionStore.isAuthenticated">{{ $t("chat.recent") }}</span>
-        <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && pageLoading">
+        <span class="reciente-txt" v-if="sessionStore.isAuthenticated && chatStore.chats.length">{{ $t("chat.recent")
+          }}</span>
+        <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && (pageLoading || chatStore.loading)">
           <Skeleton height="40px"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px;"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
+          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
         </div>
-        <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading">
-          <SplitButton label="Save" icon="pi pi-check" severity="primary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
+        <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading && !chatStore.loading">
+          <SplitButton v-for="chat in chatStore.chats" :key="chat.id_chat" icon="pi pi-check" :severity="chat.id_chat === chatStore.getActiveChatID() ? 'primary' : 'secondary'
+            " class="chat-btn" menuButtonIcon="pi pi-ellipsis-v" @click="chatStore.updateChatMessages(chat.id_chat)"
+            :model="chatOptions">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
-            <span class="text">Chat</span>
-          </SplitButton>
-
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
-            <span class="text">Chat</span>
-          </SplitButton>
-
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
-            <span class="text">Chat</span>
-          </SplitButton>
-
-          <SplitButton label="Save" icon="pi pi-check" severity="secondary" class="chat-btn"
-            menuButtonIcon="pi pi-ellipsis-v" @click="switchChat" :model="chatOptions">
-            <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
-            <span class="text">Chat</span>
+            <span class="text chat-name">{{ chat.chat_name }}</span>
           </SplitButton>
         </div>
       </section>
@@ -141,9 +116,7 @@
         <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
           aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
-          <span class="text" v-if="navbarStore.extended">{{
-            $t("chat.settings")
-          }}</span>
+          <span class="text" v-if="navbarStore.extended">{{ $t("chat.settings") }}</span>
         </Button>
         <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
           <template #item="{ item, props }" class="config-option">
@@ -180,9 +153,9 @@
 
         <div class="profile__container">
           <Skeleton shape="circle" size="3rem" v-if="pageLoading"></Skeleton>
-          <Button severity="secondary" text rounded :style="[{ 'padding': '5px' }]" v-else>
-            <Avatar :image="sessionStore.isAuthenticated ? sessionStore.user.picture : defaultAvatar" size="default"
-              shape="circle" @click="toggle" />
+          <Button severity="secondary" text rounded :style="[{ padding: '5px' }]" v-else>
+            <Avatar :image="sessionStore.isAuthenticated ? sessionStore.user.picture : defaultAvatar
+              " size="default" shape="circle" @click="toggle" />
           </Button>
           <OverlayPanel ref="op" showCloseIcon :style="[{ width: mobileStore.isMobile ? '100dvw' : '436px' }]">
             <GoogleLogin />
@@ -191,14 +164,27 @@
       </div>
 
       <div class="chat__body">
-        <div class="messages__container">
-          <div v-for="(chat, index) in chatHistory" :key="index">
+        <div class="firt-chat" v-if="chatStore.getActiveChatID() === null && !chatStore.getChatLoading()">
+          <p>Nuevo chat</p>
+        </div>
+
+
+        <div class="chat-messages-loading" v-else-if="chatStore.getChatLoading()">
+          <p>Cargando mensajes...</p>
+
+        </div>
+
+        <div class="messages__container"
+          v-else-if="!chatStore.getChatLoading() && chatStore.getActiveChatID() !== null">
+          <div v-for="(chat, index) in chatStore.chatHistory" :key="index">
             <div class="message__container user-message__container">
               <Fieldset class="user-message">
                 <template #legend>
                   <div class="top-fieldset-user">
-                    <Avatar :image="sessionStore.isAuthenticated ? sessionStore.user.picture : defaultAvatar"
-                      shape="circle" />
+                    <Avatar :image="sessionStore.isAuthenticated
+                      ? sessionStore.user.picture
+                      : defaultAvatar
+                      " shape="circle" />
                   </div>
                 </template>
                 <p v-html="chat.user.message" class="message-content"></p>
@@ -212,8 +198,14 @@
                     <Avatar :image="kenaiAvatar" />
                   </div>
                 </template>
-                <div class="loader" v-if="chat.kenai.loading"
-                  :style="[{ 'display': 'flex', 'gap': '5px', 'flex-direction': 'column', 'alignContent': 'flex-start' }]">
+                <div class="loader" v-if="chat.kenai.loading" :style="[
+                  {
+                    display: 'flex',
+                    gap: '5px',
+                    'flex-direction': 'column',
+                    alignContent: 'flex-start',
+                  },
+                ]">
                   <Skeleton></Skeleton>
                   <Skeleton width="70%"></Skeleton>
                   <Skeleton width="40%"></Skeleton>
@@ -226,6 +218,7 @@
             </div>
           </div>
         </div>
+
       </div>
 
       <div class="chat__footer">
@@ -239,13 +232,11 @@
           </template>
 
           <template #center>
-            <Skeleton height="35px" style="margin-bottom: 7px;" v-if="pageLoading"></Skeleton>
+            <Skeleton height="35px" style="margin-bottom: 7px" v-if="pageLoading"></Skeleton>
             <Textarea type="text" @input="handleInput" v-else @keydown.enter="handleEnter"
               :placeholder="$t('chat.type_a_message')" v-model="prompt" :disabled="promptFetching" size="small"
               variant="filled" rows="1" />
-            <div class="char-counter">
-              {{ charCount }}/{{ promptMaxLenght }}
-            </div>
+            <div class="char-counter">{{ charCount }}/{{ promptMaxLenght }}</div>
           </template>
 
           <template #end>
@@ -271,9 +262,9 @@ import { marked } from "marked";
 import { useSessionStore } from "@/stores/session";
 import { useNavbarStore } from "@/stores/navbar";
 import { useMobileStore } from "@/stores/mobile";
+import { useChatStore } from "@/stores/chat";
 
 // VARIABLES
-const chatID = ref(null);
 const promptFetching = ref(false);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
@@ -319,12 +310,12 @@ const settingsItems = ref([
   },
 ]);
 const prompt = ref("");
-const chatHistory = ref([]);
 const promptMaxLenght = 300;
 const pageLoading = ref(false);
 const sessionStore = useSessionStore();
 const navbarStore = useNavbarStore();
 const mobileStore = useMobileStore();
+const chatStore = useChatStore();
 const op = ref();
 
 const toggle = (event) => {
@@ -341,10 +332,8 @@ onMounted(async () => {
   pageLoading.value = true;
   try {
     await sessionStore.loadSession();
-    if (sessionStore.isAuthenticated) {
-      console.log(sessionStore.user);
-    }
     navbarStore.loadNavbar();
+    await chatStore.loadChats();
   } catch (error) {
     console.log(error);
   } finally {
@@ -396,7 +385,7 @@ const handleSendPrompt = async () => {
       index: lastChatIndex.value,
       user: {
         message: userPrompt,
-        username: sessionStore.isAuthenticated ? sessionStore.user.give_name : "Anonymous",
+        username: sessionStore.isAuthenticated ? sessionStore.user.give_name : null,
         sentAt: new Date(),
       },
       kenai: {
@@ -408,28 +397,40 @@ const handleSendPrompt = async () => {
         errorMessage: "",
       },
     });
-    chatHistory.value.push(chatRow);
+    chatStore.chatHistory.push(chatRow);
     prompt.value = "";
 
     try {
       const kenaiResponse = await sendPrompt({
         prompt: userPrompt,
         user_id: sessionStore.isAuthenticated ? sessionStore.user.id : null,
-        username: sessionStore.isAuthenticated ? sessionStore.user.username : "Anonymous",
-        chat_id: chatID.value,
+        username: sessionStore.isAuthenticated ? sessionStore.user.username : null,
+        chat_id: chatStore.getActiveChatID(),
       });
 
       chatRow.kenai.loading = false;
       chatRow.kenai.respondedAt = new Date();
       chatRow.kenai.response = kenaiResponse.response.map((r) => r);
-      chatID.value = kenaiResponse.chat_id;
-      
+      chatStore.getActiveChatID();
+
 
       for (const text of kenaiResponse.response) {
         await printMessageWithDelay(chatRow, text);
       }
 
       lastChatIndex.value++;
+
+      if (chatStore.getActiveChatID() === null) {
+        chatStore.chats.unshift(kenaiResponse.chat);
+        chatStore.setActiveChatID(kenaiResponse.chat_id);
+      } else {
+        const chatIndex = chatStore.chats.findIndex(chat => chat.id_chat === kenaiResponse.chat_id);
+
+        if (chatIndex !== -1) {
+          const [chat] = chatStore.chats.splice(chatIndex, 1);
+          chatStore.chats.unshift(chat);
+        }
+      }
     } catch (error) {
       chatRow.kenai.error = true;
       chatRow.kenai.errorMessage = error.message || "An error occurred";
@@ -467,9 +468,6 @@ const toggleSettingsPopup = (event) => {
   menuSettings.value.toggle(event);
 };
 
-const switchChat = (id_chat) => {
-  console.log(id_chat);
-};
 
 const handleLanguageChange = (event) => {
   // Cambiar el lenguaje
@@ -784,6 +782,24 @@ const handleLanguageChange = (event) => {
 
     .chat-icon {
       font-size: 0.9rem;
+    }
+
+    .chat-btn {
+      max-width: 230px;
+      height: 40px;
+
+      .chat-name {
+        max-width: 132px;
+        text-align: left;
+        display: inline-block;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
     }
   }
 
