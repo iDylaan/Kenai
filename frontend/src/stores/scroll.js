@@ -3,19 +3,17 @@ import { ref, watch } from 'vue';
 
 export const useScrollStore = defineStore('scroll', () => {
     const scrollPosition = ref(0);
-    const prevPosition = ref(0);
     const downScrolling = ref(true);
     const upScrolling = ref(false);
 
-    watch(scrollPosition, (newWidth) => {
-        downScrolling.value = prevPosition.value < newWidth;
-        upScrolling.value = prevPosition.value > newWidth;
+    watch(scrollPosition, (newWidth, oldWidth) => {
+        downScrolling.value = oldWidth < newWidth;
+        upScrolling.value = oldWidth > newWidth;
         updateScroll();
     });
 
 
     const updateScroll = () => {
-        prevPosition.value = scrollPosition.value;
         scrollPosition.value = window.scrollY;
     };
 

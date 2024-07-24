@@ -1,6 +1,6 @@
 <script setup>
 // Importaciones
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useScrollStore } from "@/stores/scroll";
 
 // Componentes
@@ -15,6 +15,8 @@ const items = ref([
   { route: "#contenido", label: "Contenido", materialIcon: "layers" },
 ]);
 
+const animationKenaiClass = ref('');
+
 // Parallax values
 const titleParallax = computed(() => {
   if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 350;
@@ -24,13 +26,27 @@ const titleParallax = computed(() => {
 // Funciones reservadas
 onMounted(() => {
   scrollStore.initScrollWatch();
+  animationKenaiClass.value = 'animate__animated animate__fadeInUp'
+  setTimeout(() => {
+    animationKenaiClass.value = 'kenai-glow__animation'
+  }, 600);
 })
 
 onUnmounted(() => {
   scrollStore.destroyScrollWatch();
 })
 
+watch(titleParallax, (newVal) => {
+  if (newVal) {
+    animationKenaiClass.value = 'animate__animated animate__fadeInUp';
 
+    setTimeout(() => {
+      animationKenaiClass.value = 'kenai-glow__animation'
+    }, 600);
+  } else {
+    animationKenaiClass.value = 'animate__animated animate__fadeOutUp';
+  }
+})
 
 // Funcinoes
 </script>
@@ -42,13 +58,16 @@ onUnmounted(() => {
       <div class="title-lights">
         <figure id="firt-light"></figure>
       </div>
-      <div class="title__container" v-show="titleParallax">
+      <div class="title__container">
         <h1>
-          <span class="animate__animated animate__fadeInUp first-title">Bienvenido a</span>
-          <span class="animate__animated animate__fadeInUp second-title" id="kenai_title">Kenai</span>
+          <span :class="titleParallax ? 'animate__fadeInUp' : 'animate__fadeOutUp'"
+            class="first-title animate__animated">Bienvenido
+            a</span>
+          <span :class="animationKenaiClass" class="second-title" id="kenai_title">Kenai</span>
         </h1>
 
-        <div class="get-started__container animate__animated animate__fadeInUp third-title">
+        <div :class="titleParallax ? 'animate__fadeInUp' : 'animate__fadeOutUp'"
+          class="third-title get-started__container animate__animated">
           <router-link to="/chat">
             <Button outlined severity="contrast" class="get-started__btn">
               <span slot="label">Comenzar</span>
@@ -187,6 +206,24 @@ a {
   animation-delay: 350ms;
 }
 
+.animate__animated.animate__fadeOutUp.first-title {
+  animation-name: fadeOutUp;
+  animation-duration: 500ms;
+  animation-delay: 0ms;
+}
+
+.animate__animated.animate__fadeOutUp.second-title {
+  animation-name: fadeOutUp;
+  animation-duration: 500ms;
+  animation-delay: 100ms;
+}
+
+.animate__animated.animate__fadeOutUp.third-title {
+  animation-name: fadeOutUp;
+  animation-duration: 500ms;
+  animation-delay: 350ms;
+}
+
 .title__container h1 {
   font-size: min(max(60px, 11.111vw), 160px);
   line-height: 100%;
@@ -211,7 +248,10 @@ a {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
-  animation: gradientRotation 5s linear infinite, textGlow 2s ease-in-out infinite alternate;
+}
+
+.kenai-glow__animation {
+  animation: gradientRotation 5s linear infinite, textGlow 2s ease-in-out infinite alternate !important;
 }
 
 @keyframes gradientRotation {
@@ -257,5 +297,9 @@ a {
     background: radial-gradient(circle, #416bc031 0%, transparent 50%);
     transform: rotate(0deg);
   }
+}
+
+.no-visible {
+  visibility: hidden;
 }
 </style>
