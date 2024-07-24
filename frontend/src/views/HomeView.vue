@@ -1,10 +1,12 @@
 <script setup>
 // Importaciones
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useScrollStore } from "@/stores/scroll";
 
 // Componentes
 
 // Variables
+const scrollStore = useScrollStore();
 const items = ref([
   { route: "#kenai", label: "Kenai", materialIcon: "home" },
   { route: "#proposito", label: "Propósito", materialIcon: "adjust" },
@@ -13,7 +15,22 @@ const items = ref([
   { route: "#contenido", label: "Contenido", materialIcon: "layers" },
 ]);
 
+// Parallax values
+const titleParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 350;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 135;
+})
+
 // Funciones reservadas
+onMounted(() => {
+  scrollStore.initScrollWatch();
+})
+
+onUnmounted(() => {
+  scrollStore.destroyScrollWatch();
+})
+
+
 
 // Funcinoes
 </script>
@@ -25,7 +42,7 @@ const items = ref([
       <div class="title-lights">
         <figure id="firt-light"></figure>
       </div>
-      <div class="title__container">
+      <div class="title__container" v-show="titleParallax">
         <h1>
           <span class="animate__animated animate__fadeInUp first-title">Bienvenido a</span>
           <span class="animate__animated animate__fadeInUp second-title" id="kenai_title">Kenai</span>
@@ -64,7 +81,9 @@ const items = ref([
     <!-- END NAVBAR -->
 
     <!-- Content -->
-    <section id="proposito"></section>
+    <section id="proposito">
+      {{ scrollStore.scrollPosition }}
+    </section>
   </main>
 </template>
 
@@ -227,7 +246,7 @@ a {
   transform: rotate(0deg);
 }
 
-@media (width >= 1024px) {
+@media (width >=1024px) {
   .title-lights {
     position: absolute;
     top: -250%;

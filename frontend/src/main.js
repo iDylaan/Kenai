@@ -8,6 +8,7 @@ import { createApp, watch } from 'vue';
 import { createPinia } from 'pinia';
 
 import PrimeVue from 'primevue/config';
+import Ripple from 'primevue/ripple'
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import "material-icons/iconfont/material-icons.css";
@@ -31,6 +32,7 @@ app.use(createPinia());
 app.use(router);
 app.use(i18n);
 app.use(PrimeVue, primevueConfig);
+app.directive('ripple', Ripple);
 app.use(vue3GoogleLogin, {
     clientId: CLIENT_ID,
 });
