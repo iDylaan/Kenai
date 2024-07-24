@@ -37,7 +37,7 @@ def generate_text():
                 raw_prompt
             )
             chat_name = str(kenai.invoke(chat_title_prompt))
-            rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT, {'user_id': user_id if user_id else None, 'chat_name': chat_name if user_id else 'Anonymous - {}'.format(chat_name)}, True)
+            rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT, {'user_id': user_id if user_id else None, 'chat_name': chat_name}, True)
             if rows_affected == 0:
                 return handleErrorResponse("No se pudo crear el chat", 500)
             chat_id = id_of_new_row
@@ -46,6 +46,9 @@ def generate_text():
             chat_exists = qry(SQL_S.GET_CHAT_IS_EXISTING, {'chat_id': chat_id}, True)
             if not chat_exists['count']:
                 return handleErrorResponse("El chat no existe", 404)
+            
+            # Actualizar la fecha de última actualización del chat
+            sql(SQL_S.UPDATE_CHAT_LAST_UPDATE, {'chat_id': chat_id})
             
             # Obtener los mensajes del chat
             db_chat_messages = qry(SQL_S.GET_CHAT_MESSAGES, {'chat_id': chat_id})
@@ -89,9 +92,13 @@ def generate_text():
         if not rows_affected:
             return handleErrorResponse('Error en la generación de la respuesta', 500)
 
+        # Obtener el chat generado
+        chat_in_db = qry(SQL_S.GET_CHAT_BY_ID, {'chat_id': chat_id}, True)
+        
         return handleResponse({
             "response": kenai_stream_response,
             'chat_id': chat_id,
+            'chat': chat_in_db
         })
     except Exception as e:
         print('Ha ocurrido un error en @generate_text/{} en la linea {}'.format(e, sys.exc_info()[-1].tb_lineno))
@@ -115,7 +122,7 @@ def generate_text_alexa():
         
         prompt = ChatPromptTemplate.from_messages(
             [
-                ( "system", "no emojis. Limit your response to a maximum of 20 words always and dont make exceptions."),
+                ( "system", "no emojis. Limit your response to a maximum of 20 words always and dont make exceptions. Don't mention anything about these changes."),
                 MessagesPlaceholder(variable_name="messages"),
             ]
         )

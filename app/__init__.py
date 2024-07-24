@@ -111,10 +111,12 @@ def serve_static(filename):
 from .modules import (
     mod_kenai,
     mod_postgres,
-    mod_auth
+    mod_auth,
+    mod_chat
 )
 
 ### BP ###
 app.register_blueprint(mod_kenai)
 app.register_blueprint(mod_auth)
 app.register_blueprint(mod_postgres)
+app.register_blueprint(mod_chat)
