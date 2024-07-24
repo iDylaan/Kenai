@@ -19,7 +19,8 @@ CREATE table chats (
   id_chat SERIAL PRIMARY KEY,
   id_user INT REFERENCES users(id_user),
   chat_name VARCHAR NOT NULL,
-  created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP)
+  created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
+  last_update TIMESTAMP DEFAULT (CURRENT_TIMESTAMP)
 );
 
 CREATE TABLE prompts (

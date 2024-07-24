@@ -7,6 +7,25 @@ class Sql_Strings():
         '''
     )
 
+    GET_CHAT_BY_ID = (
+        '''
+        SELECT 
+        	id_chat,
+        	chat_name,
+        	created_at
+        FROM chats
+        WHERE id_chat = %(chat_id)s
+        ORDER BY created_at DESC
+        '''
+    )
+
+    UPDATE_CHAT_LAST_UPDATE = (
+        """
+        UPDATE chats SET last_update = NOW()
+        WHERE id_chat = %(chat_id)s
+        """
+    )
+
     INSERT_NEW_CHAT = ( 
         "INSERT INTO chats (id_user, chat_name) VALUES "
         "(%(user_id)s, %(chat_name)s) "
