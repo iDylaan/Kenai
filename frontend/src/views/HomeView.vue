@@ -19,9 +19,26 @@ const animationKenaiClass = ref('');
 
 // Parallax values
 const titleParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 350;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 135;
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 350; //Desaparece para scroll abajo
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 135; //Aparece
 })
+const spanParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 690;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 660;//Aparece
+})
+const cardParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 0
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 240 && scrollStore.scrollPosition <= 500;//Aparece
+})
+//Scroll Seccion
+const scrollToSection = (route) => {
+  const sectionId = route.substring(1);
+  const section = document.getElementById(sectionId);
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
 
 // Funciones reservadas
 onMounted(() => {
@@ -59,6 +76,7 @@ watch(titleParallax, (newVal) => {
         <figure id="firt-light"></figure>
       </div>
       <div class="title__container">
+
         <h1>
           <span :class="titleParallax ? 'animate__fadeInUp' : 'animate__fadeOutUp'"
             class="first-title animate__animated">Bienvenido
@@ -75,6 +93,7 @@ watch(titleParallax, (newVal) => {
             </Button>
           </router-link>
         </div>
+
       </div>
     </section>
 
@@ -82,9 +101,10 @@ watch(titleParallax, (newVal) => {
     <div class="nav__container">
       <nav class="landing-navbar">
         <TabMenu :model="items" class="nav-tab-menu">
+
           <template #item="{ item, props }">
             <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
-              <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+              <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)">
                 <span class="material-icons-outlined">{{ item.materialIcon }}</span>
                 <span v-bind="props.label">{{ item.label }}</span>
               </a>
@@ -100,17 +120,132 @@ watch(titleParallax, (newVal) => {
     <!-- END NAVBAR -->
 
     <!-- Content -->
+    {{ scrollStore.scrollPosition }}
     <section id="proposito">
-      {{ scrollStore.scrollPosition }}
+      <div class=" proposito__content">
+        <h1 :class="spanParallax ? 'animate__slideInUp' : 'animate__slideOutDown'" class="animate__animated">Simple Card
+        </h1>
+        <p :class="spanParallax ? 'animate__slideInUp' : 'animate__fadeOut'" class="animate__animated m-0">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
+          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
+          neque
+          quas!
+        </p>
+      </div>
     </section>
+    <!-- Modelo -->
+    <section id="modelo">
+      <Carousel class="animate__animated custom__card">
+        <template #item>
+          
+        </template>
+      </Carousel>
+    </section>
+    <!-- Aplicaciones -->
+    <section id="aplicaciones">
+      <div class="card__content">
+        <Card :class="cardParallax ? 'animate__fadeOut' : 'animate__fadeOutDown '"
+          class="animate__animated custom__card">
+          <template #header>
+            <div class="card__header ">
+              <img alt="Aplicación Gemini" src="" class="card__imagen " />
+            </div>
+          </template>
+          <template #title>Primera</template>
+          <template #content>
+            <p class="m-0">Lorem, ipsum dolor...</p>
+          </template>
+        </Card>
+        <Card class="animate__animated custom__card">
+          <template #header>
+            <div class="card__header ">
+              <img alt="Espacio de trabajo" src="" class="card__imagen " />
+            </div>
+          </template>
+          <template #title>Segundo</template>
+          <template #content>
+            <p class="m-0">Lorem, ipsum dolor.</p>
+          </template>
+        </Card>
+        <Card class="animate__animated custom__card">
+          <template #header>
+            <div class="card__header ">
+              <img alt="Anuncios" src="" class="card__imagen " />
+            </div>
+          </template>
+          <template #title>Tercera</template>
+          <template #content>
+            <p class="m-0">Lorem, ipsum dolor</p>
+          </template>
+        </Card>
+      </div>
+    </section>
+    <!-- Contenido -->
+    <section id="contenido">
+
+    </section>
+
   </main>
 </template>
 
 <style scoped lang="scss">
 #proposito {
-  min-height: 120dvh;
   widows: 100%;
-  border: 1px solid red;
+  margin: 100px 100px 20px;
+}
+
+#aplicaciones {
+  display: flex;
+}
+
+.card__content {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.custom__card {
+  width: 25rem;
+  overflow: hidden;
+  background-color: #1e1e1e;
+  /* Color de fondo oscuro */
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  /* Texto blanco */
+  position: relative;
+}
+
+.card__header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.custom__card .card__imagen {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.custom__card .p-card-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.custom__card .p-card-content p {
+  color: #b3b3b3;
+  /* Texto gris */
+}
+
+.custom__card::after {
+  font-size: 24px;
+  color: #ffffff;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
 }
 
 .get-started__btn {
@@ -147,7 +282,6 @@ a {
 .nav-tab-menu {
   width: 100%;
 
-  ul {}
 }
 
 .nav__container {
@@ -243,7 +377,7 @@ a {
   font-size: min(max(80px, 13vw), 160px);
   color: orange;
   font-weight: 600;
-  background: linear-gradient(270deg, #fca311, #fcb243, #fc9943, #fc8243, #fca311);
+  background: linear-gradient(270deg, #fca311, #fcb243, #fc9943, #fc8243, #fd950e);
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -251,7 +385,7 @@ a {
 }
 
 .kenai-glow__animation {
-  animation: gradientRotation 5s linear infinite, textGlow 2s ease-in-out infinite alternate !important;
+  animation: gradientRotation 40s linear infinite, textGlow 38s ease-in-out infinite alternate !important;
 }
 
 @keyframes gradientRotation {
@@ -301,5 +435,10 @@ a {
 
 .no-visible {
   visibility: hidden;
+}
+
+.proposito__content {
+  display: block;
+  text-align: center
 }
 </style>
