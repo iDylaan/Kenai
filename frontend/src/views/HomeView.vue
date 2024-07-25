@@ -385,7 +385,17 @@ a {
 }
 
 .kenai-glow__animation {
-  animation: gradientRotation 40s linear infinite, textGlow 38s ease-in-out infinite alternate !important;
+  animation: textGlowFadeIn 500ms ease-in-out forwards, gradientRotation 5s linear infinite 0.5s, textGlow 2s ease-in-out infinite alternate 0.5s !important;
+}
+
+@keyframes textGlowFadeIn {
+  0% {
+    text-shadow: none;
+  }
+
+  100% {
+    text-shadow: 0 0 15px #fca21117, 0 0 10px #fca2111a, 0 0 15px #fcb24310, 0 0 20px #fc994317, 0 0 25px #fc81431c, 0 0 30px #fca21110;
+  }
 }
 
 @keyframes gradientRotation {
