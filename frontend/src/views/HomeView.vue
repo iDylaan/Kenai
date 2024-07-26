@@ -1,6 +1,6 @@
 <script setup>
 // Importaciones
-import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from "vue";
 import { useScrollStore } from "@/stores/scroll";
 
 // Componentes
@@ -16,6 +16,10 @@ const items = ref([
 ]);
 
 const animationKenaiClass = ref('');
+const carousel = ref(null);
+const animateTitle = ref('animate__animated animate__fadeInUp');
+const animateDescription = ref('animate__animated animate__fadeInUp');
+const animateImage = ref('animate__animated animate__fadeInUp');
 
 // Parallax values
 const titleParallax = computed(() => {
@@ -27,10 +31,42 @@ const spanParallax = computed(() => {
   else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 660;//Aparece
 })
 const cardParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 0
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 240 && scrollStore.scrollPosition <= 500;//Aparece
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 1600
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 910 && scrollStore.scrollPosition <= 1500;//Aparece
 })
-//Scroll Seccion
+// Animacion en el carrusel
+
+
+const handleNextClick = () => {
+  animateTitle.value = '';
+  animateDescription.value = '';
+  animateImage.value = '';
+  setTimeout(() => {
+    animateTitle.value = 'animate__animated animate__fadeInUp';
+    animateDescription.value = 'animate__animated animate__fadeInUp';
+    animateImage.value = 'animate__animated animate__fadeInUp';
+  }, 100);
+};
+
+onMounted(async () => {
+  await nextTick();
+  if (carousel.value && carousel.value.$el) {
+    const nextButton = carousel.value.$el.querySelector('.p-carousel-next');
+    const prevButton = carousel.value.$el.querySelector('.p-carousel-prev');
+
+    if (nextButton) {
+      nextButton.addEventListener('click', handleNextClick);
+    }
+
+    if (prevButton) {
+      prevButton.addEventListener('click', handleNextClick);
+    }
+
+    carousel.value.$el.addEventListener('change', handleNextClick);
+    console.log(carousel.value.$el);
+  }
+});
+//Scroll por seccion
 const scrollToSection = (route) => {
   const sectionId = route.substring(1);
   const section = document.getElementById(sectionId);
@@ -39,6 +75,36 @@ const scrollToSection = (route) => {
   }
 };
 
+//Imgenes carrusel
+const slides = ref([
+  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlCf2gjRY7VEYhKnj4eg-ab5poYVPq6dfa_Q&s', alt: 'Image 1' },
+  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://about.fb.com/es/wp-content/uploads/sites/13/2024/04/Introducing-Llama-3.png?fit=1204%2C679', alt: 'Image 2' },
+  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Amazon_Alexa_App_Logo.png', alt: 'Image 3' },
+]);
+
+
+const responsiveOptions = ref([
+  {
+    breakpoint: '1400px',
+    numVisible: 1,
+    numScroll: 1
+  },
+  {
+    breakpoint: '1199px',
+    numVisible: 1,
+    numScroll: 1
+  },
+  {
+    breakpoint: '767px',
+    numVisible: 1,
+    numScroll: 1
+  },
+  {
+    breakpoint: '575px',
+    numVisible: 1,
+    numScroll: 1
+  }
+]);
 
 // Funciones reservadas
 onMounted(() => {
@@ -64,6 +130,7 @@ watch(titleParallax, (newVal) => {
     animationKenaiClass.value = 'animate__animated animate__fadeOutUp';
   }
 })
+
 
 // Funcinoes
 </script>
@@ -120,12 +187,12 @@ watch(titleParallax, (newVal) => {
     <!-- END NAVBAR -->
 
     <!-- Content -->
-    {{ scrollStore.scrollPosition }}
+
     <section id="proposito">
       <div class=" proposito__content">
         <h1 :class="spanParallax ? 'animate__slideInUp' : 'animate__slideOutDown'" class="animate__animated">Simple Card
         </h1>
-        <p :class="spanParallax ? 'animate__slideInUp' : 'animate__fadeOut'" class="animate__animated m-0">
+        <p :class="spanParallax ? 'animate__slideInUp' : 'animate__fadeOut'" class="animate__animated m-0 p__proposito">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
           deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
           neque
@@ -134,50 +201,80 @@ watch(titleParallax, (newVal) => {
       </div>
     </section>
     <!-- Modelo -->
+    {{ scrollStore.scrollPosition }}
     <section id="modelo">
-      <Carousel class="animate__animated custom__card">
-        <template #item>
-          
-        </template>
-      </Carousel>
+      <div class="carousel-container">
+        <Carousel ref="carousel" :value="slides" :numVisible="1" :numScroll="1" :responsiveOptions="responsiveOptions"
+          circular :autoplayInterval="5000" @update:page="handleNextClick">
+          <template #item="slotProps">
+            <div class="carousel-item">
+              <div class="carousel-content">
+                <div class="text-content">
+                  <h2 :class="animateTitle">{{ slotProps.data.title }}</h2>
+                  <p :class="animateDescription">{{ slotProps.data.description }}</p>
+                </div>
+                <div class="image-content">
+                  <img :src="slotProps.data.src" :alt="slotProps.data.alt" 
+                    class="carousel-image" />
+                </div>
+              </div>
+            </div>
+          </template>
+        </Carousel>
+      </div>
     </section>
     <!-- Aplicaciones -->
+
     <section id="aplicaciones">
-      <div class="card__content">
-        <Card :class="cardParallax ? 'animate__fadeOut' : 'animate__fadeOutDown '"
-          class="animate__animated custom__card">
-          <template #header>
-            <div class="card__header ">
-              <img alt="Aplicación Gemini" src="" class="card__imagen " />
-            </div>
-          </template>
-          <template #title>Primera</template>
-          <template #content>
-            <p class="m-0">Lorem, ipsum dolor...</p>
-          </template>
-        </Card>
-        <Card class="animate__animated custom__card">
-          <template #header>
-            <div class="card__header ">
-              <img alt="Espacio de trabajo" src="" class="card__imagen " />
-            </div>
-          </template>
-          <template #title>Segundo</template>
-          <template #content>
-            <p class="m-0">Lorem, ipsum dolor.</p>
-          </template>
-        </Card>
-        <Card class="animate__animated custom__card">
-          <template #header>
-            <div class="card__header ">
-              <img alt="Anuncios" src="" class="card__imagen " />
-            </div>
-          </template>
-          <template #title>Tercera</template>
-          <template #content>
-            <p class="m-0">Lorem, ipsum dolor</p>
-          </template>
-        </Card>
+      <div class="card__content ">
+        <div class="gradient-border">
+          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
+            class="animate__animated custom__card ">
+            <template #header>
+              <div class="card__header ">
+                <img alt="Aplicación Gemini"
+                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  class="card__imagen " />
+              </div>
+            </template>
+            <template #title>Primera</template>
+            <template #content>
+              <p class="m-0">Lorem, ipsum dolor...</p>
+            </template>
+          </Card>
+        </div>
+        <div class="gradient-border">
+          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
+            class="animate__animated custom__card">
+            <template #header>
+              <div class="card__header ">
+                <img alt="Espacio de trabajo"
+                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  class="card__imagen " />
+              </div>
+            </template>
+            <template #title>Segundo</template>
+            <template #content>
+              <p class="m-0">Lorem, ipsum dolor.</p>
+            </template>
+          </Card>
+        </div>
+        <div class="gradient-border">
+          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
+            class="animate__animated custom__card">
+            <template #header>
+              <div class="card__header ">
+                <img alt="Anuncios"
+                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  class="card__imagen " />
+              </div>
+            </template>
+            <template #title>Tercera</template>
+            <template #content>
+              <p class="m-0">Lorem, ipsum dolor</p>
+            </template>
+          </Card>
+        </div>
       </div>
     </section>
     <!-- Contenido -->
@@ -192,60 +289,6 @@ watch(titleParallax, (newVal) => {
 #proposito {
   widows: 100%;
   margin: 100px 100px 20px;
-}
-
-#aplicaciones {
-  display: flex;
-}
-
-.card__content {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin: 20px 0;
-}
-
-.custom__card {
-  width: 25rem;
-  overflow: hidden;
-  background-color: #1e1e1e;
-  /* Color de fondo oscuro */
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  color: #ffffff;
-  /* Texto blanco */
-  position: relative;
-}
-
-.card__header {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-}
-
-.custom__card .card__imagen {
-  width: 40px;
-  height: 40px;
-  border-radius: 5px;
-  margin-right: 10px;
-}
-
-.custom__card .p-card-title {
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.custom__card .p-card-content p {
-  color: #b3b3b3;
-  /* Texto gris */
-}
-
-.custom__card::after {
-  font-size: 24px;
-  color: #ffffff;
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
 }
 
 .get-started__btn {
@@ -447,8 +490,165 @@ a {
   visibility: hidden;
 }
 
+//Estilos Propositos
 .proposito__content {
   display: block;
   text-align: center
+}
+
+#aplicaciones {
+  display: flex;
+}
+
+.card__content {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 150px;
+}
+
+.custom__card {
+  overflow: hidden;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  /* Texto blanco */
+  position: relative;
+}
+
+.custom__card:hover {
+  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
+}
+
+.card__header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.custom__card .card__imagen {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.custom__card .p-card-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.custom__card .p-card-content p {
+  color: #b3b3b3;
+  /* Texto gris */
+}
+
+.custom__card::after {
+  font-size: 24px;
+  color: #ffffff;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+}
+
+.p__proposito {
+  padding: 0px 50px;
+}
+
+.gradient-border {
+  width: 25rem;
+  height: 27.6rem;
+  transition: transform 0.1s;
+  transform-style: preserve-3d;
+  transform: rotateX(0) rotateY(0);
+}
+
+.gradient-border::before,
+.gradient-border::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(270deg, #fca311, #fcb243, #fc9943, #fc8243, #fd950e);
+  background-size: 400% 400%;
+  z-index: -1;
+  border-radius: 12px;
+  transition: opacity 0.3s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gradient-border::before {
+  filter: blur(3px);
+}
+
+.gradient-border:hover::before,
+.gradient-border:hover::after {
+  opacity: 1;
+  animation: gradientRotation 5s linear infinite;
+}
+
+@keyframes gradientRotation {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 400% 50%;
+  }
+}
+
+
+//Estilos Modelo
+.carousel-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 100px;
+}
+
+.carousel-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.carousel-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 300px;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #121212;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.text-content {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.image-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+
+.carousel-image {
+  max-width: 100%;
+  border-radius: 8px;
 }
 </style>
