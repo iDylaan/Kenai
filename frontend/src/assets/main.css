@@ -15,3 +15,6 @@
 
 /* Animate.css */
 @import 'animate.css';
+
+/* Style Home */
+@import './home.css';
