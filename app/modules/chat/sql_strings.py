@@ -9,6 +9,7 @@ class Sql_Strings():
         FROM chats
         WHERE id_user IS NOT NULL
         AND id_user = %(id_user)s
+        AND active = TRUE
         ORDER BY last_update DESC
         """
     )
@@ -26,5 +27,22 @@ class Sql_Strings():
         FROM prompts
         WHERE id_chat = %(id_chat)s
         ORDER BY iteration ASC
+        """
+    )
+
+
+    DELETE_CHAT_BY_ID = (
+        """
+        UPDATE chats SET active = FALSE
+        WHERE id_chat = %(id_chat)s
+        AND id_user = %(id_user)s
+        """
+    )
+
+    RENAME_CHAT_BY_ID = (
+        """
+        UPDATE chats SET chat_name = %(title)s
+        WHERE id_chat = %(id_chat)s
+        AND id_user = %(id_user)s
         """
     )

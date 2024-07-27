@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { getChatMessages, getUserChats } from '@/api/chat.js';
 
 export const useChatStore = defineStore('chat', () => {
@@ -8,16 +8,22 @@ export const useChatStore = defineStore('chat', () => {
     const loading = ref(false);
     const chatHistory = ref([]);
     const chatLoading = ref(false);
+    const isNewChat = ref(true);
+    const newMessageSent = ref(false);
 
     const loadChats = async () => {
-        chatHistory.value = [];
         loading.value = true;
         const userChats = await getUserChats();
         chats.value = userChats;
         loading.value = false;
     }
 
+    const setLoading = (value) => loading.value = value;
+
     const updateChatMessages = async (chatID) => {
+        if (chatID === activeChatID.value) return;
+
+        isNewChat.value = false;
         chatLoading.value = true;
         activeChatID.value = chatID;
         chatHistory.value = [];
@@ -50,6 +56,7 @@ export const useChatStore = defineStore('chat', () => {
     const getActiveChatID = () => activeChatID.value;
 
     const newChat = () => {
+        isNewChat.value = true;
         chatLoading.value = true;
         activeChatID.value = null;
         chatHistory.value = [];
@@ -57,11 +64,18 @@ export const useChatStore = defineStore('chat', () => {
         chatLoading.value = false;
     }
 
+    const desactivateNewChat = () => isNewChat.value = false;
+
     const getChatLoading = () => chatLoading.value;
+    const setNewMessageSent = (value) => newMessageSent.value = value;
 
     return {
         chats,
         chatHistory,
+        loading,
+        isNewChat,
+        newMessageSent,
+        desactivateNewChat,
         getChatLoading,
         loadChats,
         getChats,
@@ -69,6 +83,8 @@ export const useChatStore = defineStore('chat', () => {
         getActiveChatID,
         newChat,
         updateChatMessages,
-        getChatHistory
+        getChatHistory,
+        setLoading,
+        setNewMessageSent
     }
 });
