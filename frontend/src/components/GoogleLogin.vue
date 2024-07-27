@@ -136,6 +136,11 @@ const callback = async (response) => {
     align-items: center;
     justify-content: center;
 
+    .title__text {
+      font-size: 2rem;
+      letter-spacing: normal;
+    }
+
     span {
       font-size: 30px;
       color: white;
