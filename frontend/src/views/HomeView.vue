@@ -277,8 +277,8 @@ watch(titleParallax, (newVal) => {
       </div>
       
       <div class="card__content ">
-        <div :class="cardParallax ? 'animate__fadeIn' : 'animate__fadeOut '" class=" animate__animated gradient-border">
-          <Card :class="cardParallax ? 'animate__fadeIn' : 'animate__fadeOut '" class="animate__animated custom__card ">
+        <div :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class=" animate__animated gradient-border">
+          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated custom__card ">
             <template #header>
               <div class="card__header ">
                 <img alt="Aplicación Gemini"

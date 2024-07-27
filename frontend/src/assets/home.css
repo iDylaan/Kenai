@@ -319,6 +319,12 @@ a {
   font-size: 1.125rem;
   color: #bdbdbd;
 }
+@media (width >= 1024px) {
+    .p_text_content {
+        font-size: 1.12rem;
+        color: #bdbdbd;
+      }
+}
 
 .gradient-border {
   width: 25rem;
