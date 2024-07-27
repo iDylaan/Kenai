@@ -1,10 +1,12 @@
 <script setup>
 // Importaciones
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from "vue";
+import { useScrollStore } from "@/stores/scroll";
 
 // Componentes
 
 // Variables
+const scrollStore = useScrollStore();
 const items = ref([
   { route: "#kenai", label: "Kenai", materialIcon: "home" },
   { route: "#proposito", label: "Propósito", materialIcon: "adjust" },
@@ -13,7 +15,126 @@ const items = ref([
   { route: "#contenido", label: "Contenido", materialIcon: "layers" },
 ]);
 
+const animationKenaiClass = ref('');
+const carousel = ref(null);
+const animateTitle = ref('animate__animated animate__fadeInUp');
+const animateDescription = ref('animate__animated animate__fadeInUp');
+const animateImage = ref('animate__animated animate__fadeInUp');
+
+// Parallax values
+const titleParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 350; //Desaparece para scroll abajo
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 135; //Aparece
+})
+const spanParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 800;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 760;//Aparece
+})
+const cardParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 1370 && scrollStore.scrollPosition <= 2280
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1269 && scrollStore.scrollPosition <= 2100;//Aparece
+})
+const contentParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 1986 && scrollStore.scrollPosition <= 2600
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2090 && scrollStore.scrollPosition <= 2599;//Aparece
+})
+// Animacion en el carrusel
+
+
+const handleNextClick = () => {
+  animateTitle.value = '';
+  animateDescription.value = '';
+  animateImage.value = '';
+  setTimeout(() => {
+    animateTitle.value = 'animate__animated animate__fadeInUp';
+    animateDescription.value = 'animate__animated animate__fadeInUp';
+    animateImage.value = 'animate__animated animate__fadeInUp';
+  }, 100);
+};
+
+onMounted(async () => {
+  await nextTick();
+  if (carousel.value && carousel.value.$el) {
+    const nextButton = carousel.value.$el.querySelector('.p-carousel-next');
+    const prevButton = carousel.value.$el.querySelector('.p-carousel-prev');
+
+    if (nextButton) {
+      nextButton.addEventListener('click', handleNextClick);
+    }
+
+    if (prevButton) {
+      prevButton.addEventListener('click', handleNextClick);
+    }
+
+    carousel.value.$el.addEventListener('change', handleNextClick);
+    console.log(carousel.value.$el);
+  }
+});
+//Scroll por seccion
+const scrollToSection = (route) => {
+  const sectionId = route.substring(1);
+  const section = document.getElementById(sectionId);
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+//Imgenes carrusel
+const slides = ref([
+  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlCf2gjRY7VEYhKnj4eg-ab5poYVPq6dfa_Q&s', alt: 'Image 1' },
+  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://about.fb.com/es/wp-content/uploads/sites/13/2024/04/Introducing-Llama-3.png?fit=1204%2C679', alt: 'Image 2' },
+  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Amazon_Alexa_App_Logo.png', alt: 'Image 3' },
+]);
+
+
+const responsiveOptions = ref([
+  {
+    breakpoint: '1400px',
+    numVisible: 1,
+    numScroll: 1
+  },
+  {
+    breakpoint: '1199px',
+    numVisible: 1,
+    numScroll: 1
+  },
+  {
+    breakpoint: '767px',
+    numVisible: 1,
+    numScroll: 1
+  },
+  {
+    breakpoint: '575px',
+    numVisible: 1,
+    numScroll: 1
+  }
+]);
+
 // Funciones reservadas
+onMounted(() => {
+  scrollStore.initScrollWatch();
+  animationKenaiClass.value = 'animate__animated animate__fadeInUp'
+  setTimeout(() => {
+    animationKenaiClass.value = 'kenai-glow__animation'
+  }, 600);
+})
+
+onUnmounted(() => {
+  scrollStore.destroyScrollWatch();
+})
+
+watch(titleParallax, (newVal) => {
+  if (newVal) {
+    animationKenaiClass.value = 'animate__animated animate__fadeInUp';
+
+    setTimeout(() => {
+      animationKenaiClass.value = 'kenai-glow__animation'
+    }, 600);
+  } else {
+    animationKenaiClass.value = 'animate__animated animate__fadeOutUp';
+  }
+})
+
 
 // Funcinoes
 </script>
@@ -26,12 +147,16 @@ const items = ref([
         <figure id="firt-light"></figure>
       </div>
       <div class="title__container">
+
         <h1>
-          <span class="animate__animated animate__fadeInUp first-title">Bienvenido a</span>
-          <span class="animate__animated animate__fadeInUp second-title" id="kenai_title">Kenai</span>
+          <span :class="titleParallax ? 'animate__fadeInUp' : 'animate__fadeOutUp'"
+            class="first-title animate__animated">Bienvenido
+            a</span>
+          <span :class="animationKenaiClass" class="second-title" id="kenai_title">Kenai</span>
         </h1>
 
-        <div class="get-started__container animate__animated animate__fadeInUp third-title">
+        <div :class="titleParallax ? 'animate__fadeInUp' : 'animate__fadeOutUp'"
+          class="third-title get-started__container animate__animated">
           <router-link to="/chat">
             <Button outlined severity="contrast" class="get-started__btn">
               <span slot="label">Comenzar</span>
@@ -39,6 +164,7 @@ const items = ref([
             </Button>
           </router-link>
         </div>
+
       </div>
     </section>
 
@@ -46,9 +172,10 @@ const items = ref([
     <div class="nav__container">
       <nav class="landing-navbar">
         <TabMenu :model="items" class="nav-tab-menu">
+
           <template #item="{ item, props }">
             <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
-              <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+              <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)">
                 <span class="material-icons-outlined">{{ item.materialIcon }}</span>
                 <span v-bind="props.label">{{ item.label }}</span>
               </a>
@@ -64,179 +191,202 @@ const items = ref([
     <!-- END NAVBAR -->
 
     <!-- Content -->
-    <section id="proposito"></section>
+
+    <section id="proposito">
+      <div class=" text_content">
+        <span :class="spanParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
+          class="animate__animated title_text_content">Simple Card
+        </span>
+        <p :class="spanParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
+          class="animate__animated m-0 p_text_content">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
+          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
+          neque
+          quas!
+        </p>
+      </div>
+      
+      <div class="panel__horizontal">
+        <div class="card__horizontal">
+          <div class="img__horizontal">
+            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+          </div>
+
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing.
+          </p>
+
+        </div>
+        <div class="card__horizontal">
+          <div class="img__horizontal">
+            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+          </div class="text__horizontal">
+
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing.
+          </p>
+
+        </div>
+        <div class="card__horizontal">
+          <div class="img__horizontal">
+            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+          </div>
+
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing.
+          </p>
+
+        </div>
+      </div>
+
+    </section>
+    <!-- Modelo -->
+
+    <section id="modelo">
+      <div class="carousel-container">
+        <Carousel ref="carousel" :value="slides" :numVisible="1" :numScroll="1" :responsiveOptions="responsiveOptions"
+          circular :autoplayInterval="5000" @update:page="handleNextClick">
+          <template #item="slotProps">
+            <div class="carousel-item">
+              <div class="carousel-content">
+                <div class="text-content">
+                  <h2 :class="animateTitle">{{ slotProps.data.title }}</h2>
+                  <p :class="animateDescription">{{ slotProps.data.description }}</p>
+                </div>
+                <div class="image-content">
+                  <img :src="slotProps.data.src" :alt="slotProps.data.alt" class="carousel-image" />
+                </div>
+              </div>
+            </div>
+          </template>
+        </Carousel>
+      </div>
+    </section>
+    <!-- Aplicaciones -->
+    
+    <section id="aplicaciones">
+      <div class=" text_content">
+        <span class="animate__animated title_text_content">Simple Card
+        </span>
+        <p class="animate__animated m-0 p_text_content">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
+          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
+          neque
+          quas!
+        </p>
+      </div>
+      
+      <div class="card__content ">
+        <div :class="cardParallax ? 'animate__fadeIn' : 'animate__fadeOut '" class=" animate__animated gradient-border">
+          <Card :class="cardParallax ? 'animate__fadeIn' : 'animate__fadeOut '" class="animate__animated custom__card ">
+            <template #header>
+              <div class="card__header ">
+                <img alt="Aplicación Gemini"
+                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  class="card__imagen " />
+              </div>
+            </template>
+            <template #title>Primera</template>
+            <template #content>
+              <p class="m-0">Lorem, ipsum dolor...</p>
+            </template>
+          </Card>
+        </div>
+        <div :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
+          class="animate__animated gradient-border">
+          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
+            class="animate__animated custom__card">
+            <template #header>
+              <div class="card__header ">
+                <img alt="Espacio de trabajo"
+                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  class="card__imagen " />
+              </div>
+            </template>
+            <template #title>Segundo</template>
+            <template #content>
+              <p class="m-0">Lorem, ipsum dolor.</p>
+            </template>
+          </Card>
+        </div>
+        <div :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
+          class="animate__animated gradient-border">
+          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
+            class="animate__animated custom__card">
+            <template #header>
+              <div class="card__header ">
+                <img alt="Anuncios"
+                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  class="card__imagen " />
+              </div>
+            </template>
+            <template #title>Tercera</template>
+            <template #content>
+              <p class="m-0">Lorem, ipsum dolor</p>
+            </template>
+          </Card>
+        </div>
+      </div>
+    </section>
+    <!-- Contenido -->
+    
+    <section id="contenido">
+      <div class=" text_content">
+        <span :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '" class="animate__animated title_text_content">Contenido
+        </span>
+      </div>
+      
+      <div class="panel__horizontal">
+        <div :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
+          class="animate__animated card__horizontal">
+          <div class="img__horizontal">
+            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+          </div>
+
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing.
+          </p>
+
+        </div>
+        <div :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
+          class="animate__animated card__horizontal">
+          <div class="img__horizontal">
+            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+          </div class="text__horizontal">
+
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing.
+          </p>
+
+        </div>
+        <div :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
+          class="animate__animated card__horizontal">
+          <div class="img__horizontal">
+            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+          </div>
+
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing.
+          </p>
+
+        </div>
+      </div>
+    </section>
+    <footer class="footer__content">
+      <div class="firts__column">
+        <h2>Nombre de Equipo </h2>
+        <ul>
+          <li>Dani</li>
+          <li>Lorem, ipsum dolor.</li>
+          <li>Lorem, ipsum dolor.</li>
+          <li>Lorem, ipsum dolor.</li>
+        </ul>
+      </div>
+      <div class="second__column">
+        <img src="@/assets/imgs/Kenai-Logo.png" alt="Kenai">
+        <h1>Kenai</h1>
+      </div>
+
+    </footer>
   </main>
 </template>
-
-<style scoped lang="scss">
-#proposito {
-  min-height: 120dvh;
-  widows: 100%;
-  border: 1px solid red;
-}
-
-.get-started__btn {
-  padding: 12px calc(30px + 1dvw);
-  border-radius: 100px;
-  width: 200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  font-weight: 600;
-  transition: all 0.1s ease-in-out;
-
-  &:hover {
-    gap: 40px;
-  }
-}
-
-a {
-  text-decoration: none;
-}
-
-.landing-navbar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  width: min-content;
-  overflow: hidden;
-  margin: auto;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.nav-tab-menu {
-  width: 100%;
-
-  ul {}
-}
-
-.nav__container {
-  min-width: min-content;
-  overflow: auto;
-  padding: 0px 20px;
-  width: 100%;
-  position: sticky;
-  top: 20px;
-  margin-top: calc(30px + 10dvw / 10);
-  z-index: 1000;
-}
-
-.nav-btn {
-  border-radius: 100px;
-}
-
-.get-started__btn .material-icons-right {
-  margin-left: 12px;
-}
-
-.get-started__container {
-  width: 100%;
-  display: grid;
-  place-items: center;
-  margin-top: calc(30px - 10dvw / 2);
-}
-
-.title__section {
-  max-width: 90dvw;
-  width: 100%;
-  margin: 0 auto;
-  min-height: 70vh;
-  overflow-y: visible;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-.animate__animated.animate__fadeInUp.first-title {
-  animation-name: fadeInUp;
-  animation-duration: 500ms;
-  animation-delay: 0ms;
-}
-
-.animate__animated.animate__fadeInUp.second-title {
-  animation-name: fadeInUp;
-  animation-duration: 500ms;
-  animation-delay: 100ms;
-}
-
-.animate__animated.animate__fadeInUp.third-title {
-  animation-name: fadeInUp;
-  animation-duration: 500ms;
-  animation-delay: 350ms;
-}
-
-.title__container h1 {
-  font-size: min(max(60px, 11.111vw), 160px);
-  line-height: 100%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  font-weight: 400;
-  letter-spacing: -5px;
-  word-spacing: -4px;
-}
-
-.title__container h1 span {
-  text-wrap: nowrap;
-}
-
-#kenai_title {
-  font-size: min(max(80px, 13vw), 160px);
-  color: orange;
-  font-weight: 600;
-  background: linear-gradient(270deg, #fca311, #fcb243, #fc9943, #fc8243, #fca311);
-  background-size: 400% 400%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  position: relative;
-  animation: gradientRotation 5s linear infinite, textGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes gradientRotation {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  100% {
-    background-position: 400% 50%;
-  }
-}
-
-@keyframes textGlow {
-  0% {
-    text-shadow: 0 0 5px #fca21117, 0 0 10px #fca2111a, 0 0 15px #fcb24310, 0 0 20px #fc994317, 0 0 25px #fc81431c, 0 0 30px #fca21110;
-  }
-
-  100% {
-    text-shadow: 0 0 10px #fca21118, 0 0 20px #fca21121, 0 0 30px #fcb2431c, 0 0 40px #fc99431e, 0 0 50px #fc814318, 0 0 60px #fca21123;
-  }
-}
-
-
-.title-lights {
-  position: absolute;
-  top: -100%;
-  left: -50%;
-  width: 200%;
-  height: 250%;
-  z-index: -1;
-  background: radial-gradient(circle, #416bc031 0%, transparent 50%);
-  transform: rotate(0deg);
-}
-
-@media (width >= 1024px) {
-  .title-lights {
-    position: absolute;
-    top: -250%;
-    left: -20%;
-    width: 140%;
-    height: 500%;
-    z-index: -1;
-    background: radial-gradient(circle, #416bc031 0%, transparent 50%);
-    transform: rotate(0deg);
-  }
-}
-</style>
