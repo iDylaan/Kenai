@@ -25,7 +25,7 @@ def generate_text():
         data = request.get_json()
         user_id = data.get('user_id', None)
         user = data.get('username', None)
-        chat_id = data.get('chat_id', None)
+        chat_id = data.get('chat_id', 0)
         raw_prompt = data.get('prompt', '')
         iteration = 0
 
