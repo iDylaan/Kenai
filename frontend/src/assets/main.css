@@ -18,3 +18,43 @@
 
 /* Style Home */
 @import './home.css';
+
+
+
+*::-webkit-scrollbar {
+    max-height: 10px;
+    width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    border-radius: 100px;
+    background-color: #242424;
+}
+
+*::-webkit-scrollbar-track:hover {
+    background-color: #242424;
+}
+
+*::-webkit-scrollbar-track:active {
+    background-color: #242424;
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background-color: #4d4d4d7a;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: #4d4d4d7a;
+}
+
+*::-webkit-scrollbar-thumb:active {
+    background-color: #4d4d4d7a;
+}
+
+@media (width < 800px) {
+    *::-webkit-scrollbar {
+        max-height: 0px;
+        width: 0px;
+    }
+}

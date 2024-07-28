@@ -40,10 +40,13 @@
         <span class="reciente-txt" v-if="sessionStore.isAuthenticated && chatStore.chats.length">{{ $t("chat.recent")
           }}</span>
         <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && (pageLoading || chatStore.loading)">
-          <Skeleton height="40px"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
+          <Skeleton class="animate__animated animate__fadeInLeft ske-chat-1" height="40px"></Skeleton>
+          <Skeleton class="animate__animated animate__fadeInLeft ske-chat-2" height="40px" style="margin-top: 10px">
+          </Skeleton>
+          <Skeleton class="animate__animated animate__fadeInLeft ske-chat-3" height="40px" style="margin-top: 10px">
+          </Skeleton>
+          <Skeleton class="animate__animated animate__fadeInLeft ske-chat-4" height="40px" style="margin-top: 10px">
+          </Skeleton>
         </div>
         <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading && !chatStore.loading">
           <SplitButton v-for="chat in chatStore.chats" :key="chat.id_chat" icon="pi pi-check" :severity="chat.id_chat === chatStore.getActiveChatID() ? 'primary' : 'secondary'
@@ -111,10 +114,13 @@
         <span class="reciente-txt" v-if="sessionStore.isAuthenticated && chatStore.chats.length">{{ $t("chat.recent")
           }}</span>
         <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && (pageLoading || chatStore.loading)">
-          <Skeleton height="40px"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
-          <Skeleton height="40px" style="margin-top: 10px"></Skeleton>
+          <Skeleton class="animate__animated animate__fadeInLeft ske-chat-1" height="40px"></Skeleton>
+          <Skeleton class="animate__animated animate__fadeInLeft ske-chat-2" height="40px" style="margin-top: 10px">
+          </Skeleton>
+          <Skeleton class="animate__animated animate__fadeInLeft ske-chat-3" height="40px" style="margin-top: 10px">
+          </Skeleton>
+          <Skeleton class="animate__animated animate__fadeInLeft ske-chat-4" height="40px" style="margin-top: 10px">
+          </Skeleton>
         </div>
         <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading && !chatStore.loading">
           <SplitButton v-for="chat in chatStore.chats" :key="chat.id_chat" icon="pi pi-check" :severity="chat.id_chat === chatStore.getActiveChatID() ? 'primary' : 'secondary'
@@ -651,6 +657,30 @@ const handleLanguageChange = (event) => {
 </script>
 
 <style scoped lang="scss">
+.animate__animated.animate__fadeInLeft.ske-chat-1 {
+  animation-name: fadeInLeft;
+  animation-duration: 500ms;
+  animation-delay: 0ms;
+}
+
+.animate__animated.animate__fadeInLeft.ske-chat-2 {
+  animation-name: fadeInLeft;
+  animation-duration: 500ms;
+  animation-delay: 150ms;
+}
+
+.animate__animated.animate__fadeInLeft.ske-chat-3 {
+  animation-name: fadeInLeft;
+  animation-duration: 500ms;
+  animation-delay: 300ms;
+}
+
+.animate__animated.animate__fadeInLeft.ske-chat-4 {
+  animation-name: fadeInLeft;
+  animation-duration: 500ms;
+  animation-delay: 450ms;
+}
+
 .firt-chat {
   width: 100%;
   max-width: 900px;
@@ -1143,6 +1173,12 @@ const handleLanguageChange = (event) => {
         text-align: left;
         cursor: pointer;
         font-size: 0.9rem;
+      }
+    }
+
+    @media (width < 800px) {
+      .chat-btn {
+        max-width: 282px;
       }
     }
   }
