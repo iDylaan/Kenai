@@ -45,11 +45,11 @@
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background-color: #4d4d4d7a;
+    background-color: #4d4d4da6;
 }
 
 *::-webkit-scrollbar-thumb:active {
-    background-color: #4d4d4d7a;
+    background-color: #4d4d4d;
 }
 
 @media (width < 800px) {
