@@ -2,6 +2,9 @@
   widows: 100%;
   margin: 100px 100px 20px;
 }
+#proposito h3{
+  text-align: center;
+}
 #contenido {
   widows: 100%;
   margin: 100px 100px 20px;
@@ -241,6 +244,9 @@ a {
   transition: 0.5s;
 }
 .img__horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 10px;
   background: #1f1f1f;
   width: 100%;

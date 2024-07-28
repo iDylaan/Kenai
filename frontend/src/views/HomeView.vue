@@ -81,8 +81,8 @@ const scrollToSection = (route) => {
 
 //Imgenes carrusel
 const slides = ref([
-  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlCf2gjRY7VEYhKnj4eg-ab5poYVPq6dfa_Q&s', alt: 'Image 1' },
-  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://about.fb.com/es/wp-content/uploads/sites/13/2024/04/Introducing-Llama-3.png?fit=1204%2C679', alt: 'Image 2' },
+  { title: 'PLMs (Pretrained Language Models).', description: 'Para la creación de KenAI, utilizamos un fundamento conocido como PLMs (Pretrained Language Models), que son modelos previamente entrenados por un tercero.', src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlCf2gjRY7VEYhKnj4eg-ab5poYVPq6dfa_Q&s', alt: 'Image 1' },
+  { title: '', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://about.fb.com/es/wp-content/uploads/sites/13/2024/04/Introducing-Llama-3.png?fit=1204%2C679', alt: 'Image 2' },
   { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Amazon_Alexa_App_Logo.png', alt: 'Image 3' },
 ]);
 
@@ -195,45 +195,43 @@ watch(titleParallax, (newVal) => {
     <section id="proposito">
       <div class=" text_content">
         <span :class="spanParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
-          class="animate__animated title_text_content">Simple Card
+          class="animate__animated title_text_content">¡Hola! Soy Kenai
         </span>
         <p :class="spanParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
           class="animate__animated m-0 p_text_content">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
-          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
-          neque
-          quas!
+          Soy tu compañero de ingles, una Inteligencia Artificial diseñada para ayudarte a aprender y practicar inglés de una manera
+          divertida y segura. Mi objetivo es hacer que te sientas cómodo y confiado al hablar inglés, sin importar tu
+          nivel
+          de habilidad.
         </p>
       </div>
-      
+      <h3>¿Cómo puedo ayudarte?</h3>
       <div class="panel__horizontal">
         <div class="card__horizontal">
           <div class="img__horizontal">
-            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+            <img src="@/assets/imgs/img1.png"  alt="Imagen 1">
           </div>
-
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing.
+            Estoy aquí para charlar sobre cualquier tema que te interese.Puedes hablar conmigo a través de texto o audio.
           </p>
-
         </div>
         <div class="card__horizontal">
           <div class="img__horizontal">
-            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+            <img src="@/assets/imgs/img2.png" alt="Imagen 1">
           </div class="text__horizontal">
 
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing.
+            Te sugiero temas de conversación y te doy ideas para que siempre tengas algo nuevo que practicar.
           </p>
 
         </div>
         <div class="card__horizontal">
           <div class="img__horizontal">
-            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+            <img src="@/assets/imgs/img3.png" alt="Imagen 1">
           </div>
 
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing.
+            Te ayudo a mejorar en todas las áreas del inglés: lectura, escritura, escucha y habla.
           </p>
 
         </div>
@@ -263,7 +261,7 @@ watch(titleParallax, (newVal) => {
       </div>
     </section>
     <!-- Aplicaciones -->
-    
+
     <section id="aplicaciones">
       <div class=" text_content">
         <span class="animate__animated title_text_content">Simple Card
@@ -275,10 +273,12 @@ watch(titleParallax, (newVal) => {
           quas!
         </p>
       </div>
-      
+
       <div class="card__content ">
-        <div :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class=" animate__animated gradient-border">
-          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated custom__card ">
+        <div :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
+          class=" animate__animated gradient-border">
+          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
+            class="animate__animated custom__card ">
             <template #header>
               <div class="card__header ">
                 <img alt="Aplicación Gemini"
@@ -329,13 +329,14 @@ watch(titleParallax, (newVal) => {
       </div>
     </section>
     <!-- Contenido -->
-    
+
     <section id="contenido">
       <div class=" text_content">
-        <span :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '" class="animate__animated title_text_content">Contenido
+        <span :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
+          class="animate__animated title_text_content">Contenido
         </span>
       </div>
-      
+
       <div class="panel__horizontal">
         <div :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
           class="animate__animated card__horizontal">
