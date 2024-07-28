@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia';
 import { ref, reactive } from 'vue';
-import { getChatMessages, getUserChats } from '@/api/chat.js';
+import { getChatMessages, getUserChats, renameChatWithChatID } from '@/api/chat.js';
 import { useScrollStore } from './scroll';
+import { useToast } from 'primevue/usetoast';
 
 export const useChatStore = defineStore('chat', () => {
+    const toast = useToast();
     const scrollStore = useScrollStore();
     const chats = ref([]);
     const activeChatID = ref(null);
@@ -21,6 +23,20 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     const setLoading = (value) => loading.value = value;
+
+    const renameChat = async (chatID, newTitle) => {
+        try {
+            const renamed = await renameChatWithChatID(chatID, newTitle);
+            if (renamed) {
+                toast.add({ severity: 'success', summary: 'Hecho', detail: 'Nombre del chat cambiado correctamente', life: 3000 });
+            } else {
+                toast.add({ severity: 'error', summary: 'Error', detail: 'No se logró cambiar el nombre del chat', life: 3000 });
+            }
+        } catch (error) {
+            console.log(error);
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Error en la petición', life: 3000 });
+        }
+    }
 
     const updateChatMessages = async (chatID) => {
         if (chatID === activeChatID.value) return;
@@ -90,6 +106,7 @@ export const useChatStore = defineStore('chat', () => {
         updateChatMessages,
         getChatHistory,
         setLoading,
-        setNewMessageSent
+        setNewMessageSent,
+        renameChat
     }
 });

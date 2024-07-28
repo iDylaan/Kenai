@@ -2,11 +2,15 @@
   <Toast />
   <PageLoader :loading="pageLoading" />
 
-  <Dialog v-model:visible="renameTitle.visible" modal header="Editar Título del Chat" :style="{ width: '25rem' }">
+  <Dialog v-model:visible="renameTitle.visible" :draggable="false" modal :showHeader="false"
+    :style="{ width: '25rem', overflow: 'hidden' }">
+    <ProgressBar mode="indeterminate" class="rename-dialog-bar" v-if="renameTitle.fetching"></ProgressBar>
+    <h2>Editar Título del Chat</h2>
     <span class="second-title">Actualiza el título de tu chat para identificarlo más fácilmente.</span>
     <div class="title-input__container">
       <label for="title" class="font-semibold w-6rem">Nuevo Título</label>
-      <InputText v-model="renameTitle.title" id="new-chat-title" autocomplete="off" />
+      <InputText v-model="renameTitle.title" :invalid="renameTitle.invalid" id="new-chat-title" autocomplete="off" />
+      <small id="username-help" v-if="renameTitle.invalid">{{ renameTitle.message }}</small>
     </div>
     <div class="new-title__btns-container">
       <Button type="button" label="Cancelar" severity="secondary" @click="closeRenameDialog"></Button>
@@ -27,7 +31,7 @@
         <div class="new-btn__container">
           <Button severity="secondary" @click="chatStore.newChat()"
             :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null" size="small"
-            class="new-btn" rounded outlined>
+            v-tooltip.bottom="'Nuevo chat'" class="new-btn" rounded outlined>
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn">{{
               $t("chat.new_chat")
@@ -51,7 +55,7 @@
         <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading && !chatStore.loading">
           <SplitButton v-for="chat in chatStore.chats" :key="chat.id_chat" icon="pi pi-check" :severity="chat.id_chat === chatStore.getActiveChatID() ? 'primary' : 'secondary'
             " class="chat-btn" menuButtonIcon="pi pi-ellipsis-v" @click="chatStore.updateChatMessages(chat.id_chat)"
-            :model="getChatOptions(chat.id_chat)">
+            v-tooltip="{ value: chat.chat_name, showDelay: 300 }" :model="getChatOptions(chat.id_chat)">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text chat-name">{{ chat.chat_name }}</span>
           </SplitButton>
@@ -60,7 +64,9 @@
 
       <section class="navbar__footer">
         <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
-          aria-haspopup="true" aria-controls="overlay_menu">
+          v-tooltip.top="{
+            value: 'Ajustes'
+          }" aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
           <span class="text">{{ $t("chat.settings") }}</span>
         </Button>
@@ -92,7 +98,9 @@
     <section :class="['navbar__container', !navbarStore.extended ? 'not-extended' : '']" v-if="!mobileStore.isMobile">
       <section class="navbar__header">
         <div class="menu-btn__container">
-          <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended">
+          <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended" v-tooltip="{
+            value: navbarStore.extended ? 'Contraer el menú' : 'Expandir el menú'
+          }">
             <span class="material-icons menu-icon">menu</span>
           </Button>
         </div>
@@ -102,7 +110,7 @@
 
           <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else
             :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null"
-            @click="chatStore.newChat()">
+            v-tooltip.bottom="'Nuevo chat'" @click="chatStore.newChat()">
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn" v-if="navbarStore.extended">{{ $t("chat.new_chat")
               }}</span>
@@ -125,7 +133,10 @@
         <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading && !chatStore.loading">
           <SplitButton v-for="chat in chatStore.chats" :key="chat.id_chat" icon="pi pi-check" :severity="chat.id_chat === chatStore.getActiveChatID() ? 'primary' : 'secondary'
             " class="chat-btn" menuButtonIcon="pi pi-ellipsis-v" @click="chatStore.updateChatMessages(chat.id_chat)"
-            :model="getChatOptions(chat.id_chat)">
+            v-tooltip="{
+              value: chat.chat_name,
+              showDelay: 300
+            }" :model="getChatOptions(chat.id_chat)">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text chat-name">{{ chat.chat_name }}</span>
           </SplitButton>
@@ -134,7 +145,9 @@
 
       <section class="navbar__footer">
         <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
-          aria-haspopup="true" aria-controls="overlay_menu">
+          v-tooltip.top="{
+            value: 'Ajustes'
+          }" aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
           <span class="text" v-if="navbarStore.extended">{{ $t("chat.settings") }}</span>
         </Button>
@@ -167,7 +180,9 @@
     <section class="chat__container">
       <div class="chat__header">
         <h1 v-if="!mobileStore.isMobile">KenAI</h1>
-        <Button v-else @click="toggleMobileNavbar" severity="secondary" text rounded aria-label="Menu" size="large">
+        <Button v-else @click="toggleMobileNavbar" v-tooltip="{
+          value: navbarStore.extended ? 'Contraer el menú' : 'Expandir el menú'
+        }" severity="secondary" text rounded aria-label="Menu" size="large">
           <span class="material-icons menu-icon">menu</span>
         </Button>
 
@@ -300,8 +315,9 @@
         <Toolbar class="prompt-tools" id="tools-bar">
           <template #start>
             <Skeleton shape="circle" size="42px" v-if="pageLoading"></Skeleton>
-            <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn"
-              :disabled="promptFetching" v-else>
+            <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn" v-tooltip.top="{
+              value: 'Grabar audio'
+            }" :disabled="promptFetching" v-else>
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
           </template>
@@ -316,8 +332,9 @@
 
           <template #end>
             <Skeleton shape="circle" size="42px" v-if="pageLoading"></Skeleton>
-            <Button severity="primary" v-else rounded class="prompt-tool-btn" text @click="handleSendPrompt"
-              :disabled="promptFetching">
+            <Button severity="primary" v-else rounded class="prompt-tool-btn" text @click="handleSendPrompt" v-tooltip.top="{
+              value: 'Enviar'
+            }" :disabled="promptFetching">
               <span class="material-icons-outlined">send</span>
             </Button>
           </template>
@@ -334,7 +351,7 @@ import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 import defaultAvatar from "@/assets/imgs/profile-pic-default.svg";
 import { sendPrompt } from "@/api/kenai.js";
 import { marked } from "marked";
-import { deleteChat, renameChat } from "@/api/chat";
+import { deleteChat } from "@/api/chat";
 import { useSessionStore } from "@/stores/session";
 import { useNavbarStore } from "@/stores/navbar";
 import { useMobileStore } from "@/stores/mobile";
@@ -350,7 +367,10 @@ const toast = useToast();
 const renameTitle = reactive({
   visible: false,
   title: null,
-  idChat: null
+  idChat: null,
+  invalid: false,
+  message: null,
+  fetching: false,
 });
 const lastChatIndex = ref(0);
 const fistChatClasses = ref('')
@@ -409,6 +429,7 @@ const getChatOptions = (chatId) => {
       icon: "pi pi-pencil",
       command: () => {
         try {
+          resetRenameDialog();
           renameTitle.visible = true;
           renameTitle.idChat = chatId;
         } catch (error) {
@@ -528,12 +549,31 @@ watch(prompt, (newVal) => {
 // FUNCIONES
 const closeRenameDialog = () => {
   renameTitle.visible = false;
-  renameTitle.title = null;
-  renameTitle.idChat = null;
+  resetRenameDialog();
 }
 
-const handleChangeChatTitle = () => {
+const resetRenameDialog = () => {
+  renameTitle.title = null;
+  renameTitle.idChat = null;
+  renameTitle.invalid = false;
+  renameTitle.message = null;
+  renameTitle.fetching = false;
+}
 
+const handleChangeChatTitle = async () => {
+  if (!renameTitle.title || renameTitle.title.trim() === "") {
+    renameTitle.invalid = true;
+    renameTitle.message = "El título del chat no puede estar vacío.";
+    return;
+  } else {
+    renameTitle.fetching = true;
+    renameTitle.invalid = false;
+    renameTitle.message = null;
+    await chatStore.renameChat(renameTitle.idChat, renameTitle.title);
+    renameTitle.fetching = false;
+    closeRenameDialog();
+    chatStore.loadChats();
+  }
 }
 
 const toggleMobileNavbar = () => {

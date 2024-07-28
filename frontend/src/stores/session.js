@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useChatStore } from './chat';
-import { useToast } from 'primevue/usetoast';
+    import { useToast } from 'primevue/usetoast';
 
 export const useSessionStore = defineStore('session', () => {
     const user = ref(null);
@@ -41,7 +41,6 @@ export const useSessionStore = defineStore('session', () => {
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             toast.add({ severity: 'error', summary: 'Error', detail: 'Error al iniciar sesión', life: 3000 });
-            throw error.message;
         } finally {
             if (isAuthenticated.value) {
                 chatStore.loadChats();

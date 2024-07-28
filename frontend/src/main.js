@@ -8,6 +8,7 @@ import { createApp, watch } from 'vue';
 import { createPinia } from 'pinia';
 
 import PrimeVue from 'primevue/config';
+import Tooltip from 'primevue/tooltip';
 import Ripple from 'primevue/ripple'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
@@ -37,6 +38,7 @@ app.use(i18n);
 app.use(PrimeVue, primevueConfig);
 app.use(ToastService);
 app.directive('ripple', Ripple);
+app.directive('tooltip', Tooltip);
 app.component('Toast', Toast);
 app.use(vue3GoogleLogin, {
     clientId: CLIENT_ID,

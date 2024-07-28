@@ -65,7 +65,7 @@ export async function deleteChat(chatID) {
 }
 
 
-export async function renameChat(chatID, newName) {
+export async function renameChatWithChatID(chatID, newName) {
     try {
         if (!sessionStore.isAuthenticated) return false;
 

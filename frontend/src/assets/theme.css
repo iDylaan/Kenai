@@ -7608,6 +7608,7 @@
 
     .p-dialog-content {
         overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .p-dialog-header {
