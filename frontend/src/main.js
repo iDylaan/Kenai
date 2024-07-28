@@ -9,6 +9,8 @@ import { createPinia } from 'pinia';
 
 import PrimeVue from 'primevue/config';
 import Ripple from 'primevue/ripple'
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
@@ -33,7 +35,9 @@ app.use(createPinia());
 app.use(router);
 app.use(i18n);
 app.use(PrimeVue, primevueConfig);
+app.use(ToastService);
 app.directive('ripple', Ripple);
+app.component('Toast', Toast);
 app.use(vue3GoogleLogin, {
     clientId: CLIENT_ID,
 });

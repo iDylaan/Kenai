@@ -1,5 +1,18 @@
 <template>
+  <Toast />
   <PageLoader :loading="pageLoading" />
+
+  <Dialog v-model:visible="renameTitle.visible" modal header="Editar Título del Chat" :style="{ width: '25rem' }">
+    <span>Actualiza el título de tu chat para identificarlo más fácilmente.</span>
+    <div>
+      <label for="title" class="font-semibold w-6rem">Título</label>
+      <InputText v-model="renameTitle.title" id="new-chat-title" autocomplete="off" />
+    </div>
+    <div>
+      <Button type="button" label="Cancelar" severity="secondary" @click="closeRenameDialog"></Button>
+      <Button type="button" label="Actualizar" @click="handleChangeChatTitle"></Button>
+    </div>
+  </Dialog>
 
   <main class="main-container">
     <Sidebar v-model:visible="navbarStore.extended" class="mobile-navbar" v-if="mobileStore.isMobile">
@@ -35,7 +48,7 @@
         <div class="chats__container" v-if="sessionStore.isAuthenticated && !pageLoading && !chatStore.loading">
           <SplitButton v-for="chat in chatStore.chats" :key="chat.id_chat" icon="pi pi-check" :severity="chat.id_chat === chatStore.getActiveChatID() ? 'primary' : 'secondary'
             " class="chat-btn" menuButtonIcon="pi pi-ellipsis-v" @click="chatStore.updateChatMessages(chat.id_chat)"
-            :model="chatOptions">
+            :model="getChatOptions(chat.id_chat)">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text chat-name">{{ chat.chat_name }}</span>
           </SplitButton>
@@ -165,8 +178,8 @@
       </div>
 
       <div class="chat__body">
-        <div class="firt-chat"
-        v-if="(chatStore.getActiveChatID() === null || chatStore.isNewChat || chatStore.chatHistory.length === 0) && !chatStore.getChatLoading() && !chatStore.newMessageSent">
+        <div class="firt-chat" :class="fistChatClasses"
+          v-if="(chatStore.getActiveChatID() === null || chatStore.isNewChat || chatStore.chatHistory.length === 0) && !chatStore.getChatLoading() && !chatStore.newMessageSent">
 
           <div class="title_new-chat__container">
             <p class="new-chat-title" v-if="!pageLoading">Que gusto verte</p>
@@ -201,7 +214,9 @@
             </Carousel>
           </div>
         </div>
+        <!-- END FIRTS CHAT -->
 
+        <!-- MESSAGES LOADING -->
         <div class="chat-messages-loading messages__container" v-else-if="chatStore.getChatLoading()">
           <div class="message__container user-message__container">
             <Fieldset class="user-message">
@@ -225,9 +240,10 @@
             </Fieldset>
           </div>
         </div>
+        <!-- END MESSAGES LOADING -->
 
-        <div class="messages__container"
-          v-else>
+        <!-- CHAT CONTAINER -->
+        <div class="messages__container animate__animated animate__fadeIn" v-else>
           <div v-for="(chat, index) in chatStore.chatHistory" :key="index">
             <div class="message__container user-message__container">
               <Fieldset class="user-message">
@@ -243,7 +259,7 @@
               </Fieldset>
             </div>
 
-            <div class="message__container">
+            <div class="message__container" :id="index === chatStore.chatHistory.length - 1 ? 'last-message' : ''">
               <Fieldset class="message">
                 <template #legend>
                   <div class="top-fieldset">
@@ -270,6 +286,7 @@
             </div>
           </div>
         </div>
+        <!-- END CHAT CONTAINER -->
 
       </div>
 
@@ -316,12 +333,21 @@ import { useSessionStore } from "@/stores/session";
 import { useNavbarStore } from "@/stores/navbar";
 import { useMobileStore } from "@/stores/mobile";
 import { useChatStore } from "@/stores/chat";
+import { useScrollStore } from "@/stores/scroll";
+import { useToast } from 'primevue/usetoast';
 
 // VARIABLES
 const promptFetching = ref(false);
 const darkThemeChecked = ref(false);
 const menuSettings = ref(null);
+const toast = useToast();
+const renameTitle = reactive({
+  visible: false,
+  title: null,
+  idChat: null
+});
 const lastChatIndex = ref(0);
+const fistChatClasses = ref('')
 const presets = ref([
   {
     prompt_title: 'Hola, como estás?',
@@ -377,7 +403,8 @@ const getChatOptions = (chatId) => {
       icon: "pi pi-pencil",
       command: () => {
         try {
-          console.log(chatId);
+          renameTitle.visible = true;
+          renameTitle.idChat = chatId;
         } catch (error) {
           console.log(error);
         }
@@ -395,10 +422,12 @@ const getChatOptions = (chatId) => {
             if (chatId === chatStore.getActiveChatID()) {
               chatStore.newChat();
             }
+            toast.add({ severity: 'success', summary: 'Eliminado', detail: 'Chat eliminado correctamente', life: 3000 });
           } else {
-            console.log("Error deleting chat");
+            toast.add({ severity: 'error', summary: 'Error', detail: "Error deleting chat", life: 3000 });
           }
         } catch (error) {
+          toast.add({ severity: 'error', summary: 'Error', detail: "Error deleting chat", life: 3000 });
           console.log(error);
         }
       },
@@ -441,6 +470,7 @@ const sessionStore = useSessionStore();
 const navbarStore = useNavbarStore();
 const mobileStore = useMobileStore();
 const chatStore = useChatStore();
+const scrollStore = useScrollStore();
 const op = ref();
 
 const toggle = (event) => {
@@ -490,6 +520,16 @@ watch(prompt, (newVal) => {
 });
 
 // FUNCIONES
+const closeRenameDialog = () => {
+  renameTitle.visible = false;
+  renameTitle.title = null;
+  renameTitle.idChat = null;
+}
+
+const handleChangeChatTitle = () => {
+
+}
+
 const toggleMobileNavbar = () => {
   navbarStore.toggleExtended();
 };
@@ -527,7 +567,12 @@ const handleSendPrompt = async () => {
 
     chatStore.chatHistory.push(chatRow);
     prompt.value = "";
-    chatStore.setNewMessageSent(true);
+    // Animar el cambio de interfaz
+    fistChatClasses.value = 'animate__animated animate__fadeOut'
+    setTimeout(() => {
+      chatStore.setNewMessageSent(true);
+      scrollStore.scrollToLastMessage();
+    }, 700);
 
     try {
       const kenaiResponse = await sendPrompt({
@@ -567,6 +612,7 @@ const handleSendPrompt = async () => {
     } finally {
       promptFetching.value = false;
       chatStore.setNewMessageSent(false);
+      fistChatClasses.value = '';
     }
   }
 };

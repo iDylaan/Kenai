@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia';
 import { ref, reactive } from 'vue';
 import { getChatMessages, getUserChats } from '@/api/chat.js';
+import { useScrollStore } from './scroll';
 
 export const useChatStore = defineStore('chat', () => {
+    const scrollStore = useScrollStore();
     const chats = ref([]);
     const activeChatID = ref(null);
     const loading = ref(false);
@@ -46,6 +48,9 @@ export const useChatStore = defineStore('chat', () => {
             }
         }));
         chatLoading.value = false;
+        setTimeout(() => {
+            scrollStore.scrollToLastMessage();
+        }, 200);
     }
 
     const getChatHistory = () => chatHistory.value;

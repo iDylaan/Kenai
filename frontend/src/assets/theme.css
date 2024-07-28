@@ -10651,6 +10651,7 @@
 
     .p-toast-icon-close.p-link {
         cursor: pointer;
+        border: none;
     }
 
     /* Animations */

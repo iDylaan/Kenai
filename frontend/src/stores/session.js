@@ -1,10 +1,15 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
+import { useChatStore } from './chat';
+import { useToast } from 'primevue/usetoast';
 
 export const useSessionStore = defineStore('session', () => {
     const user = ref(null);
     const token = ref(null);
     const isAuthenticated = computed(() => token.value !== null && user.value !== null);
+    const chatStore = useChatStore();
+    const toast = useToast();
+
 
     const login = async (googleCredentials) => {
         try {
@@ -20,7 +25,6 @@ export const useSessionStore = defineStore('session', () => {
             if (!response.ok) throw new Error(response.statusText);
 
             const result = await response.json();
-            console.log(result);
 
             if (!result.success) throw new Error(result.error.message);
 
@@ -32,11 +36,16 @@ export const useSessionStore = defineStore('session', () => {
 
             // Opcional: guardar el usuario en el localStorage
             localStorage.setItem('kenai_user', JSON.stringify(result.data.user));
-
+            toast.add({ severity: 'success', summary: 'Bienvenido', detail: 'Sesión iniciada como ' + user.value.given_name, life: 3000 });
             return result.success;
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Error al iniciar sesión', life: 3000 });
             throw error.message;
+        } finally {
+            if (isAuthenticated.value) {
+                chatStore.loadChats();
+            }
         }
     };
 
@@ -45,6 +54,7 @@ export const useSessionStore = defineStore('session', () => {
         token.value = null;
         localStorage.removeItem('kenai_token');
         localStorage.removeItem('kenai_user');
+        toast.add({ severity: 'info', summary: 'Sesión cerrada', detail: 'Se ha cerrado correctamente su sesión', life: 3000 });
     };
 
     const loadSession = async () => {
@@ -69,7 +79,7 @@ export const useSessionStore = defineStore('session', () => {
                     'Authorization': `Bearer ${token.value}`
                 }
             });
-            
+
             if (!response.ok) throw new Error(response.statusText);
 
             const result = await response.json();
