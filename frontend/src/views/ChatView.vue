@@ -23,7 +23,11 @@
       <template #header>
         <div class="mobile-navbar__header">
           <Avatar :image="kenaiAvatar" />
-          <span :style="[{ 'font-size': '1.2rem', fontWeight: '500' }]">KenAI</span>
+          <router-link to="/">
+            <Button severity="secondary" text>
+              <span :style="[{ 'font-size': '1.2rem', fontWeight: '500' }]">KenAI</span>
+            </Button>
+          </router-link>
         </div>
       </template>
 
@@ -179,7 +183,11 @@
     <!-- CONTENT AREA -->
     <section class="chat__container">
       <div class="chat__header">
-        <h1 v-if="!mobileStore.isMobile">KenAI</h1>
+        <router-link to="/" v-if="!mobileStore.isMobile">
+          <Button severity="secondary" text>
+            <h1 style="padding: 0; margin: 0;">KenAI</h1>
+          </Button>
+        </router-link>
         <Button v-else @click="toggleMobileNavbar" v-tooltip="{
           value: navbarStore.extended ? 'Contraer el menú' : 'Expandir el menú'
         }" severity="secondary" text rounded aria-label="Menu" size="large">
@@ -332,9 +340,10 @@
 
           <template #end>
             <Skeleton shape="circle" size="42px" v-if="pageLoading"></Skeleton>
-            <Button severity="primary" v-else rounded class="prompt-tool-btn" text @click="handleSendPrompt" v-tooltip.top="{
-              value: 'Enviar'
-            }" :disabled="promptFetching">
+            <Button severity="primary" v-else rounded class="prompt-tool-btn" text @click="handleSendPrompt"
+              v-tooltip.top="{
+                value: 'Enviar'
+              }" :disabled="promptFetching">
               <span class="material-icons-outlined">send</span>
             </Button>
           </template>
