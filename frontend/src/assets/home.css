@@ -429,6 +429,9 @@ a {
   max-width: 100%;
   border-radius: 8px;
 }
+.p_horizontal{
+  color: #a7a7a7;
+}
 /* //FOOTER  */
 
 .footer__content {
@@ -448,4 +451,18 @@ a {
 }
 .list li{
   list-style: none;
+}
+
+
+@media (max-width: 768px) {
+  .nav-label {
+    display: none;
+  }
+  .nav__container {
+  top: 0px;
+   padding: 0px 10px;
+  }
+  .p_text_content {
+    color: #bdbdbd;
+  }
 }

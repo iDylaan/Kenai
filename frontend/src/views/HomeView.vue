@@ -3,8 +3,6 @@
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from "vue";
 import { useScrollStore } from "@/stores/scroll";
 
-// Componentes
-
 // Variables
 const scrollStore = useScrollStore();
 const items = ref([
@@ -15,6 +13,7 @@ const items = ref([
   { route: "#contenido", label: "Contenido", materialIcon: "layers" },
 ]);
 
+const isMenuOpen = ref(false);
 const animationKenaiClass = ref('');
 const carousel = ref(null);
 const animateTitle = ref('animate__animated animate__fadeInUp');
@@ -23,28 +22,27 @@ const animateImage = ref('animate__animated animate__fadeInUp');
 
 // Parallax values
 const titleParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 350; //Desaparece para scroll abajo
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 135; //Aparece
-})
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 350; // Desaparece para scroll abajo
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 135; // Aparece
+});
 const propParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 70 && scrollStore.scrollPosition <= 1100;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 880;//Aparece
-})
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 70 && scrollStore.scrollPosition <= 1200;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 1100; // Aparece
+});
 const modParallax = computed(() => {
   if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 1830;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 720 && scrollStore.scrollPosition <= 2000;//Aparece
-})
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 720 && scrollStore.scrollPosition <= 2000; // Aparece
+});
 const appParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 2900
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1900 && scrollStore.scrollPosition <= 2590;//Aparece
-})
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 2900;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1900 && scrollStore.scrollPosition <= 2800; // Aparece
+});
 const contentParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 3200
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2560 && scrollStore.scrollPosition <= 3200;//Aparece
-})
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 3500;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2560 && scrollStore.scrollPosition <= 3400; // Aparece
+});
+
 // Animacion en el carrusel
-
-
 const handleNextClick = () => {
   animateTitle.value = '';
   animateDescription.value = '';
@@ -73,25 +71,24 @@ onMounted(async () => {
     carousel.value.$el.addEventListener('change', handleNextClick);
   }
 });
-//Scroll por seccion
 
+// Scroll por seccion
 const activeSection = ref("#kenai");
 const navbar = ref(null);
 
 const scrollToSection = (route) => {
   const sectionId = route.substring(1);
   const section = document.getElementById(sectionId);
-  console.log(section);
   if (section) {
     section.scrollIntoView({ behavior: 'smooth' });
   }
+  isMenuOpen.value = false; // Cerrar el menú al hacer clic en un enlace
 };
 
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       activeSection.value = `/#${entry.target.id}`;
-      console.log(activeSection.value );
       updateNavbarHighlight();
     }
   });
@@ -105,7 +102,6 @@ const updateNavbarHighlight = () => {
       items.forEach(item => {
         const link = item.querySelector('a');
         if (link) {
-          console.log(link);
           const isActive = link.getAttribute('href') == activeSection.value;
           if (isActive) {
             item.classList.add('p-highlight'); // Add class if active
@@ -121,7 +117,6 @@ const updateNavbarHighlight = () => {
             item.classList.remove('p-highlight'); // Remove class if not active
             item.removeAttribute('data-p-highlight');
           }
-          console.log(isActive);
         }
       });
     });
@@ -146,7 +141,8 @@ onUnmounted(() => {
     }
   });
 });
-//Imgenes carrusel
+
+// Imgenes carrusel
 const slides = ref([
   {
     description: 'Kenai ha sido creado utilizando LLaMA3, el LLM (Large Language Model) liberado por Meta. Este modelo avanzado es el núcleo de mi funcionamiento, permitiéndome ofrecerte una experiencia de aprendizaje de alta calidad.',
@@ -162,7 +158,6 @@ const slides = ref([
     src: 'https://miro.medium.com/v2/resize:fit:1400/1*-V47O9e3T_LxR3P-lcpR0g.png', alt: 'Image 3'
   },
 ]);
-
 
 const responsiveOptions = ref([
   {
@@ -194,11 +189,11 @@ onMounted(() => {
   setTimeout(() => {
     animationKenaiClass.value = 'kenai-glow__animation'
   }, 600);
-})
+});
 
 onUnmounted(() => {
   scrollStore.destroyScrollWatch();
-})
+});
 
 watch(titleParallax, (newVal) => {
   if (newVal) {
@@ -210,10 +205,12 @@ watch(titleParallax, (newVal) => {
   } else {
     animationKenaiClass.value = 'animate__animated animate__fadeOutUp';
   }
-})
+});
 
-
-// Funcinoes
+// Funciones adicionales
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
 </script>
 
 <template>
@@ -254,7 +251,7 @@ watch(titleParallax, (newVal) => {
               <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)"
                 :class="{ 'active': activeSection === item.route }">
                 <span class="material-icons-outlined">{{ item.materialIcon }}</span>
-                <span v-bind="props.label">{{ item.label }}</span>
+                <span class="nav-label" v-bind="props.label">{{ item.label }}</span>
               </a>
             </router-link>
             <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
@@ -265,6 +262,7 @@ watch(titleParallax, (newVal) => {
         </TabMenu>
       </nav>
     </div>
+
 
     <!-- END NAVBAR -->
 
@@ -297,7 +295,7 @@ watch(titleParallax, (newVal) => {
         </p>
       </div>
       <br>
-      <h3 :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'" class="animate__animated sub__prop">
+      <!-- <h3 :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'" class="animate__animated sub__prop">
         ¿Cómo
         puedo
         ayudarte?</h3>
@@ -332,7 +330,7 @@ watch(titleParallax, (newVal) => {
           </p>
 
         </div>
-      </div>
+      </div> -->
 
     </section>
 
@@ -443,11 +441,11 @@ watch(titleParallax, (newVal) => {
     <section id="contenido" class="secciones">
       <div class=" text_content">
         <span :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
-          class="animate__animated title_text_content">Contenido
+          class="animate__animated title_text_content">Descubre lo que puedo hacer por ti
         </span>
         <p :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown'"
           class="animate__animated m-0 p_text_content">
-          Soy tu compañero de ingles, una Inteligencia Artificial diseñada para ayudarte a aprender .
+          Explora las funcionalidades que tengo para ofrecerte:
         </p>
       </div>
 
@@ -457,11 +455,12 @@ watch(titleParallax, (newVal) => {
           <div class="img__horizontal">
             <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
           </div>
-
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing.
+          <h4>Práctica de Conversaciones:</h4>
+          <h5 class="p_horizontal"> Chatea conmigo en inglés utilizando frases cotidianas y emojis para que nuestras
+            charlas
+            sean más dinámicas.</h5>
           </p>
-
         </div>
         <div :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
           class="animate__animated card__horizontal">
@@ -470,7 +469,9 @@ watch(titleParallax, (newVal) => {
           </div class="text__horizontal">
 
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing.
+          <h4>Desarrollo Integral de Habilidades:</h4>
+          <h5 class="p_horizontal"> Trabajemos juntos en tu lectura, escritura, escucha y habla para que logres un
+            aprendizaje completo.</h5>
           </p>
 
         </div>
@@ -481,9 +482,10 @@ watch(titleParallax, (newVal) => {
           </div>
 
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing.
+          <h4>Seguimiento de Progreso: </h4>
+          <h5 class="p_horizontal">Crea una cuenta para guardar el historial de nuestras conversaciones y organizar los
+            temas que quieras practicar.</h5>
           </p>
-
         </div>
       </div>
     </section>
