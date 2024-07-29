@@ -1,17 +1,9 @@
-#proposito {
+.secciones{
+  padding: 200px 0px 0px;
   widows: 100%;
-  margin: 100px 100px 20px;
 }
-#proposito h3{
+.sub__prop{
   text-align: center;
-}
-#contenido {
-  widows: 100%;
-  margin: 100px 100px 20px;
-}
-#aplicaciones {
-  widows: 100%;
-  margin: 100px 100px 20px;
 }
 
 .get-started__btn {
@@ -227,6 +219,7 @@ a {
 .panel__horizontal {
   display: flex;
   margin: 50px 0px;
+  justify-content: center;
 }
 
 .card__horizontal {
@@ -334,7 +327,7 @@ a {
 
 .gradient-border {
   width: 25rem;
-  height: 27.6rem;
+  height: 100%;
   transition: transform 0.1s;
   transform-style: preserve-3d;
   transform: rotateX(0) rotateY(0);
@@ -452,4 +445,7 @@ a {
 .second__column img {
   margin-right: 50px;
   width: 5rem;
+}
+.list li{
+  list-style: none;
 }

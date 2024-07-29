@@ -26,17 +26,21 @@ const titleParallax = computed(() => {
   if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 350; //Desaparece para scroll abajo
   else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 135; //Aparece
 })
-const spanParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 800;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 760;//Aparece
+const propParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 70 && scrollStore.scrollPosition <= 1100;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 880;//Aparece
 })
-const cardParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 1370 && scrollStore.scrollPosition <= 2280
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1269 && scrollStore.scrollPosition <= 2100;//Aparece
+const modParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 1830;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 720 && scrollStore.scrollPosition <= 2000;//Aparece
+})
+const appParallax = computed(() => {
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 2900
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1900 && scrollStore.scrollPosition <= 2590;//Aparece
 })
 const contentParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 1986 && scrollStore.scrollPosition <= 2600
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2090 && scrollStore.scrollPosition <= 2599;//Aparece
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 3200
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2560 && scrollStore.scrollPosition <= 3200;//Aparece
 })
 // Animacion en el carrusel
 
@@ -67,23 +71,96 @@ onMounted(async () => {
     }
 
     carousel.value.$el.addEventListener('change', handleNextClick);
-    console.log(carousel.value.$el);
   }
 });
 //Scroll por seccion
+
+const activeSection = ref("#kenai");
+const navbar = ref(null);
+
 const scrollToSection = (route) => {
   const sectionId = route.substring(1);
   const section = document.getElementById(sectionId);
+  console.log(section);
   if (section) {
     section.scrollIntoView({ behavior: 'smooth' });
   }
 };
 
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      activeSection.value = `/#${entry.target.id}`;
+      console.log(activeSection.value );
+      updateNavbarHighlight();
+    }
+  });
+}, { threshold: 0.5 });
+
+const updateNavbarHighlight = () => {
+  if (navbar.value) {
+    nextTick(() => {
+      const items = navbar.value.querySelectorAll('li');
+      const inkBar = navbar.value.querySelector('.p-tabmenu-ink-bar');
+      items.forEach(item => {
+        const link = item.querySelector('a');
+        if (link) {
+          console.log(link);
+          const isActive = link.getAttribute('href') == activeSection.value;
+          if (isActive) {
+            item.classList.add('p-highlight'); // Add class if active
+            item.setAttribute('data-p-highlight', 'true');
+            if (inkBar) {
+              const rect = item.getBoundingClientRect();
+              const navRect = navbar.value.getBoundingClientRect();
+              const offset = rect.left - navRect.left;
+              inkBar.style.width = `${rect.width}px`;
+              inkBar.style.left = `${offset}px`;
+            }
+          } else {
+            item.classList.remove('p-highlight'); // Remove class if not active
+            item.removeAttribute('data-p-highlight');
+          }
+          console.log(isActive);
+        }
+      });
+    });
+  }
+};
+
+onMounted(() => {
+  items.value.forEach(item => {
+    const section = document.getElementById(item.route.substring(1));
+    if (section) {
+      observer.observe(section);
+    }
+  });
+  updateNavbarHighlight(); // Ensure initial update
+});
+
+onUnmounted(() => {
+  items.value.forEach(item => {
+    const section = document.getElementById(item.route.substring(1));
+    if (section) {
+      observer.unobserve(section);
+    }
+  });
+});
 //Imgenes carrusel
 const slides = ref([
-  { title: 'PLMs (Pretrained Language Models).', description: 'Para la creación de KenAI, utilizamos un fundamento conocido como PLMs (Pretrained Language Models), que son modelos previamente entrenados por un tercero.', src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlCf2gjRY7VEYhKnj4eg-ab5poYVPq6dfa_Q&s', alt: 'Image 1' },
-  { title: '', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://about.fb.com/es/wp-content/uploads/sites/13/2024/04/Introducing-Llama-3.png?fit=1204%2C679', alt: 'Image 2' },
-  { title: 'Gemini models can generate code based on different kinds of inputs.', description: 'Gemini models can generate code based on different kinds of inputs.', src: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Amazon_Alexa_App_Logo.png', alt: 'Image 3' },
+  {
+    description: 'Kenai ha sido creado utilizando LLaMA3, el LLM (Large Language Model) liberado por Meta. Este modelo avanzado es el núcleo de mi funcionamiento, permitiéndome ofrecerte una experiencia de aprendizaje de alta calidad.',
+    src: 'https://hackernoon.imgix.net/images/oS3VPBDztmPNM9laovQw4x5lwE83-fqh3eg3.jpeg',
+    alt: 'Image 1'
+  },
+  {
+    description: 'LLaMA3 está diseñado para analizar grandes cantidades de datos y aprender patrones complejos del lenguaje. Esto me permite generar respuestas coherentes y contextualmente apropiadas, mejorando tu experiencia de aprendizaje con KenAI.',
+    src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlCf2gjRY7VEYhKnj4eg-ab5poYVPq6dfa_Q&s', alt: 'Image 2'
+  },
+  {
+    description: 'Gracias a la dedicación del equipo de IT Solutions, puedo interactuar contigo de manera natural y eficiente. Además, con la integración de Google Speech to Text, puedo comprender y responder a tus audios, mejorando tu práctica de pronunciación y escucha.',
+    src: 'https://miro.medium.com/v2/resize:fit:1400/1*-V47O9e3T_LxR3P-lcpR0g.png', alt: 'Image 3'
+  },
 ]);
 
 
@@ -170,12 +247,12 @@ watch(titleParallax, (newVal) => {
 
     <!-- NAVBAR -->
     <div class="nav__container">
-      <nav class="landing-navbar">
+      <nav class="landing-navbar" ref="navbar">
         <TabMenu :model="items" class="nav-tab-menu">
-
           <template #item="{ item, props }">
-            <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
-              <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)">
+            <router-link v-if="item.route" v-slot="{ href }" :to="item.route" custom>
+              <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)"
+                :class="{ 'active': activeSection === item.route }">
                 <span class="material-icons-outlined">{{ item.materialIcon }}</span>
                 <span v-bind="props.label">{{ item.label }}</span>
               </a>
@@ -188,31 +265,51 @@ watch(titleParallax, (newVal) => {
         </TabMenu>
       </nav>
     </div>
+
     <!-- END NAVBAR -->
 
     <!-- Content -->
-
-    <section id="proposito">
+    {{ scrollStore.scrollPosition }}
+    <section id="proposito" class="secciones">
       <div class=" text_content">
-        <span :class="spanParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
+        <span :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
           class="animate__animated title_text_content">¡Hola! Soy Kenai
         </span>
-        <p :class="spanParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
+        <p :class="propParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
           class="animate__animated m-0 p_text_content">
-          Soy tu compañero de ingles, una Inteligencia Artificial diseñada para ayudarte a aprender y practicar inglés de una manera
+          Soy tu compañero de ingles, una Inteligencia Artificial diseñada para ayudarte a aprender y practicar inglés
+          de
+          una manera
           divertida y segura. Mi objetivo es hacer que te sientas cómodo y confiado al hablar inglés, sin importar tu
           nivel
           de habilidad.
+        <p>
+          Fui creado por un talentoso grupo de estudiantes de la Universidad Tecnológica de Nezahualcóyotl, conocidos
+          como <b> Equipo IT Solutions</b>.
+        <p>Ellos se dieron cuenta de que muchos estudiantes, como tú, se sienten
+          inseguros
+          al
+          hablar inglés debido a los prejuicios y la falta de confianza. Por eso, decidieron crearme para brindarte un
+          espacio
+          amigable y seguro donde puedas mejorar tus habilidades sin temor a ser juzgado.
+        </p>
+        </p>
         </p>
       </div>
-      <h3>¿Cómo puedo ayudarte?</h3>
-      <div class="panel__horizontal">
+      <br>
+      <h3 :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'" class="animate__animated sub__prop">
+        ¿Cómo
+        puedo
+        ayudarte?</h3>
+      <div :class="propParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
+        class="animate__animated panel__horizontal">
         <div class="card__horizontal">
           <div class="img__horizontal">
-            <img src="@/assets/imgs/img1.png"  alt="Imagen 1">
+            <img src="@/assets/imgs/img1.png" alt="Imagen 1">
           </div>
           <p>
-            Estoy aquí para charlar sobre cualquier tema que te interese.Puedes hablar conmigo a través de texto o audio.
+            Estoy aquí para charlar sobre cualquier tema que te interese.Puedes hablar conmigo a través de texto o
+            audio.
           </p>
         </div>
         <div class="card__horizontal">
@@ -238,9 +335,21 @@ watch(titleParallax, (newVal) => {
       </div>
 
     </section>
+
+    {{ scrollStore.scrollPosition }}
+
     <!-- Modelo -->
 
-    <section id="modelo">
+    <section id="modelo" class="secciones">
+      <div class=" text_content">
+        <span :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'"
+          class="animate__animated title_text_content">La Tecnología Detrás de Kenai</span>
+        <p :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'" class="animate__animated m-0 p_text_content">
+          Para la creación de Kenai, el equipo de IT Solutions utilizó un fundamento conocido como PLMs (Pretrained
+          Language
+          Models), que son modelos previamente entrenados por un tercero.
+        </p>
+      </div>
       <div class="carousel-container">
         <Carousel ref="carousel" :value="slides" :numVisible="1" :numScroll="1" :responsiveOptions="responsiveOptions"
           circular :autoplayInterval="5000" @update:page="handleNextClick">
@@ -248,8 +357,7 @@ watch(titleParallax, (newVal) => {
             <div class="carousel-item">
               <div class="carousel-content">
                 <div class="text-content">
-                  <h2 :class="animateTitle">{{ slotProps.data.title }}</h2>
-                  <p :class="animateDescription">{{ slotProps.data.description }}</p>
+                  <h3 :class="animateDescription">{{ slotProps.data.description }}</h3>
                 </div>
                 <div class="image-content">
                   <img :src="slotProps.data.src" :alt="slotProps.data.alt" class="carousel-image" />
@@ -260,24 +368,28 @@ watch(titleParallax, (newVal) => {
         </Carousel>
       </div>
     </section>
+
+    {{ scrollStore.scrollPosition }}
     <!-- Aplicaciones -->
 
-    <section id="aplicaciones">
+    <section id="aplicaciones" class="secciones">
       <div class=" text_content">
-        <span class="animate__animated title_text_content">Simple Card
+        <span class="title_text_content">Simple Card
         </span>
         <p class="animate__animated m-0 p_text_content">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
-          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae
+          numquam
+          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
+          cupiditate
           neque
           quas!
         </p>
       </div>
 
       <div class="card__content ">
-        <div :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
+        <div :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
           class=" animate__animated gradient-border">
-          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
+          <Card :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
             class="animate__animated custom__card ">
             <template #header>
               <div class="card__header ">
@@ -292,10 +404,8 @@ watch(titleParallax, (newVal) => {
             </template>
           </Card>
         </div>
-        <div :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
-          class="animate__animated gradient-border">
-          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
-            class="animate__animated custom__card">
+        <div :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated gradient-border">
+          <Card :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated custom__card">
             <template #header>
               <div class="card__header ">
                 <img alt="Espacio de trabajo"
@@ -309,10 +419,8 @@ watch(titleParallax, (newVal) => {
             </template>
           </Card>
         </div>
-        <div :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
-          class="animate__animated gradient-border">
-          <Card :class="cardParallax ? 'animate__fadeInUp' : 'animate__fadeOut '"
-            class="animate__animated custom__card">
+        <div :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated gradient-border">
+          <Card :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated custom__card">
             <template #header>
               <div class="card__header ">
                 <img alt="Anuncios"
@@ -328,13 +436,19 @@ watch(titleParallax, (newVal) => {
         </div>
       </div>
     </section>
+
+    {{ scrollStore.scrollPosition }}
     <!-- Contenido -->
 
-    <section id="contenido">
+    <section id="contenido" class="secciones">
       <div class=" text_content">
         <span :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
           class="animate__animated title_text_content">Contenido
         </span>
+        <p :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown'"
+          class="animate__animated m-0 p_text_content">
+          Soy tu compañero de ingles, una Inteligencia Artificial diseñada para ayudarte a aprender .
+        </p>
       </div>
 
       <div class="panel__horizontal">
@@ -373,14 +487,15 @@ watch(titleParallax, (newVal) => {
         </div>
       </div>
     </section>
+    {{ scrollStore.scrollPosition }}
     <footer class="footer__content">
       <div class="firts__column">
-        <h2>Nombre de Equipo </h2>
-        <ul>
-          <li>Dani</li>
-          <li>Lorem, ipsum dolor.</li>
-          <li>Lorem, ipsum dolor.</li>
-          <li>Lorem, ipsum dolor.</li>
+        <h2>IT Solutions </h2>
+        <ul class="list">
+          <li>Campos Figueroa Brandon</li>
+          <li>Chaparro Marin Daniel</li>
+          <li>Cruz Hernández Génesis Uriel Yair</li>
+          <li>Cortes Islas Brandon</li>
         </ul>
       </div>
       <div class="second__column">
