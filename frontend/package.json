@@ -19,6 +19,7 @@
     "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
     "quill": "^2.0.2",
+    "socket.io-client": "^4.7.5",
     "vue": "^3.4.29",
     "vue-country-flag-next": "^2.3.2",
     "vue-i18n": "^9.13.1",
