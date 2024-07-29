@@ -20,3 +20,4 @@ Flask-JWT-Extended
 langchain
 langchain-community
 flask_talisman
+flask-socketio
