@@ -6,7 +6,7 @@ export async function getUserChats() {
     try {
         if (!sessionStore.isAuthenticated) return [];
 
-        const response = await fetch('http://localhost:5000/chat/', {
+        const response = await fetch('/chat/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${sessionStore.token}`,
@@ -27,7 +27,7 @@ export async function getChatMessages(chatID) {
     try {
         if (!sessionStore.isAuthenticated) return [];
 
-        const response = await fetch('http://localhost:5000/chat/messages/' + chatID, {
+        const response = await fetch('/chat/messages/' + chatID, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${sessionStore.token}`,
@@ -48,7 +48,7 @@ export async function deleteChat(chatID) {
     try {
         if (!sessionStore.isAuthenticated) return false;
 
-        const response = await fetch('http://localhost:5000/chat/delete/' + chatID, {
+        const response = await fetch('/chat/delete/' + chatID, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${sessionStore.token}`,
@@ -69,7 +69,7 @@ export async function renameChatWithChatID(chatID, newName) {
     try {
         if (!sessionStore.isAuthenticated) return false;
 
-        const response = await fetch('http://localhost:5000/chat/rename/' + chatID, {
+        const response = await fetch('/chat/rename/' + chatID, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${sessionStore.token}`,

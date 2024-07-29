@@ -13,7 +13,7 @@ export const useSessionStore = defineStore('session', () => {
 
     const login = async (googleCredentials, t) => {
         try {
-            const response = await fetch('http://localhost:5000/auth/google', {
+            const response = await fetch('/auth/google', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -71,7 +71,7 @@ export const useSessionStore = defineStore('session', () => {
 
     const validateSession = async () => {
         try {
-            const response = await fetch('http://localhost:5000/auth/jwt_check', {
+            const response = await fetch('/auth/jwt_check', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
