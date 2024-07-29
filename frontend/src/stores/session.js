@@ -44,6 +44,7 @@ export const useSessionStore = defineStore('session', () => {
         } finally {
             if (isAuthenticated.value) {
                 chatStore.loadChats();
+                chatStore.newChat();
             }
         }
     };
@@ -54,6 +55,7 @@ export const useSessionStore = defineStore('session', () => {
         localStorage.removeItem('kenai_token');
         localStorage.removeItem('kenai_user');
         toast.add({ severity: 'info', summary: t('auth.session_closed'), detail: t('auth.success.logout'), life: 3000 });
+        chatStore.newChat();
     };
 
     const loadSession = async () => {
