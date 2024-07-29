@@ -24,17 +24,17 @@ export const useChatStore = defineStore('chat', () => {
 
     const setLoading = (value) => loading.value = value;
 
-    const renameChat = async (chatID, newTitle) => {
+    const renameChat = async (chatID, newTitle, t) => {
         try {
             const renamed = await renameChatWithChatID(chatID, newTitle);
             if (renamed) {
-                toast.add({ severity: 'success', summary: 'Hecho', detail: 'Nombre del chat cambiado correctamente', life: 3000 });
+                toast.add({ severity: 'success', summary: t('chat.done'), detail: t('chat.success.chat_name_updated'), life: 3000 });
             } else {
-                toast.add({ severity: 'error', summary: 'Error', detail: 'No se logró cambiar el nombre del chat', life: 3000 });
+                toast.add({ severity: 'error', summary: 'Error', detail: t('chat.error.no_chat_deleted'), life: 3000 });
             }
         } catch (error) {
             console.log(error);
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Error en la petición', life: 3000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: t('chat.error.request'), life: 3000 });
         }
     }
 

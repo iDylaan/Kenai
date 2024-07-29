@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useChatStore } from './chat';
-    import { useToast } from 'primevue/usetoast';
+import { useToast } from 'primevue/usetoast';
 
 export const useSessionStore = defineStore('session', () => {
     const user = ref(null);
@@ -11,7 +11,7 @@ export const useSessionStore = defineStore('session', () => {
     const toast = useToast();
 
 
-    const login = async (googleCredentials) => {
+    const login = async (googleCredentials, t) => {
         try {
             const response = await fetch('http://localhost:5000/auth/google', {
                 method: 'POST',
@@ -36,11 +36,11 @@ export const useSessionStore = defineStore('session', () => {
 
             // Opcional: guardar el usuario en el localStorage
             localStorage.setItem('kenai_user', JSON.stringify(result.data.user));
-            toast.add({ severity: 'success', summary: 'Bienvenido', detail: 'Sesión iniciada como ' + user.value.given_name, life: 3000 });
+            toast.add({ severity: 'success', summary: t('auth.welcome'), detail: `${t("auth.success.login_as")} ${user.value.given_name}`, life: 3000 });
             return result.success;
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Error al iniciar sesión', life: 3000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: t('auth.error.login'), life: 3000 });
         } finally {
             if (isAuthenticated.value) {
                 chatStore.loadChats();
@@ -48,12 +48,12 @@ export const useSessionStore = defineStore('session', () => {
         }
     };
 
-    const logout = () => {
+    const logout = (t) => {
         user.value = null;
         token.value = null;
         localStorage.removeItem('kenai_token');
         localStorage.removeItem('kenai_user');
-        toast.add({ severity: 'info', summary: 'Sesión cerrada', detail: 'Se ha cerrado correctamente su sesión', life: 3000 });
+        toast.add({ severity: 'info', summary: t('auth.session_closed'), detail: t('auth.success.logout'), life: 3000 });
     };
 
     const loadSession = async () => {

@@ -5,6 +5,13 @@
     overflow: hidden;
 }
 
+.language__container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
 .animate__animated.animate__fadeInLeft.ske-chat-1 {
     animation-name: fadeInLeft;
     animation-duration: 500ms;

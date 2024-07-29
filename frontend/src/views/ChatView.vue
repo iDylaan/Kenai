@@ -5,16 +5,18 @@
   <Dialog v-model:visible="renameTitle.visible" :draggable="false" modal :showHeader="false"
     :style="{ width: '25rem', overflow: 'hidden' }">
     <ProgressBar mode="indeterminate" class="rename-dialog-bar" v-if="renameTitle.fetching"></ProgressBar>
-    <h2>Editar Título del Chat</h2>
-    <span class="second-title">Actualiza el título de tu chat para identificarlo más fácilmente.</span>
+    <h2>{{ t('chat.edit_chat_title') }}</h2>
+    <span class="second-title">{{ t('chat.update_title_description') }}</span>
     <div class="title-input__container">
-      <label for="title" class="font-semibold w-6rem">Nuevo Título</label>
+      <label for="title" class="font-semibold w-6rem">{{ t('chat.new_title_label') }}</label>
       <InputText v-model="renameTitle.title" :invalid="renameTitle.invalid" id="new-chat-title" autocomplete="off" />
-      <small id="username-help" v-if="renameTitle.invalid">{{ renameTitle.message }}</small>
+      <small id="username-help" v-if="renameTitle.invalid">{{
+        renameTitle.message
+      }}</small>
     </div>
     <div class="new-title__btns-container">
-      <Button type="button" label="Cancelar" severity="secondary" @click="closeRenameDialog"></Button>
-      <Button type="button" label="Actualizar" @click="handleChangeChatTitle"></Button>
+      <Button type="button" :label="t('prime_ui.cancel')" severity="secondary" @click="closeRenameDialog"></Button>
+      <Button type="button" :label="t('prime_ui.edit')" @click="handleChangeChatTitle"></Button>
     </div>
   </Dialog>
 
@@ -33,20 +35,20 @@
 
       <section class="navbar__header">
         <div class="new-btn__container">
-          <Button severity="secondary" @click="chatStore.newChat()"
-            :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null" size="small"
-            v-tooltip.bottom="'Nuevo chat'" class="new-btn" rounded outlined>
+          <Button severity="secondary" @click="chatStore.newChat()" :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null
+            " size="small" v-tooltip.bottom="t('chat.new_chat')" class="new-btn" rounded outlined>
             <span class="material-icons">add</span>
-            <span class="text animate__animated animate__fadeIn">{{
-              $t("chat.new_chat")
-            }}</span>
+            <span class="text animate__animated animate__fadeIn">
+              {{ t('chat.new_chat') }}
+            </span>
           </Button>
         </div>
       </section>
 
       <section class="navbar__body animate__animated animate_fadeIn">
-        <span class="reciente-txt" v-if="sessionStore.isAuthenticated && chatStore.chats.length">{{ $t("chat.recent")
-          }}</span>
+        <span class="reciente-txt" v-if="sessionStore.isAuthenticated && chatStore.chats.length">
+          {{ t('chat.recent') }}
+        </span>
         <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && (pageLoading || chatStore.loading)">
           <Skeleton class="animate__animated animate__fadeInLeft ske-chat-1" height="40px"></Skeleton>
           <Skeleton class="animate__animated animate__fadeInLeft ske-chat-2" height="40px" style="margin-top: 10px">
@@ -69,33 +71,35 @@
       <section class="navbar__footer">
         <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
           v-tooltip.top="{
-            value: 'Ajustes'
+            value: t('chat.settings'),
           }" aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
-          <span class="text">{{ $t("chat.settings") }}</span>
+          <span class="text">
+            {{ t('chat.settings') }}
+          </span>
         </Button>
-        <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
-          <template #item="{ item, props }" class="config-option">
-            <a v-bind="props.action" @click.stop>
-              <template v-if="item.type === 'button'" class="config-option">
-                <span>{{ $t("chat." + item.label) }}</span>
-              </template>
-              <template v-else-if="item.type === 'switch'" class="config-option">
-                <span>{{ $t("chat." + item.label) }}</span>
-                <InputSwitch v-model="darkThemeChecked" />
-              </template>
-              <template v-else-if="item.type === 'select'" class="config-option">
-                <span>{{ $t("chat." + item.label) }}</span>
-                <Dropdown v-model="siteLanguage" :options="item.children" optionLabel="label"
-                  @change="handleLanguageChange">
-                  <template #item="{ option }">
-                    <span>{{ $t("chat." + option.label) }}</span>
-                  </template>
-                </Dropdown>
-              </template>
-            </a>
-          </template>
-        </Menu>
+        <Dialog v-model:visible="menuSettings" :header="t('chat.settings')" :style="{ width: '25rem' }"
+          position="bottomleft" :modal="true" :draggable="false">
+          <label for="language" :style="{ marginBottom: '10px', marginLeft: '5px' }">{{ t('chat.language') }}</label>
+          <Dropdown v-model="siteLanguage" name="language" @change="handleLanguageChange" :style="{ width: '100%' }"
+            :options="languages" optionLabel="name">
+            <template #value="slotProps">
+              <div v-if="siteLanguage" :style="{ display: 'flex', alignItems: 'center' }">
+                <country-flag :country='siteLanguage.flag' size='small' />
+                <div>{{ siteLanguage.name }}</div>
+              </div>
+              <span v-else>
+                {{ t('chat.select_a_lang') }}
+              </span>
+            </template>
+            <template #option="slotProps">
+              <div :style="{ display: 'flex', alignItems: 'center' }">
+                <country-flag :country='slotProps.option.flag' size='small' />
+                <div>{{ slotProps.option.name }}</div>
+              </div>
+            </template>
+          </Dropdown>
+        </Dialog>
       </section>
     </Sidebar>
 
@@ -103,7 +107,7 @@
       <section class="navbar__header">
         <div class="menu-btn__container">
           <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended" v-tooltip="{
-            value: navbarStore.extended ? 'Contraer el menú' : 'Expandir el menú'
+            value: navbarStore.extended ? t('chat.collapse_menu') : t('chat.expand_menu'),
           }">
             <span class="material-icons menu-icon">menu</span>
           </Button>
@@ -112,19 +116,20 @@
         <div class="new-btn__container">
           <Skeleton height="40px" borderRadius="100px" v-if="pageLoading"></Skeleton>
 
-          <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else
-            :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null"
-            v-tooltip.bottom="'Nuevo chat'" @click="chatStore.newChat()">
+          <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null
+            " v-tooltip.bottom="t('chat.new_chat')" @click="chatStore.newChat()">
             <span class="material-icons">add</span>
-            <span class="text animate__animated animate__fadeIn" v-if="navbarStore.extended">{{ $t("chat.new_chat")
-              }}</span>
+            <span class="text animate__animated animate__fadeIn" v-if="navbarStore.extended">
+              {{ t('chat.new_chat') }}
+            </span>
           </Button>
         </div>
       </section>
 
       <section class="navbar__body animate__animated animate_fadeIn" v-if="navbarStore.extended">
-        <span class="reciente-txt" v-if="sessionStore.isAuthenticated && chatStore.chats.length">{{ $t("chat.recent")
-          }}</span>
+        <span class="reciente-txt" v-if="sessionStore.isAuthenticated && chatStore.chats.length">
+          {{ t('chat.recent') }}
+        </span>
         <div class="chats-skeleton" v-if="sessionStore.isAuthenticated && (pageLoading || chatStore.loading)">
           <Skeleton class="animate__animated animate__fadeInLeft ske-chat-1" height="40px"></Skeleton>
           <Skeleton class="animate__animated animate__fadeInLeft ske-chat-2" height="40px" style="margin-top: 10px">
@@ -139,7 +144,7 @@
             " class="chat-btn" menuButtonIcon="pi pi-ellipsis-v" @click="chatStore.updateChatMessages(chat.id_chat)"
             v-tooltip="{
               value: chat.chat_name,
-              showDelay: 300
+              showDelay: 300,
             }" :model="getChatOptions(chat.id_chat)">
             <span class="material-icons-outlined chat-icon">mark_chat_unread</span>
             <span class="text chat-name">{{ chat.chat_name }}</span>
@@ -150,33 +155,35 @@
       <section class="navbar__footer">
         <Button label="Secondary" severity="secondary" text class="settings-btn" rounded @click="toggleSettingsPopup"
           v-tooltip.top="{
-            value: 'Ajustes'
+            value: t('chat.settings'),
           }" aria-haspopup="true" aria-controls="overlay_menu">
           <span class="material-icons-outlined chat-icon">settings</span>
-          <span class="text" v-if="navbarStore.extended">{{ $t("chat.settings") }}</span>
+          <span class="text" v-if="navbarStore.extended">
+            {{ t('chat.settings') }}
+          </span>
         </Button>
-        <Menu ref="menuSettings" id="overlay_menu_settings" :model="settingsItems" :popup="true">
-          <template #item="{ item, props }" class="config-option">
-            <a v-bind="props.action" @click.stop>
-              <template v-if="item.type === 'button'" class="config-option">
-                <span>{{ $t("chat." + item.label) }}</span>
-              </template>
-              <template v-else-if="item.type === 'switch'" class="config-option">
-                <span>{{ $t("chat." + item.label) }}</span>
-                <InputSwitch v-model="darkThemeChecked" />
-              </template>
-              <template v-else-if="item.type === 'select'" class="config-option">
-                <span>{{ $t("chat." + item.label) }}</span>
-                <Dropdown v-model="siteLanguage" :options="item.children" optionLabel="label"
-                  @change="handleLanguageChange">
-                  <template #item="{ option }">
-                    <span>{{ $t("chat." + option.label) }}</span>
-                  </template>
-                </Dropdown>
-              </template>
-            </a>
-          </template>
-        </Menu>
+        <Dialog v-model:visible="menuSettings" :header="t('chat.settings')" :style="{ width: '25rem' }"
+          position="bottomleft" :modal="true" :draggable="false">
+          <label for="language" :style="{ marginBottom: '10px', marginLeft: '5px' }">{{ t('chat.language') }}</label>
+          <Dropdown v-model="siteLanguage" name="language" @change="handleLanguageChange" :style="{ width: '100%' }"
+            :options="languages" optionLabel="name">
+            <template #value="slotProps">
+              <div v-if="siteLanguage" :style="{ display: 'flex', alignItems: 'center' }">
+                <country-flag :country='siteLanguage.flag' size='small' />
+                <div>{{ siteLanguage.name }}</div>
+              </div>
+              <span v-else>
+                {{ t('chat.select_a_lang') }}
+              </span>
+            </template>
+            <template #option="slotProps">
+              <div :style="{ display: 'flex', alignItems: 'center' }">
+                <country-flag :country='slotProps.option.flag' size='small' />
+                <div>{{ slotProps.option.name }}</div>
+              </div>
+            </template>
+          </Dropdown>
+        </Dialog>
       </section>
     </section>
 
@@ -185,11 +192,11 @@
       <div class="chat__header">
         <router-link to="/" v-if="!mobileStore.isMobile">
           <Button severity="secondary" text>
-            <h1 style="padding: 0; margin: 0;">KenAI</h1>
+            <h1 style="padding: 0; margin: 0">KenAI</h1>
           </Button>
         </router-link>
         <Button v-else @click="toggleMobileNavbar" v-tooltip="{
-          value: navbarStore.extended ? 'Contraer el menú' : 'Expandir el menú'
+          value: navbarStore.extended ? t('chat.collapse_menu') : t('chat.expand_menu'),
         }" severity="secondary" text rounded aria-label="Menu" size="large">
           <span class="material-icons menu-icon">menu</span>
         </Button>
@@ -207,38 +214,46 @@
       </div>
 
       <div class="chat__body">
-        <div class="firt-chat" :class="fistChatClasses"
-          v-if="(chatStore.getActiveChatID() === null || chatStore.isNewChat || chatStore.chatHistory.length === 0) && !chatStore.getChatLoading() && !chatStore.newMessageSent">
-
+        <div class="firt-chat" :class="fistChatClasses" v-if="
+          (chatStore.getActiveChatID() === null ||
+            chatStore.isNewChat ||
+            chatStore.chatHistory.length === 0) &&
+          !chatStore.getChatLoading() &&
+          !chatStore.newMessageSent
+        ">
           <div class="title_new-chat__container">
-            <p class="new-chat-title" v-if="!pageLoading">Que gusto verte</p>
-            <p class="new-chat-subtitle" v-if="!pageLoading">¿De qué quieres conversar?</p>
+            <p class="new-chat-title" v-if="!pageLoading">{{ t('chat.nice_to_see_you') }}</p>
+            <p class="new-chat-subtitle" v-if="!pageLoading">
+              {{ t('chat.what_you_want_to_talk') }}
+            </p>
           </div>
 
           <div class="presets animate__fadeIn animate__animated" v-if="!pageLoading">
-
-            <label class="presets-label">Recomendaciones</label>
+            <label class="presets-label">{{ t('chat.recomendations') }}</label>
             <Carousel class="carrousel" :value="presets" :numVisible="3" :numScroll="1"
               :responsiveOptions="responsiveOptions" circular :autoplayInterval="3000">
               <template #item="slotProps">
-
-
                 <Button label="Contrast" class="pre-prompt__container" severity="contrast" outlined>
                   <div class="level__container">
-                    <Tag
-                      :severity="slotProps.data.level === 0 ? 'success' : slotProps.data.level === 1 ? 'info' : 'warning'"
-                      rounded style="display: flex; justify-content: center; gap: 5px">
+                    <Tag :severity="slotProps.data.level === 0
+                      ? 'success'
+                      : slotProps.data.level === 1
+                        ? 'info'
+                        : 'warning'
+                      " rounded style="display: flex; justify-content: center; gap: 5px">
                       <span class="material-icons" style="font-size: 1rem">translate</span>
-                      {{ slotProps.data.level === 0 ? 'Básico' : slotProps.data.level === 1 ? 'Intermedio' : 'Avanzado'
+                      {{
+                        slotProps.data.level === 0
+                          ? t('chat.basic')
+                          : slotProps.data.level === 1
+                            ? t('chat.intermediate')
+                            : t('chat.advanced')
                       }}
                     </Tag>
                   </div>
 
-                  <div class="prompt__container">
-                    "{{ slotProps.data.prompt_title }}"
-                  </div>
+                  <div class="prompt__container">"{{ slotProps.data.prompt_title }}"</div>
                 </Button>
-
               </template>
             </Carousel>
           </div>
@@ -316,7 +331,6 @@
           </div>
         </div>
         <!-- END CHAT CONTAINER -->
-
       </div>
 
       <div class="chat__footer">
@@ -324,7 +338,7 @@
           <template #start>
             <Skeleton shape="circle" size="42px" v-if="pageLoading"></Skeleton>
             <Button label="Secondary" severity="secondary" rounded text class="prompt-tool-btn" v-tooltip.top="{
-              value: 'Grabar audio'
+              value: t('chat.record_audio'),
             }" :disabled="promptFetching" v-else>
               <span class="material-icons-outlined chat-icon">mic</span>
             </Button>
@@ -333,7 +347,7 @@
           <template #center>
             <Skeleton height="35px" style="margin-bottom: 7px" v-if="pageLoading"></Skeleton>
             <Textarea type="text" @input="handleInput" v-else @keydown.enter="handleEnter"
-              :placeholder="$t('chat.type_a_message')" v-model="prompt" :disabled="promptFetching" size="small"
+              :placeholder="t('chat.type_a_message')" v-model="prompt" :disabled="promptFetching" size="small"
               variant="filled" rows="1" />
             <div class="char-counter">{{ charCount }}/{{ promptMaxLenght }}</div>
           </template>
@@ -342,7 +356,7 @@
             <Skeleton shape="circle" size="42px" v-if="pageLoading"></Skeleton>
             <Button severity="primary" v-else rounded class="prompt-tool-btn" text @click="handleSendPrompt"
               v-tooltip.top="{
-                value: 'Enviar'
+                value: t('chat.send'),
               }" :disabled="promptFetching">
               <span class="material-icons-outlined">send</span>
             </Button>
@@ -366,12 +380,14 @@ import { useNavbarStore } from "@/stores/navbar";
 import { useMobileStore } from "@/stores/mobile";
 import { useChatStore } from "@/stores/chat";
 import { useScrollStore } from "@/stores/scroll";
-import { useToast } from 'primevue/usetoast';
+import { useLangStore } from "@/stores/lang";
+import { useToast } from "primevue/usetoast";
+import { useI18n } from 'vue-i18n';
 
 // VARIABLES
+const { t, locale } = useI18n();
 const promptFetching = ref(false);
-const darkThemeChecked = ref(false);
-const menuSettings = ref(null);
+const menuSettings = ref(false);
 const toast = useToast();
 const renameTitle = reactive({
   visible: false,
@@ -382,59 +398,59 @@ const renameTitle = reactive({
   fetching: false,
 });
 const lastChatIndex = ref(0);
-const fistChatClasses = ref('')
+const fistChatClasses = ref("");
 const presets = ref([
   {
-    prompt_title: 'Hola, como estás?',
+    prompt_title: "Hola, como estás?",
     level: 0,
   },
   {
-    prompt_title: 'Hola, me ayudas a practicar?',
+    prompt_title: "Hola, me ayudas a practicar?",
     level: 1,
   },
   {
-    prompt_title: 'Hola, por que el cielo es azul?',
+    prompt_title: "Hola, por que el cielo es azul?",
     level: 2,
   },
   {
-    prompt_title: 'Hola, como aprend verbos irregulares?',
+    prompt_title: "Hola, como aprend verbos irregulares?",
     level: 0,
   },
   {
-    prompt_title: 'Hola, quiero practicar ingles',
+    prompt_title: "Hola, quiero practicar ingles",
     level: 1,
   },
   {
-    prompt_title: 'Hola, Nivel B2, simulacion de entrevista laboral',
+    prompt_title: "Hola, Nivel B2, simulacion de entrevista laboral",
     level: 2,
   },
 ]);
 const responsiveOptions = ref([
   {
-    breakpoint: '1400px',
+    breakpoint: "1400px",
     numVisible: 2,
-    numScroll: 1
+    numScroll: 1,
   },
   {
-    breakpoint: '1199px',
+    breakpoint: "1199px",
     numVisible: 3,
-    numScroll: 1
+    numScroll: 1,
   },
   {
-    breakpoint: '767px',
+    breakpoint: "767px",
     numVisible: 2,
-    numScroll: 1
+    numScroll: 1,
   },
   {
-    breakpoint: '575px',
+    breakpoint: "575px",
     numVisible: 1,
-    numScroll: 1
-  }
+    numScroll: 1,
+  },
 ]);
 const getChatOptions = (chatId) => {
   return [
     {
-      label: "Rename",
+      label: t('chat.rename'),
       icon: "pi pi-pencil",
       command: () => {
         try {
@@ -447,7 +463,7 @@ const getChatOptions = (chatId) => {
       },
     },
     {
-      label: "Delete",
+      label: t('chat.delete'),
       icon: "pi pi-times",
       command: async () => {
         try {
@@ -458,12 +474,27 @@ const getChatOptions = (chatId) => {
             if (chatId === chatStore.getActiveChatID()) {
               chatStore.newChat();
             }
-            toast.add({ severity: 'success', summary: 'Eliminado', detail: 'Chat eliminado correctamente', life: 3000 });
+            toast.add({
+              severity: "success",
+              summary: t('chat.deleted'),
+              detail: t('chat.success.deleted'),
+              life: 3000,
+            });
           } else {
-            toast.add({ severity: 'error', summary: 'Error', detail: "Error deleting chat", life: 3000 });
+            toast.add({
+              severity: "error",
+              summary: "Error",
+              detail: t('chat.error.no_chat_deleted'),
+              life: 3000,
+            });
           }
         } catch (error) {
-          toast.add({ severity: 'error', summary: 'Error', detail: "Error deleting chat", life: 3000 });
+          toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: t('chat.error.no_chat_deleted'),
+            life: 3000,
+          });
           console.log(error);
         }
       },
@@ -471,34 +502,20 @@ const getChatOptions = (chatId) => {
   ];
 };
 
-const settingsItems = ref([
+const languages = ref([
   {
-    items: [
-      {
-        label: "dark_theme",
-        icon: "dark_mode",
-        type: "switch",
-      },
-      {
-        label: "language",
-        icon: "language",
-        type: "select",
-        children: [
-          {
-            label: "English",
-            icon: "translate",
-            lang_code: "en",
-          },
-          {
-            label: "Spanish",
-            icon: "translate",
-            lang_code: "es",
-          },
-        ],
-      },
-    ],
+    name: t("chat.english"),
+    icon: "translate",
+    flag: "us",
+    code: 'en'
   },
-]);
+  {
+    name: t("chat.spanish"),
+    icon: "translate",
+    flag: "mx",
+    code: 'es'
+  },
+])
 const prompt = ref("");
 const promptMaxLenght = 300;
 const pageLoading = ref(false);
@@ -507,11 +524,9 @@ const navbarStore = useNavbarStore();
 const mobileStore = useMobileStore();
 const chatStore = useChatStore();
 const scrollStore = useScrollStore();
+const langStore = useLangStore();
+const siteLanguage = ref(langStore.langCode);
 const op = ref();
-
-const toggle = (event) => {
-  op.value.toggle(event);
-}
 
 // COMPONENTES
 import PageLoader from "@/components/layout/PageLoader.vue";
@@ -525,6 +540,13 @@ onMounted(async () => {
     await sessionStore.loadSession();
     navbarStore.loadNavbar();
     await chatStore.loadChats();
+    langStore.loadLang();
+    locale.value = langStore.langCode;
+    languages.value.forEach((lang) => {
+      if (lang.code === langStore.langCode) {
+        siteLanguage.value = lang;
+      }
+    })
   } catch (error) {
     console.log(error);
   } finally {
@@ -556,10 +578,14 @@ watch(prompt, (newVal) => {
 });
 
 // FUNCIONES
+const toggle = (event) => {
+  op.value.toggle(event);
+};
+
 const closeRenameDialog = () => {
   renameTitle.visible = false;
   resetRenameDialog();
-}
+};
 
 const resetRenameDialog = () => {
   renameTitle.title = null;
@@ -567,23 +593,23 @@ const resetRenameDialog = () => {
   renameTitle.invalid = false;
   renameTitle.message = null;
   renameTitle.fetching = false;
-}
+};
 
 const handleChangeChatTitle = async () => {
   if (!renameTitle.title || renameTitle.title.trim() === "") {
     renameTitle.invalid = true;
-    renameTitle.message = "El título del chat no puede estar vacío.";
+    renameTitle.message = t('chat.error.no_title');
     return;
   } else {
     renameTitle.fetching = true;
     renameTitle.invalid = false;
     renameTitle.message = null;
-    await chatStore.renameChat(renameTitle.idChat, renameTitle.title);
+    await chatStore.renameChat(renameTitle.idChat, renameTitle.title, t);
     renameTitle.fetching = false;
     closeRenameDialog();
     chatStore.loadChats();
   }
-}
+};
 
 const toggleMobileNavbar = () => {
   navbarStore.toggleExtended();
@@ -623,7 +649,7 @@ const handleSendPrompt = async () => {
     chatStore.chatHistory.push(chatRow);
     prompt.value = "";
     // Animar el cambio de interfaz
-    fistChatClasses.value = 'animate__animated animate__fadeOut'
+    fistChatClasses.value = "animate__animated animate__fadeOut";
     setTimeout(() => {
       chatStore.setNewMessageSent(true);
       scrollStore.scrollToLastMessage();
@@ -652,7 +678,9 @@ const handleSendPrompt = async () => {
         chatStore.chats.unshift(kenaiResponse.chat);
         chatStore.setActiveChatID(kenaiResponse.chat_id);
       } else {
-        const chatIndex = chatStore.chats.findIndex(chat => chat.id_chat === kenaiResponse.chat_id);
+        const chatIndex = chatStore.chats.findIndex(
+          (chat) => chat.id_chat === kenaiResponse.chat_id
+        );
 
         if (chatIndex !== -1) {
           const [chat] = chatStore.chats.splice(chatIndex, 1);
@@ -667,11 +695,10 @@ const handleSendPrompt = async () => {
     } finally {
       promptFetching.value = false;
       chatStore.setNewMessageSent(false);
-      fistChatClasses.value = '';
+      fistChatClasses.value = "";
     }
   }
 };
-
 
 const handleEnter = (event) => {
   if (!event.shiftKey) {
@@ -696,15 +723,16 @@ const toggleNavbarExtended = () => {
 };
 
 const toggleSettingsPopup = (event) => {
-  menuSettings.value.toggle(event);
+  menuSettings.value = !menuSettings.value;
 };
 
-
 const handleLanguageChange = (event) => {
-  // Cambiar el lenguaje
+  const selectedLanguage = event.value;
+  langStore.changeLang(selectedLanguage.code);
+  siteLanguage.value = selectedLanguage;
 };
 </script>
 
 <style scoped lang="scss">
-@import '@/assets/chat.scss';
+@import "@/assets/chat.scss";
 </style>

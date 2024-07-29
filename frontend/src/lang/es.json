@@ -1,5 +1,22 @@
 {
+  "auth": {
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "hi": "!Hola",
+    "privacy_policy": "Políticas de privacidad",
+    "terms_of_service": "Condiciones del servicio",
+    "session_closed": "Sesión cerrada",
+    "welcome": "Bienvenido",
+    "success": {
+      "logout": "Se ha cerrado correctamente su sesión.",
+      "login_as": "Sesión iniciada como"
+    },
+    "error": {
+      "login": "Error al iniciar sesión."
+    }
+  },
   "chat": {
+    "select_a_lang": "Seleccione un idioma",
     "new_chat": "Nuevo chat",
     "recent": "Reciente",
     "settings": "Configuración",
@@ -9,11 +26,36 @@
     "english": "Inglés",
     "spanish": "Español",
     "dark_theme": "Tema oscuro",
-    "language": "Lenguaje"
+    "language": "Idioma",
+    "recomendations": "Recomendaciones",
+    "nice_to_see_you": "Que gusto verte",
+    "what_you_want_to_talk": "¿De qué quieres conversar?",
+    "collapse_menu": "Contraer el menú",
+    "expand_menu": "Expandir el menú",
+    "record_audio": "Grabar audio",
+    "send": "Enviar",
+    "edit_chat_title": "Editar Título del Chat",
+    "update_title_description": "Actualiza el título de tu chat para identificarlo más fácilmente.",
+    "new_title_label": "Nuevo título",
+    "deleted": "Eliminado",
+    "done": "Hecho",
+    "basic": "Básico",
+    "intermediate": "Intermedio",
+    "advanced": "Avanzado",
+    "success": {
+      "deleted": "Chat eliminado correctamente.",
+      "chat_name_updated": "Nombre del chat cambiado correctamente."
+    },
+    "error": {
+      "no_title": "El título del chat no puede estar vacío.",
+      "no_chat_deleted": "No se pudo eliminar el chat.",
+      "request": "Error en la petición."
+    }
   },
   "prime_ui": {
     "accept": "Aceptar",
     "reject": "Rechazar",
+    "edit": "Editar",
     "startsWith": "Comienza con",
     "contains": "Contiene",
     "notContains": "No contiene",
@@ -31,6 +73,7 @@
     "dateAfter": "La fecha es posterior",
     "clear": "Limpiar",
     "apply": "Aplicar",
+    "update": "Actualizar",
     "matchAll": "Coincidir todos",
     "matchAny": "Coincidir cualquier",
     "addRule": "Añadir regla",
@@ -49,8 +92,24 @@
       "Viernes",
       "Sábado"
     ],
-    "dayNamesShort": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-    "dayNamesMin": ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+    "dayNamesShort": [
+      "Dom",
+      "Lun",
+      "Mar",
+      "Mié",
+      "Jue",
+      "Vie",
+      "Sáb"
+    ],
+    "dayNamesMin": [
+      "Do",
+      "Lu",
+      "Ma",
+      "Mi",
+      "Ju",
+      "Vi",
+      "Sa"
+    ],
     "monthNames": [
       "Enero",
       "Febrero",
@@ -60,7 +119,7 @@
       "Junio",
       "Julio",
       "Agosto",
-      "Septiembre", 
+      "Septiembre",
       "Octubre",
       "Noviembre",
       "Diciembre"

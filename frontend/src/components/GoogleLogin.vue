@@ -5,18 +5,22 @@ import { GoogleLogin } from "vue3-google-login";
 import { decodeCredential } from 'vue3-google-login'
 import { useSessionStore } from "@/stores/session";
 import { useMobileStore } from "@/stores/mobile";
+import { useI18n } from 'vue-i18n';
+
 
 // VARIABLES
 const store = useSessionStore();
 const mobileStore = useMobileStore();
 const loading = ref(false);
+const { t, locale } = useI18n();
+
 
 // FUNCIONES
 const callback = async (response) => {
   loading.value = true;
   const userData = decodeCredential(response.credential);
   try {
-    await store.login(userData);
+    await store.login(userData, t);
   } catch (error) {
     console.log(error);
   } finally {
@@ -37,30 +41,30 @@ const callback = async (response) => {
 
       <section class="title__container" v-if="!store.isAuthenticated">
         <span class="material-icons">person</span>
-        <h1 class="title__text">Login</h1>
+        <h1 class="title__text">{{ t('auth.login') }}</h1>
       </section>
 
       <section class="user-details" v-if="store.isAuthenticated">
         <div class="authed__container">
           <Avatar :image="store.user.picture" alt="User Avatar" shape="circle" size="xlarge"
             style="height: 80px; width: 80px" />
-          <span class="hi-user">!Hola, {{ store.user.given_name }}¡</span>
+          <span class="hi-user">{{ t('auth.hi') }}, {{ store.user.given_name }}¡</span>
         </div>
       </section>
 
       <section class="form__container">
         <GoogleLogin :callback="callback" v-if="!store.isAuthenticated" />
-        <Button class="logout-btn" v-if="store.isAuthenticated" @click="store.logout()" rounded outlined>
+        <Button class="logout-btn" v-if="store.isAuthenticated" @click="store.logout(t)" rounded outlined>
           <span class="material-icons-outlined icon">logout</span>
-          Logout
+          {{ t('auth.logout') }}
         </Button>
       </section>
 
 
       <section class="footer__container" :style="[{ flexDirection: mobileStore.isMobile ? 'column' : '' }]">
-        <Button class="footer-btn" label="Políticas de privacidad" severity="secondary" text size="small" />
+        <Button class="footer-btn" :label="t('auth.privacy_policy')" severity="secondary" text size="small" />
         <Divider layout="vertical" v-if="!mobileStore.isMobile" />
-        <Button class="footer-btn" label="Condiciones del servicio" severity="secondary" text size="small" />
+        <Button class="footer-btn" :label="t('auth.terms_of_service')" severity="secondary" text size="small" />
       </section>
     </div>
   </main>
