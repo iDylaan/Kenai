@@ -1,6 +1,6 @@
 export async function sendPrompt(promptData) {
     try {
-        const response = await fetch('http://localhost:5000/kenai/generate', {
+        const response = await fetch('/kenai/generate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
