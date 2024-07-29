@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref, reactive } from 'vue';
-import { getChatMessages, getUserChats } from '@/api/chat.js';
+import { getChatMessages, getUserChats, renameChatWithChatID } from '@/api/chat.js';
+import { useScrollStore } from './scroll';
+import { useToast } from 'primevue/usetoast';
 
 export const useChatStore = defineStore('chat', () => {
+    const toast = useToast();
+    const scrollStore = useScrollStore();
     const chats = ref([]);
     const activeChatID = ref(null);
     const loading = ref(false);
@@ -19,6 +23,20 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     const setLoading = (value) => loading.value = value;
+
+    const renameChat = async (chatID, newTitle, t) => {
+        try {
+            const renamed = await renameChatWithChatID(chatID, newTitle);
+            if (renamed) {
+                toast.add({ severity: 'success', summary: t('chat.done'), detail: t('chat.success.chat_name_updated'), life: 3000 });
+            } else {
+                toast.add({ severity: 'error', summary: 'Error', detail: t('chat.error.no_chat_deleted'), life: 3000 });
+            }
+        } catch (error) {
+            console.log(error);
+            toast.add({ severity: 'error', summary: 'Error', detail: t('chat.error.request'), life: 3000 });
+        }
+    }
 
     const updateChatMessages = async (chatID) => {
         if (chatID === activeChatID.value) return;
@@ -46,6 +64,9 @@ export const useChatStore = defineStore('chat', () => {
             }
         }));
         chatLoading.value = false;
+        setTimeout(() => {
+            scrollStore.scrollToLastMessage();
+        }, 200);
     }
 
     const getChatHistory = () => chatHistory.value;
@@ -85,6 +106,7 @@ export const useChatStore = defineStore('chat', () => {
         updateChatMessages,
         getChatHistory,
         setLoading,
-        setNewMessageSent
+        setNewMessageSent,
+        renameChat
     }
 });

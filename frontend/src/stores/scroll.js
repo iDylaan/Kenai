@@ -12,6 +12,12 @@ export const useScrollStore = defineStore('scroll', () => {
         updateScroll();
     });
 
+    const scrollToLastMessage = () => {
+        const lastMessageElement = document.getElementById('last-message');
+        if (lastMessageElement) {
+            lastMessageElement.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     const updateScroll = () => {
         scrollPosition.value = window.scrollY;
@@ -28,6 +34,7 @@ export const useScrollStore = defineStore('scroll', () => {
     return {
         initScrollWatch,
         destroyScrollWatch,
+        scrollToLastMessage,
         scrollPosition,
         upScrolling,
         downScrolling

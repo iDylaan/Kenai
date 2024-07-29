@@ -9,7 +9,10 @@ import { PrimeVueResolver } from 'unplugin-vue-components/resolvers';
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
+
 import { VitePWA } from 'vite-plugin-pwa'
+import { dirname, resolve } from 'node:path';
 
 const env = dotenv.config({ path: 'C:/Users/danie/OneDrive/Documentos/GitHub/Kenai/env' });
 dotenvExpand.expand(env);
@@ -18,6 +21,9 @@ dotenvExpand.expand(env);
 export default defineConfig({
   plugins: [
     vue(),
+    VueI18nPlugin({
+      include: resolve(dirname(fileURLToPath(import.meta.url)), './src/lang/**')
+    }),
     VitePWA({
       injectRegister: 'auto',
       registerType: 'autoUpdate',
