@@ -21,7 +21,8 @@
   </Dialog>
 
   <main class="main-container">
-    <Sidebar v-model:visible="navbarStore.extended" class="mobile-navbar" v-if="mobileStore.isMobile">
+    <Sidebar v-model:visible="navbarStore.extended" class="mobile-navbar" v-if="mobileStore.isMobile"
+      @update:visible="navbarStore.closeExtended()">
       <template #header>
         <div class="mobile-navbar__header">
           <Avatar :image="kenaiAvatar" />
@@ -106,7 +107,7 @@
     <section :class="['navbar__container', !navbarStore.extended ? 'not-extended' : '']" v-if="!mobileStore.isMobile">
       <section class="navbar__header">
         <div class="menu-btn__container">
-          <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended" v-tooltip="{
+          <Button severity="secondary" size="small" text rounded @click="navbarStore.toggleExtended()" v-tooltip="{
             value: navbarStore.extended ? t('chat.collapse_menu') : t('chat.expand_menu'),
           }">
             <span class="material-icons menu-icon">menu</span>
@@ -195,7 +196,7 @@
             <h1 style="padding: 0; margin: 0">KenAI</h1>
           </Button>
         </router-link>
-        <Button v-else @click="toggleMobileNavbar" v-tooltip="{
+        <Button v-else @click="navbarStore.toggleExtended()" v-tooltip="{
           value: navbarStore.extended ? t('chat.collapse_menu') : t('chat.expand_menu'),
         }" severity="secondary" text rounded aria-label="Menu" size="large">
           <span class="material-icons menu-icon">menu</span>
@@ -611,10 +612,6 @@ const handleChangeChatTitle = async () => {
   }
 };
 
-const toggleMobileNavbar = () => {
-  navbarStore.toggleExtended();
-};
-
 const printMessageWithDelay = async (chatRow, message) => {
   chatRow.kenai.renderedResponse += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
@@ -717,10 +714,6 @@ const handleInput = (event) => {
   }
 };
 const charCount = computed(() => prompt.value.length);
-
-const toggleNavbarExtended = () => {
-  navbarStore.toggleExtended();
-};
 
 const toggleSettingsPopup = (event) => {
   menuSettings.value = !menuSettings.value;

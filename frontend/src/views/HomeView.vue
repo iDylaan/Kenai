@@ -198,7 +198,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   scrollStore.destroyScrollWatch();
-  window.removeEventListener('scroll', handleScroll);
 });
 
 watch(titleParallax, (newVal) => {
