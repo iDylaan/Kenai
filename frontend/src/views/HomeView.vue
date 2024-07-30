@@ -2,7 +2,9 @@
 // Importaciones
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from "vue";
 import { useScrollStore } from "@/stores/scroll";
-
+import { useNavbarStore } from "@/stores/navbar";
+import { useMobileStore } from "@/stores/mobile";
+import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 // Variables
 const scrollStore = useScrollStore();
 const items = ref([
@@ -14,11 +16,13 @@ const items = ref([
 ]);
 
 const isMenuOpen = ref(false);
+const isMobileNavbarOpen = ref(false); // Nueva propiedad
 const animationKenaiClass = ref('');
 const carousel = ref(null);
-const animateTitle = ref('animate__animated animate__fadeInUp');
 const animateDescription = ref('animate__animated animate__fadeInUp');
-const animateImage = ref('animate__animated animate__fadeInUp');
+const animateImage = ref('animate__animated animate__fadeIn');
+const navbarStore = useNavbarStore();
+const mobileStore = useMobileStore();
 
 // Parallax values
 const titleParallax = computed(() => {
@@ -38,23 +42,22 @@ const appParallax = computed(() => {
   else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1900 && scrollStore.scrollPosition <= 2800; // Aparece
 });
 const contentParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 3500;
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 3800;
   else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2560 && scrollStore.scrollPosition <= 3400; // Aparece
 });
 
 // Animacion en el carrusel
 const handleNextClick = () => {
-  animateTitle.value = '';
   animateDescription.value = '';
   animateImage.value = '';
   setTimeout(() => {
-    animateTitle.value = 'animate__animated animate__fadeInUp';
     animateDescription.value = 'animate__animated animate__fadeInUp';
-    animateImage.value = 'animate__animated animate__fadeInUp';
+    animateImage.value = 'animate__animated animate__fadeIn';
   }, 100);
 };
 
 onMounted(async () => {
+  mobileStore.initWidthWatch();
   await nextTick();
   if (carousel.value && carousel.value.$el) {
     const nextButton = carousel.value.$el.querySelector('.p-carousel-next');
@@ -82,7 +85,7 @@ const scrollToSection = (route) => {
   if (section) {
     section.scrollIntoView({ behavior: 'smooth' });
   }
-  isMenuOpen.value = false; // Cerrar el menú al hacer clic en un enlace
+  isMobileNavbarOpen.value = false;
 };
 
 const observer = new IntersectionObserver((entries) => {
@@ -130,10 +133,12 @@ onMounted(() => {
       observer.observe(section);
     }
   });
-  updateNavbarHighlight(); // Ensure initial update
+  updateNavbarHighlight();
+  mobileStore.initWidthWatch();
 });
 
 onUnmounted(() => {
+  mobileStore.destroyWidthWatch();
   items.value.forEach(item => {
     const section = document.getElementById(item.route.substring(1));
     if (section) {
@@ -193,6 +198,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   scrollStore.destroyScrollWatch();
+  window.removeEventListener('scroll', handleScroll);
 });
 
 watch(titleParallax, (newVal) => {
@@ -211,10 +217,26 @@ watch(titleParallax, (newVal) => {
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
+
+const toggleMobileNavbar = () => {
+  isMobileNavbarOpen.value = !isMobileNavbarOpen.value;
+  updateNavbarHighlight(); // Ensure highlight updates on toggle
+};
+
+const toggleNavbarExtended = () => {
+  navbarStore.toggleExtended();
+};
+
+
 </script>
+
 
 <template>
   <main>
+    <Button v-if="mobileStore.isMobile" @click="toggleMobileNavbar" severity="secondary" text rounded aria-label="Menu"
+      size="large" class="fixed-button">
+      <span class="material-icons menu-icon">menu</span>
+    </Button>
     <!-- Title -->
     <section class="title__section" id="kenai">
       <div class="title-lights">
@@ -245,7 +267,8 @@ const toggleMenu = () => {
     <!-- NAVBAR -->
     <div class="nav__container">
       <nav class="landing-navbar" ref="navbar">
-        <TabMenu :model="items" class="nav-tab-menu">
+        <!-- VISTA ESCRITORIO -->
+        <TabMenu v-if="!mobileStore.isMobile" :model="items" class="nav-tab-menu">
           <template #item="{ item, props }">
             <router-link v-if="item.route" v-slot="{ href }" :to="item.route" custom>
               <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)"
@@ -261,6 +284,29 @@ const toggleMenu = () => {
           </template>
         </TabMenu>
       </nav>
+      <!-- VISTA MOVIL -->
+      <div :class="['navbar__container', { 'open': isMobileNavbarOpen }]">
+        <div class="mobile-navbar__header mobile__home">
+          <Avatar :image="kenaiAvatar" class="avatar__home" />
+          <span :style="[{ 'font-size': '1.2rem', fontWeight: '500' }]">KenAI</span>
+          <span class="close-btn material-icons" @click="toggleMobileNavbar">close</span>
+        </div>
+        <TabMenu :model="items" class="nav-tab-menu">
+          <template #item="{ item, props }">
+            <router-link v-if="item.route" v-slot="{ href }" :to="item.route" custom>
+              <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)"
+                :class="{ 'active': activeSection === item.route }" class="p__menulink">
+                <span class="material-icons-outlined">{{ item.materialIcon }}</span>
+                <span v-bind="props.label">{{ item.label }}</span>
+              </a>
+            </router-link>
+            <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
+              <span class="material-icons-outlined">{{ item.materialIcon }}</span>
+              <span v-bind="props.label">{{ item.label }}</span>
+            </a>
+          </template>
+        </TabMenu>
+      </div>
     </div>
 
 
@@ -357,7 +403,7 @@ const toggleMenu = () => {
                 <div class="text-content">
                   <h3 :class="animateDescription">{{ slotProps.data.description }}</h3>
                 </div>
-                <div class="image-content">
+                <div class="image-content" :class="animateImage">
                   <img :src="slotProps.data.src" :alt="slotProps.data.alt" class="carousel-image" />
                 </div>
               </div>
@@ -372,15 +418,11 @@ const toggleMenu = () => {
 
     <section id="aplicaciones" class="secciones">
       <div class=" text_content">
-        <span class="title_text_content">Simple Card
+        <span class="title_text_content">Descubre Cómo Usar Kenai
         </span>
-        <p class="animate__animated m-0 p_text_content">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae
-          numquam
-          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse,
-          cupiditate
-          neque
-          quas!
+        <p class="animate__animated m-0 p_text_content">Aquí te presento cómo puedes usarme para sacar el máximo
+          provecho de
+          nuestras interacciones:
         </p>
       </div>
 
@@ -392,13 +434,15 @@ const toggleMenu = () => {
             <template #header>
               <div class="card__header ">
                 <img alt="Aplicación Gemini"
-                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  src="@/assets/imgs/undraw_browsing_online_re_umsa.svg"
                   class="card__imagen " />
               </div>
             </template>
-            <template #title>Primera</template>
+            <template #title>Herramienta Educativa en Escuelas</template>
             <template #content>
-              <p class="m-0">Lorem, ipsum dolor...</p>
+              <p class="m-0">Las escuelas pueden integrar a Kenai en sus aulas para complementar las lecciones de
+                inglés, permitiendo a los estudiantes practicar conversaciones, mejorar su pronunciación y desarrollar
+                habilidades lingüísticas en un entorno interactivo y atractivo.</p>
             </template>
           </Card>
         </div>
@@ -407,13 +451,15 @@ const toggleMenu = () => {
             <template #header>
               <div class="card__header ">
                 <img alt="Espacio de trabajo"
-                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  src="https://us.123rf.com/450wm/freeslab/freeslab2308/freeslab230802150/211497474-concepto-de-ilustraci%C3%B3n-de-profesor-de-ingl%C3%A9s-sobre-fondo-blanco.jpg?ver=6"
                   class="card__imagen " />
               </div>
             </template>
-            <template #title>Segundo</template>
+            <template #title>Apoyo para Profesores</template>
             <template #content>
-              <p class="m-0">Lorem, ipsum dolor.</p>
+              <p class="m-0">Los profesores pueden usar Kenai como asistente para proporcionar ejercicios personalizados
+                y retroalimentación instantánea a los estudiantes, facilitando una enseñanza más efectiva y adaptada a
+                las necesidades individuales de cada alumno.</p>
             </template>
           </Card>
         </div>
@@ -426,9 +472,11 @@ const toggleMenu = () => {
                   class="card__imagen " />
               </div>
             </template>
-            <template #title>Tercera</template>
+            <template #title>Recurso en Universidades</template>
             <template #content>
-              <p class="m-0">Lorem, ipsum dolor</p>
+              <p class="m-0">Universidades pueden implementar a Kenai para ofrecer soporte adicional a sus estudiantes,
+                mejorando sus habilidades de inglés de manera autónoma y eficiente, y preparándolos mejor para sus
+                estudios y futuras oportunidades profesionales.</p>
             </template>
           </Card>
         </div>
@@ -501,7 +549,7 @@ const toggleMenu = () => {
         </ul>
       </div>
       <div class="second__column">
-        <img src="@/assets/imgs/Kenai-Logo.png" alt="Kenai">
+        <img :src="kenaiAvatar" alt="Kenai">
         <h1>Kenai</h1>
       </div>
 

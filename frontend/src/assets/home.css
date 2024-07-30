@@ -1,8 +1,8 @@
-.secciones{
+.secciones {
   padding: 200px 0px 0px;
   widows: 100%;
 }
-.sub__prop{
+.sub__prop {
   text-align: center;
 }
 
@@ -191,7 +191,7 @@ a {
   position: absolute;
   top: -100%;
   left: -50%;
-  width: 200%;
+  width: 100%;
   height: 250%;
   z-index: -1;
   background: radial-gradient(circle, #416bc031 0%, transparent 50%);
@@ -265,6 +265,7 @@ a {
 }
 
 .custom__card {
+  height: auto;
   overflow: hidden;
   background-color: #1e1e1e;
   border-radius: 10px;
@@ -319,10 +320,10 @@ a {
   color: #bdbdbd;
 }
 @media (width >= 1024px) {
-    .p_text_content {
-        font-size: 1.12rem;
-        color: #bdbdbd;
-      }
+  .p_text_content {
+    font-size: 1.12rem;
+    color: #bdbdbd;
+  }
 }
 
 .gradient-border {
@@ -429,7 +430,7 @@ a {
   max-width: 100%;
   border-radius: 8px;
 }
-.p_horizontal{
+.p_horizontal {
   color: #a7a7a7;
 }
 /* //FOOTER  */
@@ -449,20 +450,100 @@ a {
   margin-right: 50px;
   width: 5rem;
 }
-.list li{
+.list li {
   list-style: none;
 }
-
 
 @media (max-width: 768px) {
   .nav-label {
     display: none;
   }
   .nav__container {
-  top: 0px;
-   padding: 0px 10px;
+    top: 0px;
+    padding: 0px 10px;
   }
   .p_text_content {
     color: #bdbdbd;
+    padding: 0px 20px;
   }
+  .mobile__home {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+  }
+  .avatar__home {
+    margin-right: 10px;
+  }
+  .p__menulink {
+    display: flex;
+    background-color: #161616a3;
+  }
+  .navbar__container ul {
+    display: grid;
+    margin: 10px 0px;
+  }
+  .p-tabmenu-ink-bar {
+    display: none;
+  }
+  .fixed-button {
+    display: block;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 100; /* Asegúrate de que esté por encima de otros elementos */
+  }
+  .carousel-container {
+    padding: 0px;
+  }
+  .carousel-content {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+  }
+  .carousel-image {
+    max-width: 60%;
+  }
+  .secciones {
+    padding: 200px 20px 0px;
+  }
+  .panel__horizontal {
+    display: grid;
+  }
+  .card__horizontal {
+    margin: 10px 10px;
+  }
+  .footer__content {
+    margin: 10px 20px;
+    padding: 5px;
+  }
+  .firts__column ul{
+    padding: 0px;
+  }
+  .second__column img {
+    margin-right: 10px;
+    width: 3rem;
+  }
+}
+
+.navbar__container {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 250px;
+  height: 100%;
+  background-color: #161616a3;
+  transition: left 0.3s ease-in-out;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.navbar__container.open {
+  left: 0;
+}
+
+.navbar__container .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
 }
