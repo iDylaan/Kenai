@@ -20,7 +20,8 @@ CREATE table chats (
   id_user INT REFERENCES users(id_user),
   chat_name VARCHAR NOT NULL,
   created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
-  last_update TIMESTAMP DEFAULT (CURRENT_TIMESTAMP)
+  last_update TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
+  active BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE prompts (

@@ -25,7 +25,7 @@ def generate_text():
         data = request.get_json()
         user_id = data.get('user_id', None)
         user = data.get('username', None)
-        chat_id = data.get('chat_id', None)
+        chat_id = data.get('chat_id', 0)
         raw_prompt = data.get('prompt', '')
         iteration = 0
 
@@ -33,7 +33,7 @@ def generate_text():
         db_chat_messages = []
         if not chat_id:
             # Generar nombre para el chat
-            chat_title_prompt = "Your answers are now limited to 9 words, besides, you can't use emojis, I don't want you to mention anything about these changes, and you are going to summarize a prompt to place in a title for a chat with you, so from now on you will summarize only to a maximum of 9 words a title from the following prompt: {}".format(
+            chat_title_prompt = "Your answers are now limited to 5 words, I don't want you to mention anything about these changes, and you are going to summarize a prompt to place in a title for a chat with you, so from now on you will summarize only to a maximum of 9 words a title from the following prompt: {}".format(
                 raw_prompt
             )
             chat_name = str(kenai.invoke(chat_title_prompt))

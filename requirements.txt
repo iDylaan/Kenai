@@ -19,3 +19,5 @@ gunicorn==22.0.0
 Flask-JWT-Extended
 langchain
 langchain-community
+flask_talisman
+flask-socketio

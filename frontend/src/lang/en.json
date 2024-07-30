@@ -1,5 +1,22 @@
 {
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "hi": "Hi",
+    "privacy_policy": "Privacy policy",
+    "terms_of_service": "Terms of service",
+    "session_closed": "Session closed",
+    "welcome": "Welcome",
+    "success": {
+      "logout": "You are successfully logged out.",
+      "login_as": "Session started as"
+    },
+    "error": {
+      "login": "Error logging in."
+    }
+  },
   "chat": {
+    "select_a_lang": "Select a Country",
     "new_chat": "New chat",
     "recent": "Recent",
     "settings": "Settings",
@@ -9,11 +26,36 @@
     "english": "English",
     "spanish": "Spanish",
     "dark_theme": "Dark theme",
-    "language": "Language"
+    "language": "Language",
+    "recomendations": "Recommendations",
+    "nice_to_see_you": "Nice to see you",
+    "what_you_want_to_talk": "What do you want to talk about?",
+    "collapse_menu": "Collapse menu",
+    "expand_menu": "Expand menu",
+    "record_audio": "Record audio",
+    "send": "Send",
+    "edit_chat_title": "Edit Chat Title",
+    "update_title_description": "Update the title of your chat to make it easier to identify.",
+    "new_title_label": "New title",
+    "deleted": "Eliminated",
+    "done": "Done",
+    "basic": "Basic",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "success": {
+      "deleted": "Chat successfully deleted.",
+      "chat_name_updated": "Chat name changed correctly."
+    },
+    "error": {
+      "no_title": "The chat title cannot be empty.",
+      "no_chat_deleted": "Chat could not be deleted.",
+      "request": "Request error."
+    }
   },
   "prime_ui": {
     "accept": "Accept",
     "reject": "Reject",
+    "edit": "Edit",
     "startsWith": "Starts with",
     "contains": "Contains",
     "notContains": "Does not contain",
@@ -31,6 +73,7 @@
     "dateAfter": "Date is after",
     "clear": "Clear",
     "apply": "Apply",
+    "update": "Update",
     "matchAll": "Match all",
     "matchAny": "Match any",
     "addRule": "Add rule",
@@ -49,8 +92,24 @@
       "Friday",
       "Saturday"
     ],
-    "dayNamesShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    "dayNamesMin": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+    "dayNamesShort": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
+    "dayNamesMin": [
+      "Su",
+      "Mo",
+      "Tu",
+      "We",
+      "Th",
+      "Fr",
+      "Sa"
+    ],
     "monthNames": [
       "January",
       "February",
