@@ -1,7 +1,3 @@
-.secciones {
-  padding: 200px 0px 0px;
-  widows: 100%;
-}
 .sub__prop {
   text-align: center;
 }
@@ -71,7 +67,7 @@ a {
   max-width: 90dvw;
   width: 100%;
   margin: 0 auto;
-  min-height: 70vh;
+  min-height: calc(100dvh - 200px);
   overflow-y: visible;
   display: flex;
   justify-content: center;
@@ -134,14 +130,12 @@ a {
   font-size: min(max(80px, 13vw), 160px);
   color: orange;
   font-weight: 600;
-  background: linear-gradient(
-    270deg,
-    #fca311,
-    #fcb243,
-    #fc9943,
-    #fc8243,
-    #fd950e
-  );
+  background: linear-gradient(270deg,
+      #fca311,
+      #fcb243,
+      #fc9943,
+      #fc8243,
+      #fd950e);
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -211,6 +205,12 @@ a {
   }
 }
 
+#proposito {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+}
+
 .no-visible {
   visibility: hidden;
 }
@@ -232,10 +232,12 @@ a {
   border: 1px solid #2c2c2c;
   border-radius: 10px;
 }
+
 .card__horizontal:hover {
   box-shadow: rgba(134, 134, 134, 0.35) 0px 5px 15px;
   transition: 0.5s;
 }
+
 .img__horizontal {
   display: flex;
   align-items: center;
@@ -319,7 +321,8 @@ a {
   font-size: 1.125rem;
   color: #bdbdbd;
 }
-@media (width >= 1024px) {
+
+@media (width >=1024px) {
   .p_text_content {
     font-size: 1.12rem;
     color: #bdbdbd;
@@ -333,6 +336,7 @@ a {
   transform-style: preserve-3d;
   transform: rotateX(0) rotateY(0);
 }
+
 .gradient-border:hover {
   transition: 0.5s;
 }
@@ -345,14 +349,12 @@ a {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(
-    270deg,
-    #fca311,
-    #fcb243,
-    #fc9943,
-    #fc8243,
-    #fd950e
-  );
+  background: linear-gradient(270deg,
+      #fca311,
+      #fcb243,
+      #fc9943,
+      #fc8243,
+      #fd950e);
   background-size: 400% 400%;
   z-index: -1;
   border-radius: 12px;
@@ -381,7 +383,25 @@ a {
   }
 }
 
+#contenido {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+}
+
+#aplicaciones {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+}
+
 /* //Estilos Modelo */
+#modelo {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+}
+
 .carousel-container {
   width: 100%;
   display: flex;
@@ -430,9 +450,11 @@ a {
   max-width: 100%;
   border-radius: 8px;
 }
+
 .p_horizontal {
   color: #a7a7a7;
 }
+
 /* //FOOTER  */
 
 .footer__content {
@@ -442,14 +464,17 @@ a {
   justify-content: space-around;
   border-top: 1px solid rgb(98, 98, 98);
 }
+
 .second__column {
   display: flex;
   align-items: center;
 }
+
 .second__column img {
   margin-right: 50px;
   width: 5rem;
 }
+
 .list li {
   list-style: none;
 }
@@ -458,67 +483,85 @@ a {
   .nav-label {
     display: none;
   }
+
   .nav__container {
     top: 0px;
     padding: 0px 10px;
   }
+
   .p_text_content {
     color: #bdbdbd;
     padding: 0px 20px;
   }
+
   .mobile__home {
     padding: 10px;
     display: flex;
     align-items: center;
   }
+
   .avatar__home {
     margin-right: 10px;
   }
+
   .p__menulink {
     display: flex;
     background-color: #161616a3;
   }
+
   .navbar__container ul {
     display: grid;
     margin: 10px 0px;
   }
+
   .p-tabmenu-ink-bar {
     display: none;
   }
+
   .fixed-button {
     display: block;
     position: fixed;
     top: 10px;
     left: 10px;
-    z-index: 100; /* Asegúrate de que esté por encima de otros elementos */
+    z-index: 100;
+    /* Asegúrate de que esté por encima de otros elementos */
   }
+
   .carousel-container {
     padding: 0px;
   }
+
   .carousel-content {
     display: block;
     text-align: center;
     font-size: 12px;
   }
+
   .carousel-image {
     max-width: 60%;
   }
+
   .secciones {
     padding: 200px 20px 0px;
   }
+
   .panel__horizontal {
     display: grid;
   }
+
   .card__horizontal {
     margin: 10px 10px;
   }
+
   .footer__content {
     margin: 10px 20px;
     padding: 5px;
   }
-  .firts__column ul{
+
+  .firts__column ul {
     padding: 0px;
   }
+
   .second__column img {
     margin-right: 10px;
     width: 3rem;

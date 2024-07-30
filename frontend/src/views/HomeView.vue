@@ -312,12 +312,13 @@ const toggleNavbarExtended = () => {
 
     <!-- END NAVBAR -->
 
+
     <!-- Content -->
     {{ scrollStore.scrollPosition }}
     <section id="proposito" class="secciones">
-      <div class=" text_content">
+      <div class="text_content">
         <span :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
-          class="animate__animated title_text_content">¡Hola! Soy Kenai
+          class="animate__animated title_text_content">¡Hola! 👋 Soy KenAI
         </span>
         <p :class="propParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
           class="animate__animated m-0 p_text_content">
@@ -433,8 +434,7 @@ const toggleNavbarExtended = () => {
             class="animate__animated custom__card ">
             <template #header>
               <div class="card__header ">
-                <img alt="Aplicación Gemini"
-                  src="@/assets/imgs/undraw_browsing_online_re_umsa.svg"
+                <img alt="Aplicación Gemini" src="@/assets/imgs/undraw_browsing_online_re_umsa.svg"
                   class="card__imagen " />
               </div>
             </template>
@@ -552,7 +552,11 @@ const toggleNavbarExtended = () => {
         <img :src="kenaiAvatar" alt="Kenai">
         <h1>Kenai</h1>
       </div>
-
     </footer>
   </main>
 </template>
+
+<style scoped lang="scss">
+/* Style Home */
+@import '@/assets/home.scss';
+</style>
