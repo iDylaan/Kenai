@@ -1,7 +1,19 @@
 .sub__prop {
   text-align: center;
 }
-
+.img__proposito {
+  width: 35%;
+}
+.div__proposito {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 5rem;
+}
+.p__proposito {
+  padding: 5px;
+  width: 50%;
+}
 .get-started__btn {
   padding: 12px calc(30px + 1dvw);
   border-radius: 100px;
@@ -130,12 +142,14 @@ a {
   font-size: min(max(80px, 13vw), 160px);
   color: orange;
   font-weight: 600;
-  background: linear-gradient(270deg,
-      #fca311,
-      #fcb243,
-      #fc9943,
-      #fc8243,
-      #fd950e);
+  background: linear-gradient(
+    270deg,
+    #fca311,
+    #fcb243,
+    #fc9943,
+    #fc8243,
+    #fd950e
+  );
   background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -203,6 +217,9 @@ a {
     background: radial-gradient(circle, #416bc031 0%, transparent 50%);
     transform: rotate(0deg);
   }
+  #modelo {
+    padding: 0rem;
+  }
 }
 
 #proposito {
@@ -267,7 +284,7 @@ a {
 }
 
 .custom__card {
-  height: auto;
+  height: 100%;
   overflow: hidden;
   background-color: #1e1e1e;
   border-radius: 10px;
@@ -285,13 +302,14 @@ a {
   display: flex;
   align-items: center;
   padding: 10px;
+  height: 10rem;
+
 }
 
 .custom__card .card__imagen {
   width: 100%;
-  height: auto;
+  height: 100%;
   border-radius: 5px;
-  margin-right: 10px;
 }
 
 .custom__card .p-card-title {
@@ -349,12 +367,14 @@ a {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(270deg,
-      #fca311,
-      #fcb243,
-      #fc9943,
-      #fc8243,
-      #fd950e);
+  background: linear-gradient(
+    270deg,
+    #fca311,
+    #fcb243,
+    #fc9943,
+    #fc8243,
+    #fd950e
+  );
   background-size: 400% 400%;
   z-index: -1;
   border-radius: 12px;
@@ -397,6 +417,7 @@ a {
 
 /* //Estilos Modelo */
 #modelo {
+  padding: 6rem 0rem;
   min-height: 100dvh;
   display: grid;
   place-content: center;

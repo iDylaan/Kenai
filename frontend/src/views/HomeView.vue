@@ -319,64 +319,32 @@ const toggleNavbarExtended = () => {
         <span :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
           class="animate__animated title_text_content">¡Hola! 👋 Soy KenAI
         </span>
-        <p :class="propParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
-          class="animate__animated m-0 p_text_content">
-          Soy tu compañero de ingles, una Inteligencia Artificial diseñada para ayudarte a aprender y practicar inglés
-          de
-          una manera
-          divertida y segura. Mi objetivo es hacer que te sientas cómodo y confiado al hablar inglés, sin importar tu
-          nivel
-          de habilidad.
-        <p>
-          Fui creado por un talentoso grupo de estudiantes de la Universidad Tecnológica de Nezahualcóyotl, conocidos
-          como <b> Equipo IT Solutions</b>.
-        <p>Ellos se dieron cuenta de que muchos estudiantes, como tú, se sienten
-          inseguros
-          al
-          hablar inglés debido a los prejuicios y la falta de confianza. Por eso, decidieron crearme para brindarte un
-          espacio
-          amigable y seguro donde puedas mejorar tus habilidades sin temor a ser juzgado.
-        </p>
-        </p>
-        </p>
+        <div class="div__proposito">
+          <img :src="kenaiAvatar" alt="Kenai" class="img__proposito">
+          <p :class="propParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
+            class="animate__animated m-0 p__proposito">
+            Soy tu compañero de ingles, una Inteligencia Artificial diseñada para ayudarte a aprender y practicar inglés
+            de
+            una manera
+            divertida y segura. Mi objetivo es hacer que te sientas cómodo y confiado al hablar inglés, sin importar tu
+            nivel
+            de habilidad.
+          <p>
+            Fui creado por un talentoso grupo de estudiantes de la Universidad Tecnológica de Nezahualcóyotl, conocidos
+            como <b> Equipo IT Solutions</b>.
+          <p>Ellos se dieron cuenta de que muchos estudiantes, como tú, se sienten
+            inseguros
+            al
+            hablar inglés debido a los prejuicios y la falta de confianza. Por eso, decidieron crearme para brindarte un
+            espacio
+            amigable y seguro donde puedas mejorar tus habilidades sin temor a ser juzgado.
+          </p>
+          </p>
+          </p>
+          
+        </div>
       </div>
       <br>
-      <!-- <h3 :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'" class="animate__animated sub__prop">
-        ¿Cómo
-        puedo
-        ayudarte?</h3>
-      <div :class="propParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
-        class="animate__animated panel__horizontal">
-        <div class="card__horizontal">
-          <div class="img__horizontal">
-            <img src="@/assets/imgs/img1.png" alt="Imagen 1">
-          </div>
-          <p>
-            Estoy aquí para charlar sobre cualquier tema que te interese.Puedes hablar conmigo a través de texto o
-            audio.
-          </p>
-        </div>
-        <div class="card__horizontal">
-          <div class="img__horizontal">
-            <img src="@/assets/imgs/img2.png" alt="Imagen 1">
-          </div class="text__horizontal">
-
-          <p>
-            Te sugiero temas de conversación y te doy ideas para que siempre tengas algo nuevo que practicar.
-          </p>
-
-        </div>
-        <div class="card__horizontal">
-          <div class="img__horizontal">
-            <img src="@/assets/imgs/img3.png" alt="Imagen 1">
-          </div>
-
-          <p>
-            Te ayudo a mejorar en todas las áreas del inglés: lectura, escritura, escucha y habla.
-          </p>
-
-        </div>
-      </div> -->
 
     </section>
 
@@ -450,7 +418,7 @@ const toggleNavbarExtended = () => {
             <template #header>
               <div class="card__header ">
                 <img alt="Espacio de trabajo"
-                  src="https://us.123rf.com/450wm/freeslab/freeslab2308/freeslab230802150/211497474-concepto-de-ilustraci%C3%B3n-de-profesor-de-ingl%C3%A9s-sobre-fondo-blanco.jpg?ver=6"
+                  src="@/assets/imgs/undraw_teacher_re_sico.svg"
                   class="card__imagen " />
               </div>
             </template>
@@ -467,7 +435,7 @@ const toggleNavbarExtended = () => {
             <template #header>
               <div class="card__header ">
                 <img alt="Anuncios"
-                  src="https://lh3.googleusercontent.com/hRHXzqoiepyRdZldzouwopBfzZE8qrdOeo9rk1s-8M3xBCqZLAhiHftlOA1M2L-SNnQBYzEZaXmINpng1coPWwUJ1VsHH6Kkt3sTkT7pmExwu7eq=w400"
+                  src="@/assets/imgs/undraw_speech_to_text_re_8mtf.svg"
                   class="card__imagen " />
               </div>
             </template>
@@ -500,7 +468,7 @@ const toggleNavbarExtended = () => {
         <div :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
           class="animate__animated card__horizontal">
           <div class="img__horizontal">
-            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+            <img src="@/assets/imgs/img2.png" alt="Imagen 1">
           </div>
           <p>
           <h4>Práctica de Conversaciones:</h4>
@@ -512,7 +480,7 @@ const toggleNavbarExtended = () => {
         <div :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
           class="animate__animated card__horizontal">
           <div class="img__horizontal">
-            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+            <img src="@/assets/imgs/img3.png" alt="Imagen 1">
           </div class="text__horizontal">
 
           <p>
@@ -525,7 +493,7 @@ const toggleNavbarExtended = () => {
         <div :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
           class="animate__animated card__horizontal">
           <div class="img__horizontal">
-            <img src="https://vimond.academy/wp-content/uploads/2024/02/placeholder.png.webp" alt="Imagen 1">
+            <img src="@/assets/imgs/img1.png" alt="Imagen 1">
           </div>
 
           <p>
