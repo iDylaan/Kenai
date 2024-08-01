@@ -10059,6 +10059,16 @@
         flex-wrap: nowrap;
     }
 
+   
+    @media (max-width: 768px) {
+        .nav-tab-menu > .p-tabmenu-nav {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+    }
     .p-tabmenu-nav a {
         cursor: pointer;
         user-select: none;

@@ -1,19 +1,7 @@
 .sub__prop {
   text-align: center;
 }
-.img__proposito {
-  width: 35%;
-}
-.div__proposito {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 5rem;
-}
-.p__proposito {
-  padding: 5px;
-  width: 50%;
-}
+
 .get-started__btn {
   padding: 12px calc(30px + 1dvw);
   border-radius: 100px;
@@ -226,6 +214,7 @@ a {
   min-height: 100dvh;
   display: grid;
   place-content: center;
+  padding: 0px 200px;
 }
 
 .no-visible {
@@ -501,6 +490,9 @@ a {
 }
 
 @media (max-width: 768px) {
+  #proposito {
+    padding: 2px ;
+  }
   .nav-label {
     display: none;
   }
@@ -530,11 +522,6 @@ a {
     background-color: #161616a3;
   }
 
-  .navbar__container ul {
-    display: grid;
-    margin: 10px 0px;
-  }
-
   .p-tabmenu-ink-bar {
     display: none;
   }
@@ -561,6 +548,10 @@ a {
   .carousel-image {
     max-width: 60%;
   }
+  .card__content {
+    display: grid;
+    padding: 0px 0px;
+  }  
 
   .secciones {
     padding: 200px 20px 0px;
@@ -610,4 +601,21 @@ a {
   top: 10px;
   right: 10px;
   cursor: pointer;
+}
+
+.text__null{
+  display: none;
+}
+
+.typing {
+  white-space: normal;
+  overflow: hidden;
+  border-right: 0.15em solid orange; /* Simula el cursor de máquina de escribir */
+  animation: blink-caret 0.75s step-end infinite;
+  display: inline-block;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: orange }
 }

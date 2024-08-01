@@ -225,13 +225,96 @@ const toggleMobileNavbar = () => {
 const toggleNavbarExtended = () => {
   navbarStore.toggleExtended();
 };
+const displayTextH3 = ref('');
+const displayTextP = ref('');
+const displayTextP2 = ref('');
+const displayTextP3 = ref('');
+const isTypingH3 = ref(true);
+const isTypingP = ref(true);
+const isTypingP2 = ref(true);
+const isTypingP3 = ref(true);
 
+const fullTextH3 = "¡Hola! 👋 Soy KenAI";
+const fullTextP = "Soy tu compañero de inglés, una Inteligencia Artificial diseñada para ayudarte a aprender y practicar inglés de una manera divertida y segura. Mi objetivo es hacer que te sientas cómodo y confiado al hablar inglés, sin importar tu nivel de habilidad.🤓";
+const fullTextP2 = "Fui creado por un talentoso grupo de estudiantes de la Universidad Tecnológica de Nezahualcóyotl, conocidos como Equipo IT Solutions.";
+const fullTextP3 = "Ellos se dieron cuenta de que muchos estudiantes, como tú, se sienten inseguros 🙁 al hablar inglés debido a los prejuicios y la falta de confianza. Por eso, decidieron crearme para brindarte un espacio amigable y seguro donde puedas mejorar tus habilidades sin temor a ser juzgado. 🤗";
+
+let indexH3 = ref(0);
+let indexP = ref(0);
+let indexP2 = ref(0);
+let indexP3 = ref(0);
+const animateNextFieldset = ref(false);
+
+const resetTextAndIndices = () => {
+  displayTextH3.value = '';
+  displayTextP.value = '';
+  displayTextP2.value = '';
+  displayTextP3.value = '';
+
+  indexH3.value = 0;
+  indexP.value = 0;
+  indexP2.value = 0;
+  indexP3.value = 0;
+
+  isTypingH3.value = true;
+  isTypingP.value = true;
+  isTypingP2.value = true;
+  isTypingP3.value = true;
+
+  animateNextFieldset.value = false;
+};
+
+const typeText = (indexRef, fullText, isTypingRef, displayTextRef, callback) => {
+  if (indexRef.value < fullText.length) {
+    displayTextRef.value += fullText.charAt(indexRef.value);
+    indexRef.value++;
+    setTimeout(() => typeText(indexRef, fullText, isTypingRef, displayTextRef, callback), 15);
+  } else {
+    isTypingRef.value = false;
+    if (callback) callback();
+  }
+};
+
+const startTypingInNextFieldset = () => {
+  typeText(indexP2, fullTextP2, isTypingP2, displayTextP2, () => {
+    setTimeout(() => typeText(indexP3, fullTextP3, isTypingP3, displayTextP3), 500);
+  });
+};
+
+watch(animateNextFieldset, (newValue) => {
+  if (newValue) {
+    startTypingInNextFieldset();
+  }
+});
+
+watch(propParallax, (newValue) => {
+  if (newValue) {
+    // Resetear los textos e índices cuando propParallax sea true
+    resetTextAndIndices();
+    // Iniciar el efecto de escritura
+    typeText(indexH3, fullTextH3, isTypingH3, displayTextH3, () => {
+      typeText(indexP, fullTextP, isTypingP, displayTextP, () => {
+        animateNextFieldset.value = true;
+      });
+    });
+  } else {
+    // Resetear los textos cuando propParallax sea false
+    resetTextAndIndices();
+  }
+});
+onMounted(() => {
+  typeText(indexH3, fullTextH3, isTypingH3, displayTextH3, () => {
+      typeText(indexP, fullTextP, isTypingP, displayTextP, () => {
+        animateNextFieldset.value = true;
+      });
+    });
+});
 
 </script>
 
 
 <template>
-  <main>
+  <main style="overflow-x: hidden;">
     <Button v-if="mobileStore.isMobile" @click="toggleMobileNavbar" severity="secondary" text rounded aria-label="Menu"
       size="large" class="fixed-button">
       <span class="material-icons menu-icon">menu</span>
@@ -316,36 +399,32 @@ const toggleNavbarExtended = () => {
     {{ scrollStore.scrollPosition }}
     <section id="proposito" class="secciones">
       <div class="text_content">
-        <span :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
-          class="animate__animated title_text_content">¡Hola! 👋 Soy KenAI
-        </span>
-        <div class="div__proposito">
-          <img :src="kenaiAvatar" alt="Kenai" class="img__proposito">
-          <p :class="propParallax ? 'animate__slideInUp' : 'animate__fadeOut'"
-            class="animate__animated m-0 p__proposito">
-            Soy tu compañero de ingles, una Inteligencia Artificial diseñada para ayudarte a aprender y practicar inglés
-            de
-            una manera
-            divertida y segura. Mi objetivo es hacer que te sientas cómodo y confiado al hablar inglés, sin importar tu
-            nivel
-            de habilidad.
-          <p>
-            Fui creado por un talentoso grupo de estudiantes de la Universidad Tecnológica de Nezahualcóyotl, conocidos
-            como <b> Equipo IT Solutions</b>.
-          <p>Ellos se dieron cuenta de que muchos estudiantes, como tú, se sienten
-            inseguros
-            al
-            hablar inglés debido a los prejuicios y la falta de confianza. Por eso, decidieron crearme para brindarte un
-            espacio
-            amigable y seguro donde puedas mejorar tus habilidades sin temor a ser juzgado.
-          </p>
-          </p>
-          </p>
-          
-        </div>
+        <Fieldset :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
+          class="animate__animated text_content">
+          <template #legend>
+            <div class="flex align-items-center pl-2">
+              <Avatar :image="kenaiAvatar" shape="circle" />
+              <span class="font-bold">KenAI</span>
+            </div>
+          </template>
+          <div class="m-0">
+            <h3 :class="{ 'typing': isTypingH3 }">{{ displayTextH3 }}</h3>
+            <p :class="{ 'typing': isTypingP }">{{ displayTextP }}</p>
+          </div>
+        </Fieldset>
+        <Fieldset :class="animateNextFieldset ? 'animate__fadeInUp' : 'animate__fadeOut'" class="animate__animated text_content">
+          <template #legend>
+            <div class="flex align-items-center pl-2">
+              <Avatar :image="kenaiAvatar" shape="circle" />
+              <span class="font-bold">KenAI</span>
+            </div>
+          </template>
+          <div class="m-0">
+            <p :class="{ 'typing': isTypingP2 }">{{ displayTextP2 }}</p>
+            <p :class="{ 'typing': isTypingP3 }">{{ displayTextP3 }}</p>
+          </div>
+        </Fieldset>
       </div>
-      <br>
-
     </section>
 
     {{ scrollStore.scrollPosition }}
@@ -355,9 +434,9 @@ const toggleNavbarExtended = () => {
     <section id="modelo" class="secciones">
       <div class=" text_content">
         <span :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'"
-          class="animate__animated title_text_content">La Tecnología Detrás de Kenai</span>
+          class="animate__animated title_text_content">La Tecnología Detrás de KenAI</span>
         <p :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'" class="animate__animated m-0 p_text_content">
-          Para la creación de Kenai, el equipo de IT Solutions utilizó un fundamento conocido como PLMs (Pretrained
+          Para la creación de KenAI, el equipo de IT Solutions utilizó un fundamento conocido como PLMs (Pretrained
           Language
           Models), que son modelos previamente entrenados por un tercero.
         </p>
@@ -386,7 +465,7 @@ const toggleNavbarExtended = () => {
 
     <section id="aplicaciones" class="secciones">
       <div class=" text_content">
-        <span class="title_text_content">Descubre Cómo Usar Kenai
+        <span class="title_text_content">Descubre Cómo Usar KenAI
         </span>
         <p class="animate__animated m-0 p_text_content">Aquí te presento cómo puedes usarme para sacar el máximo
           provecho de
@@ -407,7 +486,7 @@ const toggleNavbarExtended = () => {
             </template>
             <template #title>Herramienta Educativa en Escuelas</template>
             <template #content>
-              <p class="m-0">Las escuelas pueden integrar a Kenai en sus aulas para complementar las lecciones de
+              <p class="m-0">Las escuelas pueden integrar a KenAI en sus aulas para complementar las lecciones de
                 inglés, permitiendo a los estudiantes practicar conversaciones, mejorar su pronunciación y desarrollar
                 habilidades lingüísticas en un entorno interactivo y atractivo.</p>
             </template>
@@ -417,14 +496,12 @@ const toggleNavbarExtended = () => {
           <Card :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated custom__card">
             <template #header>
               <div class="card__header ">
-                <img alt="Espacio de trabajo"
-                  src="@/assets/imgs/undraw_teacher_re_sico.svg"
-                  class="card__imagen " />
+                <img alt="Espacio de trabajo" src="@/assets/imgs/undraw_teacher_re_sico.svg" class="card__imagen " />
               </div>
             </template>
             <template #title>Apoyo para Profesores</template>
             <template #content>
-              <p class="m-0">Los profesores pueden usar Kenai como asistente para proporcionar ejercicios personalizados
+              <p class="m-0">Los profesores pueden usar KenAI como asistente para proporcionar ejercicios personalizados
                 y retroalimentación instantánea a los estudiantes, facilitando una enseñanza más efectiva y adaptada a
                 las necesidades individuales de cada alumno.</p>
             </template>
@@ -434,14 +511,12 @@ const toggleNavbarExtended = () => {
           <Card :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated custom__card">
             <template #header>
               <div class="card__header ">
-                <img alt="Anuncios"
-                  src="@/assets/imgs/undraw_speech_to_text_re_8mtf.svg"
-                  class="card__imagen " />
+                <img alt="Anuncios" src="@/assets/imgs/undraw_speech_to_text_re_8mtf.svg" class="card__imagen " />
               </div>
             </template>
             <template #title>Recurso en Universidades</template>
             <template #content>
-              <p class="m-0">Universidades pueden implementar a Kenai para ofrecer soporte adicional a sus estudiantes,
+              <p class="m-0">Universidades pueden implementar a KenAI para ofrecer soporte adicional a sus estudiantes,
                 mejorando sus habilidades de inglés de manera autónoma y eficiente, y preparándolos mejor para sus
                 estudios y futuras oportunidades profesionales.</p>
             </template>
@@ -517,7 +592,7 @@ const toggleNavbarExtended = () => {
       </div>
       <div class="second__column">
         <img :src="kenaiAvatar" alt="Kenai">
-        <h1>Kenai</h1>
+        <h1>KenAI</h1>
       </div>
     </footer>
   </main>
