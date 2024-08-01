@@ -216,8 +216,7 @@
       <div class="chat__body">
         <div class="firt-chat" :class="fistChatClasses" v-if="
           (chatStore.getActiveChatID() === null ||
-            chatStore.isNewChat ||
-            chatStore.chatHistory.length === 0) &&
+            chatStore.isNewChat) &&
           !chatStore.getChatLoading() &&
           !chatStore.newMessageSent
         ">
