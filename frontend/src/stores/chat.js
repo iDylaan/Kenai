@@ -14,6 +14,7 @@ export const useChatStore = defineStore('chat', () => {
     const chatLoading = ref(false);
     const isNewChat = ref(true);
     const newMessageSent = ref(false);
+    const kenaiErrorResponse = ref(false);
 
     const loadChats = async () => {
         loading.value = true;
@@ -83,6 +84,8 @@ export const useChatStore = defineStore('chat', () => {
         chatHistory.value = [];
         loading.value = false;
         chatLoading.value = false;
+        newMessageSent.value = false;
+        kenaiErrorResponse.value = false;
     }
 
     const desactivateNewChat = () => isNewChat.value = false;
@@ -90,12 +93,15 @@ export const useChatStore = defineStore('chat', () => {
     const getChatLoading = () => chatLoading.value;
     const setNewMessageSent = (value) => newMessageSent.value = value;
 
+    const setKenaiErrorResponse = () => { kenaiErrorResponse.value = true }
+
     return {
         chats,
         chatHistory,
         loading,
         isNewChat,
         newMessageSent,
+        kenaiErrorResponse,
         desactivateNewChat,
         getChatLoading,
         loadChats,
@@ -107,6 +113,7 @@ export const useChatStore = defineStore('chat', () => {
         getChatHistory,
         setLoading,
         setNewMessageSent,
-        renameChat
+        renameChat,
+        setKenaiErrorResponse
     }
 });

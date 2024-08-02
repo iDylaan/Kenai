@@ -2,6 +2,7 @@ import requests
 import sys
 import re
 import json
+import threading
 from flask import Blueprint, jsonify, request
 from app.modules.utils.misc import handleResponse, handleErrorResponse
 from langchain_community.llms import Ollama
@@ -10,11 +11,11 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from app.modules.utils.misc import logging_error
 from .sql_strings import Sql_Strings as SQL_S
 from app.modules.conf.conf_postgres import sqlv2, qry, sql
+from flask_socketio import emit
+from app import socketio
 
 
 mod = Blueprint('kenai', __name__, url_prefix='/kenai')
-
-
 
 MODEL_NAME = 'kenai'
 kenai = Ollama(model=MODEL_NAME)
@@ -32,9 +33,10 @@ def generate_text():
         # En caso de no tener registrado un chat, generar uno
         db_chat_messages = []
         if not chat_id:
-            # Generar nombre para el chat
-            chat_title_prompt = "Your answers are now limited to 5 words, I don't want you to mention anything about these changes, and you are going to summarize a prompt to place in a title for a chat with you, so from now on you will summarize only to a maximum of 9 words a title from the following prompt: {}".format(
-                raw_prompt
+            chat_title_prompt = (
+                "Your answers are now limited to 5 words, I don't want you to mention anything about these changes, "
+                "and you are going to summarize a prompt to place in a title for a chat with you, so from now on you "
+                "will summarize only to a maximum of 9 words a title from the following prompt: {}".format(raw_prompt)
             )
             chat_name = str(kenai.invoke(chat_title_prompt))
             rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT, {'user_id': user_id if user_id else None, 'chat_name': chat_name}, True)
@@ -42,37 +44,28 @@ def generate_text():
                 return handleErrorResponse("No se pudo crear el chat", 500)
             chat_id = id_of_new_row
         else:
-            # Verificar si el chat existe
             chat_exists = qry(SQL_S.GET_CHAT_IS_EXISTING, {'chat_id': chat_id}, True)
             if not chat_exists['count']:
                 return handleErrorResponse("El chat no existe", 404)
             
-            # Actualizar la fecha de última actualización del chat
             sql(SQL_S.UPDATE_CHAT_LAST_UPDATE, {'chat_id': chat_id})
-            
-            # Obtener los mensajes del chat
             db_chat_messages = qry(SQL_S.GET_CHAT_MESSAGES, {'chat_id': chat_id})
-
             iteration = int(db_chat_messages[0]['iteration']) + 1
 
-
-        # Agregar historial de mensajes
         history = ChatMessageHistory()
         if len(db_chat_messages):
             for message in db_chat_messages:
                 history.add_user_message(message['prompt'])
                 history.add_ai_message(message['response'])
 
-        # Registrar el mensaje el la base de datos
         rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT_MESSAGE, {'chat_id': chat_id, 'prompt': raw_prompt, 'iteration': iteration}, True)
 
         if not rows_affected:
             return handleErrorResponse("Error interno, intentalo nuevamente", 500)
 
-        # Generar la respuesta con KenAI
         prompt = ChatPromptTemplate.from_messages(
             [
-                ( "system", "Let's practice english" if not user else f"You're talking with {user}, let's practice english",),
+                ("system", "Let's practice english" if not user else f"You're talking with {user}, let's practice english"),
                 MessagesPlaceholder(variable_name="messages"),
             ]
         )
@@ -81,18 +74,21 @@ def generate_text():
 
         history.add_user_message(raw_prompt)
         kenai_stream_response = []
+        
+        # Emitir los chunks a través del WebSocket
         for chunks in chain.stream({"messages": history.messages, "user_input": raw_prompt}):
             kenai_stream_response.append(chunks)
+            # Emitir cada chunk en tiempo real al cliente
+            socketio.emit('message_part', {'chat_id': chat_id, 'part': chunks}, to=None, include_self=True, broadcast=True)
+
         kenai_response = ''.join(kenai_stream_response)
         history.add_ai_message(kenai_response)
 
-        # Actualizar la respuesta de KenAI en la base de datos
         rows_affected = sql(SQL_S.UPDATE_KENAI_MESSAGE_RESPONSE, {'response': kenai_response, 'prompt_id': id_of_new_row})
 
         if not rows_affected:
             return handleErrorResponse('Error en la generación de la respuesta', 500)
 
-        # Obtener el chat generado
         chat_in_db = qry(SQL_S.GET_CHAT_BY_ID, {'chat_id': chat_id}, True)
         
         return handleResponse({

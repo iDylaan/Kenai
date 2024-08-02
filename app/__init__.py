@@ -5,6 +5,7 @@ from .app_config import Config
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_talisman import Talisman
+from flask_socketio import SocketIO
 
 
 ### Cargar App ###
@@ -16,44 +17,11 @@ app.config.from_object(Config)
 ### CORS ###
 CORS(app)
 
+### SocketIO ###
+socketio = SocketIO(app, cors_allowed_origins="*")
+
 ### JWT Config ###
 jwt = JWTManager(app)
-
-#### Configuracion Cabeceras Talisman (SEC) ####
-# csp = {
-#     'default-src': [
-#         "'self'",
-#         "'unsafe-inline'",
-#         "https://fonts.cdnfonts.com",
-#         "https://accounts.google.com"
-#     ],
-#     'style-src': [
-#         "'self'",
-#         "'unsafe-inline'",
-#         "https://fonts.googleapis.com",
-#         "https://accounts.google.com"
-#     ],
-#     'font-src': [
-#         "'self'",
-#         "https://fonts.gstatic.com"
-#     ],
-#     'script-src': [
-#         "'self'",
-#         "'unsafe-inline'",
-#         "https://accounts.google.com"
-#     ],
-#     'img-src': [
-#         "'self'",
-#         "data:"
-#     ],
-# }
-# talisman = Talisman(app, content_security_policy=csp)
-# talisman.frame_options = 'SAMEORIGIN'
-# talisman.strict_transport_security = True
-# talisman.session_cookie_secure = True
-# talisman.session_cookie_http_only = True
-# talisman.force_https = True
-# talisman.force_file_save = True
 
 ### Carga logger ###
 from app.modules.utils.misc import init_logger
@@ -120,3 +88,7 @@ app.register_blueprint(mod_kenai)
 app.register_blueprint(mod_auth)
 app.register_blueprint(mod_postgres)
 app.register_blueprint(mod_chat)
+
+
+if __name__ == '__main__':
+    socketio.run(app, debug=True)

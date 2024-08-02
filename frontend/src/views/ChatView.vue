@@ -116,8 +116,11 @@
         <div class="new-btn__container">
           <Skeleton height="40px" borderRadius="100px" v-if="pageLoading"></Skeleton>
 
-          <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else :disabled="!sessionStore.isAuthenticated || chatStore.getActiveChatID() === null
-            " v-tooltip.bottom="t('chat.new_chat')" @click="chatStore.newChat()">
+          <Button severity="secondary" size="small" class="new-btn" rounded outlined v-else :disabled="(
+            !sessionStore.isAuthenticated
+            || chatStore.getActiveChatID() === null
+          )
+            && !chatStore.kenaiErrorResponse" v-tooltip.bottom="t('chat.new_chat')" @click="chatStore.newChat()">
             <span class="material-icons">add</span>
             <span class="text animate__animated animate__fadeIn" v-if="navbarStore.extended">
               {{ t('chat.new_chat') }}
@@ -218,7 +221,7 @@
           (chatStore.getActiveChatID() === null ||
             chatStore.isNewChat) &&
           !chatStore.getChatLoading() &&
-          !chatStore.newMessageSent
+          !chatStore.newMessageSent && !chatStore.kenaiErrorResponse
         ">
           <div class="title_new-chat__container">
             <p class="new-chat-title" v-if="!pageLoading">{{ t('chat.nice_to_see_you') }}</p>
@@ -382,9 +385,11 @@ import { useScrollStore } from "@/stores/scroll";
 import { useLangStore } from "@/stores/lang";
 import { useToast } from "primevue/usetoast";
 import { useI18n } from 'vue-i18n';
+import { io } from 'socket.io-client';
 
 // VARIABLES
 const { t, locale } = useI18n();
+const socket = io('ws://localhost:5000');
 const promptFetching = ref(false);
 const menuSettings = ref(false);
 const toast = useToast();
@@ -551,10 +556,29 @@ onMounted(async () => {
   } finally {
     pageLoading.value = false;
   }
+
+  socket.on('connect', () => {
+    console.log('Connected to WebSocket');
+  });
+
+  socket.on('message_part', (data) => {
+    if (data.chat_id === chatStore.getActiveChatID()) {
+      chat.kenai.renderedResponse += data.part;
+    }
+  });
+
+  socket.on('complete', (data) => {
+    if (data.chat_id === chatStore.getActiveChatID()) {
+      chat.kenai.loading = false;
+    }
+  });
 });
 
 onUnmounted(() => {
   mobileStore.destroyWidthWatch();
+  socket.off('message_part');
+  socket.off('complete');
+  socket.close();
 });
 
 watch(prompt, (newVal) => {
@@ -647,6 +671,7 @@ const handleSendPrompt = async () => {
 
     chatStore.chatHistory.push(chatRow);
     prompt.value = "";
+
     // Animar el cambio de interfaz
     fistChatClasses.value = "animate__animated animate__fadeOut";
     setTimeout(() => {
@@ -655,6 +680,7 @@ const handleSendPrompt = async () => {
     }, 700);
 
     try {
+      // Enviar el prompt al servidor vía HTTP
       const kenaiResponse = await sendPrompt({
         prompt: userPrompt,
         user_id: sessionStore.isAuthenticated ? sessionStore.user.id : null,
@@ -662,14 +688,8 @@ const handleSendPrompt = async () => {
         chat_id: chatStore.getActiveChatID(),
       });
 
-      chatRow.kenai.loading = false;
-      chatRow.kenai.respondedAt = new Date();
-      chatRow.kenai.response = kenaiResponse.response.map((r) => r);
-      chatStore.getActiveChatID();
-
-      for (const text of kenaiResponse.response) {
-        await printMessageWithDelay(chatRow, text);
-      }
+      // Aquí no necesitas esperar a que la respuesta completa vuelva,
+      // porque los chunks se manejarán por el WebSocket
 
       lastChatIndex.value++;
 
@@ -686,10 +706,15 @@ const handleSendPrompt = async () => {
           chatStore.chats.unshift(chat);
         }
       }
+
+      if (chatStore.kenaiErrorResponse) {
+        chatStore.setKenaiErrorResponse(false);
+      }
     } catch (error) {
       chatRow.kenai.error = true;
       chatRow.kenai.errorMessage = error.message || "An error occurred";
       chatRow.kenai.loading = false;
+      chatStore.setKenaiErrorResponse(true);
       console.error(error.message);
     } finally {
       promptFetching.value = false;
@@ -698,6 +723,7 @@ const handleSendPrompt = async () => {
     }
   }
 };
+
 
 const handleEnter = (event) => {
   if (!event.shiftKey) {
