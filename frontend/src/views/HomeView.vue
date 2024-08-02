@@ -2,15 +2,14 @@
 // Importaciones
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from "vue";
 import { useScrollStore } from "@/stores/scroll";
-import { useNavbarStore } from "@/stores/navbar";
+import { useHomeNavbarStore } from "@/stores/home/navbar";
 import { useMobileStore } from "@/stores/mobile";
 import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 // Variables
-const scrollStore = useScrollStore();
 const items = ref([
   { route: "#kenai", label: "Kenai", materialIcon: "home" },
-  { route: "#proposito", label: "Propósito", materialIcon: "adjust" },
   { route: "#modelo", label: "Modelo", materialIcon: "pets" },
+  { route: "#proposito", label: "Propósito", materialIcon: "adjust" },
   { route: "#aplicaciones", label: "Aplicaciones", materialIcon: "grid_view" },
   { route: "#contenido", label: "Contenido", materialIcon: "layers" },
 ]);
@@ -21,7 +20,8 @@ const animationKenaiClass = ref('');
 const carousel = ref(null);
 const animateDescription = ref('animate__animated animate__fadeInUp');
 const animateImage = ref('animate__animated animate__fadeIn');
-const navbarStore = useNavbarStore();
+const scrollStore = useScrollStore();
+const navbarStore = useHomeNavbarStore();
 const mobileStore = useMobileStore();
 
 // Parallax values
@@ -30,20 +30,19 @@ const titleParallax = computed(() => {
   else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 135; // Aparece
 });
 const propParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 70 && scrollStore.scrollPosition <= 1200;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 80 && scrollStore.scrollPosition <= 1100; // Aparece
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 1400 && scrollStore.scrollPosition <= 2600;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1000 && scrollStore.scrollPosition <= 2300; // Aparece
 });
 const modParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 1830;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 720 && scrollStore.scrollPosition <= 2000; // Aparece
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 580 && scrollStore.scrollPosition <= 1580;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 520 && scrollStore.scrollPosition <= 1530; // Aparece
 });
 const appParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 2900;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1900 && scrollStore.scrollPosition <= 2800; // Aparece
+  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 2250 && scrollStore.scrollPosition <= 3500;
+  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2150 && scrollStore.scrollPosition <= 3450; // Aparece
 });
 const contentParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 3800;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2560 && scrollStore.scrollPosition <= 3400; // Aparece
+  return scrollStore.scrollPosition >= 3350;
 });
 
 // Animacion en el carrusel
@@ -150,17 +149,34 @@ onUnmounted(() => {
 // Imgenes carrusel
 const slides = ref([
   {
-    description: 'Kenai ha sido creado utilizando LLaMA3, el LLM (Large Language Model) liberado por Meta. Este modelo avanzado es el núcleo de mi funcionamiento, permitiéndome ofrecerte una experiencia de aprendizaje de alta calidad.',
-    src: 'https://hackernoon.imgix.net/images/oS3VPBDztmPNM9laovQw4x5lwE83-fqh3eg3.jpeg',
-    alt: 'Image 1'
+    description: 'KenAI fue reforzado mediante Fine-Tuning mediante materiales nativos en inglés de conversaciones y transcripciones de clases y reuniones de trabajo.',
+    src: 'https://media.discordapp.net/attachments/915663431120609300/1268864818253922375/Kenai_Logo.png?ex=66adf9f3&is=66aca873&hm=6610eb188391f4f43d1055b968a6248b3a208c93608d82623e0a5c64265c22e6&=&format=webp&quality=lossless&width=912&height=671',
+    alt: 'KenAI Logo',
   },
   {
-    description: 'LLaMA3 está diseñado para analizar grandes cantidades de datos y aprender patrones complejos del lenguaje. Esto me permite generar respuestas coherentes y contextualmente apropiadas, mejorando tu experiencia de aprendizaje con KenAI.',
-    src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlCf2gjRY7VEYhKnj4eg-ab5poYVPq6dfa_Q&s', alt: 'Image 2'
+    description: 'El reforzamiento se ha realizado gracias a datasets obtenidos en Hugging Face y Kaggle, estos datasets se enfocaron en la interacción nativa en inglés e interpretación de emociones con emojis😁🌞.',
+    src: 'https://miro.medium.com/v2/resize:fit:1358/1*fX7vpC0o6pxy08AGlL60Yg.png',
+    alt: 'Hugging Face',
   },
   {
-    description: 'Gracias a la dedicación del equipo de IT Solutions, puedo interactuar contigo de manera natural y eficiente. Además, con la integración de Google Speech to Text, puedo comprender y responder a tus audios, mejorando tu práctica de pronunciación y escucha.',
-    src: 'https://miro.medium.com/v2/resize:fit:1400/1*-V47O9e3T_LxR3P-lcpR0g.png', alt: 'Image 3'
+    description: 'KenAI utiliza LLaMA3, el último Large Language Model (LLM) liberado por Meta. Este modelo avanzado es el núcleo de su funcionamiento, permitiendo ofrecer una experiencia de aprendizaje de alta calidad.',
+    src: 'https://www.mlwires.com/wp-content/uploads/2024/04/Llama_3_featured_image-fs8.png',
+    alt: 'LLaMA3'
+  },
+  {
+    description: 'Las tecnologías web con las que se ha llevado acabo el proyecto son Flask para el backend y Vue.Js en el frontend, con Python para el proceso de entrenamiento y comunicación con el modelo KenAI.',
+    src: 'https://images.velog.io/images/ba93love/post/d596a6bf-dcaf-42ff-bc19-3bab2840270d/news.png',
+    alt: 'Flask & Vue.js'
+  },
+  {
+    description: '¡KenAI está en la nube! El sistema se ejecuta sobre una instancia de una Virtual Machine (VM) y esto con el apoyo de la plataforma de Oracle Cloud Infraestructure (OCI).',
+    src: 'https://www.tecnovait.com/wp-content/uploads/2023/11/oracle-servicio-cloud.png',
+    alt: 'OCI'
+  },
+  {
+    description: '!Ahora disponible con Alexa! Se ha creado una skill para amazon alexa la cual nos permite comunicarnos con KenAI desde la comodida de nuestros dispositivos inteligentes Echo, simplemente diciendo "Alexa, abre kenai chat".',
+    src: 'https://ds6yc8t7pnx74.cloudfront.net/es-ES/alexa/alexa-skills-kit.thumb.800.480.png?ck=1595957409',
+    alt: 'Amazon Alexa'
   },
 ]);
 
@@ -225,38 +241,31 @@ const toggleMobileNavbar = () => {
 const toggleNavbarExtended = () => {
   navbarStore.toggleExtended();
 };
-const displayTextH3 = ref('');
 const displayTextP = ref('');
 const displayTextP2 = ref('');
 const displayTextP3 = ref('');
-const isTypingH3 = ref(true);
 const isTypingP = ref(true);
 const isTypingP2 = ref(true);
 const isTypingP3 = ref(true);
 
-const fullTextH3 = "¡Hola! 👋 Soy KenAI";
 const fullTextP = "Soy tu compañero de inglés, una Inteligencia Artificial diseñada para ayudarte a aprender y practicar inglés de una manera divertida y segura. Mi objetivo es hacer que te sientas cómodo y confiado al hablar inglés, sin importar tu nivel de habilidad.🤓";
 const fullTextP2 = "Fui creado por un talentoso grupo de estudiantes de la Universidad Tecnológica de Nezahualcóyotl, conocidos como Equipo IT Solutions.";
 const fullTextP3 = "Ellos se dieron cuenta de que muchos estudiantes, como tú, se sienten inseguros 🙁 al hablar inglés debido a los prejuicios y la falta de confianza. Por eso, decidieron crearme para brindarte un espacio amigable y seguro donde puedas mejorar tus habilidades sin temor a ser juzgado. 🤗";
 
-let indexH3 = ref(0);
 let indexP = ref(0);
 let indexP2 = ref(0);
 let indexP3 = ref(0);
 const animateNextFieldset = ref(false);
 
 const resetTextAndIndices = () => {
-  displayTextH3.value = '';
   displayTextP.value = '';
   displayTextP2.value = '';
   displayTextP3.value = '';
 
-  indexH3.value = 0;
   indexP.value = 0;
   indexP2.value = 0;
   indexP3.value = 0;
 
-  isTypingH3.value = true;
   isTypingP.value = true;
   isTypingP2.value = true;
   isTypingP3.value = true;
@@ -268,7 +277,7 @@ const typeText = (indexRef, fullText, isTypingRef, displayTextRef, callback) => 
   if (indexRef.value < fullText.length) {
     displayTextRef.value += fullText.charAt(indexRef.value);
     indexRef.value++;
-    setTimeout(() => typeText(indexRef, fullText, isTypingRef, displayTextRef, callback), 15);
+    setTimeout(() => typeText(indexRef, fullText, isTypingRef, displayTextRef, callback), 5);
   } else {
     isTypingRef.value = false;
     if (callback) callback();
@@ -277,7 +286,7 @@ const typeText = (indexRef, fullText, isTypingRef, displayTextRef, callback) => 
 
 const startTypingInNextFieldset = () => {
   typeText(indexP2, fullTextP2, isTypingP2, displayTextP2, () => {
-    setTimeout(() => typeText(indexP3, fullTextP3, isTypingP3, displayTextP3), 500);
+    setTimeout(() => typeText(indexP3, fullTextP3, isTypingP3, displayTextP3), 200);
   });
 };
 
@@ -292,10 +301,8 @@ watch(propParallax, (newValue) => {
     // Resetear los textos e índices cuando propParallax sea true
     resetTextAndIndices();
     // Iniciar el efecto de escritura
-    typeText(indexH3, fullTextH3, isTypingH3, displayTextH3, () => {
-      typeText(indexP, fullTextP, isTypingP, displayTextP, () => {
-        animateNextFieldset.value = true;
-      });
+    typeText(indexP, fullTextP, isTypingP, displayTextP, () => {
+      animateNextFieldset.value = true;
     });
   } else {
     // Resetear los textos cuando propParallax sea false
@@ -303,20 +310,18 @@ watch(propParallax, (newValue) => {
   }
 });
 onMounted(() => {
-  typeText(indexH3, fullTextH3, isTypingH3, displayTextH3, () => {
-      typeText(indexP, fullTextP, isTypingP, displayTextP, () => {
-        animateNextFieldset.value = true;
-      });
-    });
+  typeText(indexP, fullTextP, isTypingP, displayTextP, () => {
+    animateNextFieldset.value = true;
+  });
 });
 
 </script>
 
 
 <template>
-  <main style="overflow-x: hidden;">
-    <Button v-if="mobileStore.isMobile" @click="toggleMobileNavbar" severity="secondary" text rounded aria-label="Menu"
-      size="large" class="fixed-button">
+  <main>
+    <Button v-if="mobileStore.isMobile" @click="navbarStore.toggleExtended()" severity="secondary" text rounded
+      aria-label="Menu" size="large" class="fixed-button">
       <span class="material-icons menu-icon">menu</span>
     </Button>
     <!-- Title -->
@@ -346,11 +351,10 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- NAVBAR -->
-    <div class="nav__container">
+    <!-- NAVBAR DESKTOP -->
+    <div class="nav__container" v-if="!mobileStore.isMobile">
       <nav class="landing-navbar" ref="navbar">
-        <!-- VISTA ESCRITORIO -->
-        <TabMenu v-if="!mobileStore.isMobile" :model="items" class="nav-tab-menu">
+        <TabMenu :model="items" class="nav-tab-menu">
           <template #item="{ item, props }">
             <router-link v-if="item.route" v-slot="{ href }" :to="item.route" custom>
               <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)"
@@ -366,20 +370,29 @@ onMounted(() => {
           </template>
         </TabMenu>
       </nav>
-      <!-- VISTA MOVIL -->
-      <div :class="['navbar__container', { 'open': isMobileNavbarOpen }]">
-        <div class="mobile-navbar__header mobile__home">
-          <Avatar :image="kenaiAvatar" class="avatar__home" />
-          <span :style="[{ 'font-size': '1.2rem', fontWeight: '500' }]">KenAI</span>
-          <span class="close-btn material-icons" @click="toggleMobileNavbar">close</span>
-        </div>
-        <TabMenu :model="items" class="nav-tab-menu">
+    </div>
+
+    <!-- NAVBAR MOVIL -->
+    <div class="navbar__container" v-else>
+
+      <Sidebar v-model:visible="navbarStore.extended" class="mobile-navbar home"
+        @update:visible="navbarStore.closeExtended()">
+        <template #header>
+          <div class="mobile-navbar__header">
+            <Avatar :image="kenaiAvatar" />
+            <Button severity="secondary" text>
+              <span :style="[{ 'font-size': '1.2rem', fontWeight: '500' }]">KenAI</span>
+            </Button>
+          </div>
+        </template>
+
+        <TabMenu :model="items" class="mobile-navigator-buttons">
           <template #item="{ item, props }">
             <router-link v-if="item.route" v-slot="{ href }" :to="item.route" custom>
               <a v-ripple :href="href" v-bind="props.action" @click.prevent="scrollToSection(item.route)"
-                :class="{ 'active': activeSection === item.route }" class="p__menulink">
+                :class="{ 'active': activeSection === item.route }">
                 <span class="material-icons-outlined">{{ item.materialIcon }}</span>
-                <span v-bind="props.label">{{ item.label }}</span>
+                <span class="nav-label" v-bind="props.label">{{ item.label }}</span>
               </a>
             </router-link>
             <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
@@ -388,67 +401,31 @@ onMounted(() => {
             </a>
           </template>
         </TabMenu>
-      </div>
+      </Sidebar>
     </div>
 
 
     <!-- END NAVBAR -->
 
-
-    <!-- Content -->
-    {{ scrollStore.scrollPosition }}
-    <section id="proposito" class="secciones">
-      <div class="text_content">
-        <Fieldset :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
-          class="animate__animated text_content">
-          <template #legend>
-            <div class="flex align-items-center pl-2">
-              <Avatar :image="kenaiAvatar" shape="circle" />
-              <span class="font-bold">KenAI</span>
-            </div>
-          </template>
-          <div class="m-0">
-            <h3 :class="{ 'typing': isTypingH3 }">{{ displayTextH3 }}</h3>
-            <p :class="{ 'typing': isTypingP }">{{ displayTextP }}</p>
-          </div>
-        </Fieldset>
-        <Fieldset :class="animateNextFieldset ? 'animate__fadeInUp' : 'animate__fadeOut'" class="animate__animated text_content">
-          <template #legend>
-            <div class="flex align-items-center pl-2">
-              <Avatar :image="kenaiAvatar" shape="circle" />
-              <span class="font-bold">KenAI</span>
-            </div>
-          </template>
-          <div class="m-0">
-            <p :class="{ 'typing': isTypingP2 }">{{ displayTextP2 }}</p>
-            <p :class="{ 'typing': isTypingP3 }">{{ displayTextP3 }}</p>
-          </div>
-        </Fieldset>
-      </div>
-    </section>
-
-    {{ scrollStore.scrollPosition }}
-
     <!-- Modelo -->
-
     <section id="modelo" class="secciones">
       <div class=" text_content">
-        <span :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'"
-          class="animate__animated title_text_content">La Tecnología Detrás de KenAI</span>
-        <p :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'" class="animate__animated m-0 p_text_content">
+        <span :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'" class="title_text_content">La Tecnología
+          Detrás de KenAI</span>
+        <p :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'" class="animate__animated p_text_content">
           Para la creación de KenAI, el equipo de IT Solutions utilizó un fundamento conocido como PLMs (Pretrained
           Language
           Models), que son modelos previamente entrenados por un tercero.
         </p>
       </div>
-      <div class="carousel-container">
+      <div class="carousel-container animate__animated" :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'">
         <Carousel ref="carousel" :value="slides" :numVisible="1" :numScroll="1" :responsiveOptions="responsiveOptions"
           circular :autoplayInterval="5000" @update:page="handleNextClick">
           <template #item="slotProps">
             <div class="carousel-item">
               <div class="carousel-content">
                 <div class="text-content">
-                  <h3 :class="animateDescription">{{ slotProps.data.description }}</h3>
+                  <h3>{{ slotProps.data.description }}</h3>
                 </div>
                 <div class="image-content" :class="animateImage">
                   <img :src="slotProps.data.src" :alt="slotProps.data.alt" class="carousel-image" />
@@ -460,14 +437,38 @@ onMounted(() => {
       </div>
     </section>
 
-    {{ scrollStore.scrollPosition }}
+    <!-- Content -->
+    <section id="proposito" class="secciones">
+      <h3 style="text-align: center; font-size: 3rem" class="animate__animated animate__fadeInLeft">¡Hola! 👋 Soy KenAI
+      </h3>
+      <div class="text_content">
+        <Fieldset :class="propParallax ? 'animate__fadeInUp' : 'animate__fadeOutUp'"
+          class="animate__animated text_content">
+          <template #legend>
+            <div>
+              <Avatar :image="kenaiAvatar" style="margin: 0px 10px" />
+            </div>
+          </template>
+          <div style="display: flex; align-items: flex-start; flex-direction: column;">
+            <p style="text-align: left;" :class="{ 'typing': isTypingP }">{{ displayTextP }}</p>
+            <p style="text-align: left;" :class="{ 'typing': isTypingP2 }">{{ displayTextP2 }}</p>
+            <p style="text-align: left;" :class="{ 'typing': isTypingP3 }">{{ displayTextP3 }}</p>
+          </div>
+        </Fieldset>
+      </div>
+    </section>
+
     <!-- Aplicaciones -->
 
     <section id="aplicaciones" class="secciones">
       <div class=" text_content">
-        <span class="title_text_content">Descubre Cómo Usar KenAI
+        <span class="title_text_content animate__animated"
+          :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '">Descubre Cómo Usar KenAI
         </span>
-        <p class="animate__animated m-0 p_text_content">Aquí te presento cómo puedes usarme para sacar el máximo
+        <p class="animate__animated animate__animated p_text_content"
+          :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '">Aquí te presento cómo puedes usarme para
+          sacar el
+          máximo
           provecho de
           nuestras interacciones:
         </p>
@@ -486,7 +487,7 @@ onMounted(() => {
             </template>
             <template #title>Herramienta Educativa en Escuelas</template>
             <template #content>
-              <p class="m-0">Las escuelas pueden integrar a KenAI en sus aulas para complementar las lecciones de
+              <p>Las escuelas pueden integrar a KenAI en sus aulas para complementar las lecciones de
                 inglés, permitiendo a los estudiantes practicar conversaciones, mejorar su pronunciación y desarrollar
                 habilidades lingüísticas en un entorno interactivo y atractivo.</p>
             </template>
@@ -501,7 +502,7 @@ onMounted(() => {
             </template>
             <template #title>Apoyo para Profesores</template>
             <template #content>
-              <p class="m-0">Los profesores pueden usar KenAI como asistente para proporcionar ejercicios personalizados
+              <p>Los profesores pueden usar KenAI como asistente para proporcionar ejercicios personalizados
                 y retroalimentación instantánea a los estudiantes, facilitando una enseñanza más efectiva y adaptada a
                 las necesidades individuales de cada alumno.</p>
             </template>
@@ -525,7 +526,6 @@ onMounted(() => {
       </div>
     </section>
 
-    {{ scrollStore.scrollPosition }}
     <!-- Contenido -->
 
     <section id="contenido" class="secciones">
@@ -579,20 +579,33 @@ onMounted(() => {
         </div>
       </div>
     </section>
-    {{ scrollStore.scrollPosition }}
+
     <footer class="footer__content">
-      <div class="firts__column">
-        <h2>IT Solutions </h2>
-        <ul class="list">
-          <li>Campos Figueroa Brandon</li>
-          <li>Chaparro Marin Daniel</li>
-          <li>Cruz Hernández Génesis Uriel Yair</li>
-          <li>Cortes Islas Brandon</li>
-        </ul>
+      <Divider />
+      <div class="footer_data">
+        <div class="firts__column">
+          <h2>IT Solutions </h2>
+          <ul class="list">
+            <li>Campos Figueroa Brandon</li>
+            <li>Chaparro Marin Daniel</li>
+            <li>Cruz Hernández Génesis Uriel Yair</li>
+            <li>Cortes Islas Brandon</li>
+          </ul>
+        </div>
+        <div class="second__column">
+          <img :src="kenaiAvatar" alt="Kenai">
+          <h1>KenAI</h1>
+        </div>
       </div>
-      <div class="second__column">
-        <img :src="kenaiAvatar" alt="Kenai">
-        <h1>KenAI</h1>
+      <Divider />
+      <div class="footer__base">
+        <span>© 2024 - IT Solutions </span>
+
+        <Divider v-if="!mobileStore.isMobile" layout="vertical" />
+        <div class="terms">
+          <Button size="small">Politicas de Privacidad</Button>
+          <Button size="small">Terminos y Condiciones</Button>
+        </div>
       </div>
     </footer>
   </main>
