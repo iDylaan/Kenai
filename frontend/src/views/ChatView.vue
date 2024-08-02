@@ -21,7 +21,8 @@
   </Dialog>
 
   <main class="main-container">
-    <Sidebar v-model:visible="navbarStore.extended" class="mobile-navbar" v-if="mobileStore.isMobile">
+    <Sidebar v-model:visible="navbarStore.extended" class="mobile-navbar" v-if="mobileStore.isMobile"
+      @update:visible="navbarStore.closeExtended()">
       <template #header>
         <div class="mobile-navbar__header">
           <Avatar :image="kenaiAvatar" />
@@ -106,7 +107,7 @@
     <section :class="['navbar__container', !navbarStore.extended ? 'not-extended' : '']" v-if="!mobileStore.isMobile">
       <section class="navbar__header">
         <div class="menu-btn__container">
-          <Button severity="secondary" size="small" text rounded @click="toggleNavbarExtended" v-tooltip="{
+          <Button severity="secondary" size="small" text rounded @click="navbarStore.toggleExtended()" v-tooltip="{
             value: navbarStore.extended ? t('chat.collapse_menu') : t('chat.expand_menu'),
           }">
             <span class="material-icons menu-icon">menu</span>
@@ -195,7 +196,7 @@
             <h1 style="padding: 0; margin: 0">KenAI</h1>
           </Button>
         </router-link>
-        <Button v-else @click="toggleMobileNavbar" v-tooltip="{
+        <Button v-else @click="navbarStore.toggleExtended()" v-tooltip="{
           value: navbarStore.extended ? t('chat.collapse_menu') : t('chat.expand_menu'),
         }" severity="secondary" text rounded aria-label="Menu" size="large">
           <span class="material-icons menu-icon">menu</span>
@@ -216,8 +217,7 @@
       <div class="chat__body">
         <div class="firt-chat" :class="fistChatClasses" v-if="
           (chatStore.getActiveChatID() === null ||
-            chatStore.isNewChat ||
-            chatStore.chatHistory.length === 0) &&
+            chatStore.isNewChat) &&
           !chatStore.getChatLoading() &&
           !chatStore.newMessageSent
         ">
@@ -401,27 +401,27 @@ const lastChatIndex = ref(0);
 const fistChatClasses = ref("");
 const presets = ref([
   {
-    prompt_title: "Hola, como estás?",
+    prompt_title: "Explicame como funcionan los verbos en pasado simple.",
     level: 0,
   },
   {
-    prompt_title: "Hola, me ayudas a practicar?",
+    prompt_title: "Enseñame a conjugar con voz pasiva.",
     level: 1,
   },
   {
-    prompt_title: "Hola, por que el cielo es azul?",
+    prompt_title: "Podemos simular una entrevista laboral.",
     level: 2,
   },
   {
-    prompt_title: "Hola, como aprend verbos irregulares?",
+    prompt_title: "¿Cuáles son los verbos irregulares?",
     level: 0,
   },
   {
-    prompt_title: "Hola, quiero practicar ingles",
+    prompt_title: "Vamos a simular una conversación de un cliente y un mesero.",
     level: 1,
   },
   {
-    prompt_title: "Hola, Nivel B2, simulacion de entrevista laboral",
+    prompt_title: "Juguemos a \"Palabras Encadenadas\"",
     level: 2,
   },
 ]);
@@ -611,10 +611,6 @@ const handleChangeChatTitle = async () => {
   }
 };
 
-const toggleMobileNavbar = () => {
-  navbarStore.toggleExtended();
-};
-
 const printMessageWithDelay = async (chatRow, message) => {
   chatRow.kenai.renderedResponse += message;
   await new Promise((resolve) => setTimeout(resolve, 30));
@@ -717,10 +713,6 @@ const handleInput = (event) => {
   }
 };
 const charCount = computed(() => prompt.value.length);
-
-const toggleNavbarExtended = () => {
-  navbarStore.toggleExtended();
-};
 
 const toggleSettingsPopup = (event) => {
   menuSettings.value = !menuSettings.value;

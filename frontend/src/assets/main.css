@@ -11,14 +11,10 @@
 @import './reset.css';
 
 /* PrimeVue THEME */
-@import './theme.css';
+@import './theme.scss';
 
 /* Animate.css */
 @import 'animate.css';
-
-/* Style Home */
-@import './home.css';
-
 
 
 *::-webkit-scrollbar {
