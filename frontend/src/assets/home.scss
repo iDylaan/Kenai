@@ -491,8 +491,8 @@ a {
 
 @media (max-width: 768px) {
   #proposito {
-    padding: 2px ;
-  }
+    padding: 0px 100px;
+}
   .nav-label {
     display: none;
   }
@@ -550,7 +550,8 @@ a {
   }
   .card__content {
     display: grid;
-    padding: 0px 0px;
+    padding: 0px;
+    justify-content: center;
   }  
 
   .secciones {

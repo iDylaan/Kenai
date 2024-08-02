@@ -38,13 +38,25 @@ const modParallax = computed(() => {
   else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 720 && scrollStore.scrollPosition <= 2000; // Aparece
 });
 const appParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 2900;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1900 && scrollStore.scrollPosition <= 2800; // Aparece
+  if (mobileStore.isMobile) {
+    if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 4300;
+    else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2340 && scrollStore.scrollPosition <= 4299; // Aparece
+  } else {
+    if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 2900;
+    else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 1600 && scrollStore.scrollPosition <= 2530; // Aparece
+  }
 });
+
 const contentParallax = computed(() => {
-  if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 3800;
-  else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2560 && scrollStore.scrollPosition <= 3400; // Aparece
+  if (mobileStore.isMobile) {
+    if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 5100;
+    else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 4059 && scrollStore.scrollPosition <= 4600; // Aparece
+  } else {
+    if (scrollStore.downScrolling) return scrollStore.scrollPosition >= 0 && scrollStore.scrollPosition <= 3800;
+    else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2230 && scrollStore.scrollPosition <= 4600; // Aparece
+  }
 });
+
 
 // Animacion en el carrusel
 const handleNextClick = () => {
@@ -57,7 +69,6 @@ const handleNextClick = () => {
 };
 
 onMounted(async () => {
-  mobileStore.initWidthWatch();
   await nextTick();
   if (carousel.value && carousel.value.$el) {
     const nextButton = carousel.value.$el.querySelector('.p-carousel-next');
@@ -304,10 +315,10 @@ watch(propParallax, (newValue) => {
 });
 onMounted(() => {
   typeText(indexH3, fullTextH3, isTypingH3, displayTextH3, () => {
-      typeText(indexP, fullTextP, isTypingP, displayTextP, () => {
-        animateNextFieldset.value = true;
-      });
+    typeText(indexP, fullTextP, isTypingP, displayTextP, () => {
+      animateNextFieldset.value = true;
     });
+  });
 });
 
 </script>
@@ -319,6 +330,7 @@ onMounted(() => {
       size="large" class="fixed-button">
       <span class="material-icons menu-icon">menu</span>
     </Button>
+
     <!-- Title -->
     <section class="title__section" id="kenai">
       <div class="title-lights">
@@ -390,13 +402,9 @@ onMounted(() => {
         </TabMenu>
       </div>
     </div>
-
-
     <!-- END NAVBAR -->
 
-
     <!-- Content -->
-    {{ scrollStore.scrollPosition }}
     <section id="proposito" class="secciones">
       <div class="text_content">
         <Fieldset :class="propParallax ? 'animate__slideInUp' : 'animate__slideOutDown'"
@@ -412,7 +420,8 @@ onMounted(() => {
             <p :class="{ 'typing': isTypingP }">{{ displayTextP }}</p>
           </div>
         </Fieldset>
-        <Fieldset :class="animateNextFieldset ? 'animate__fadeInUp' : 'animate__fadeOut'" class="animate__animated text_content">
+        <Fieldset :class="animateNextFieldset ? 'animate__fadeInUp' : 'animate__fadeOut'"
+          class="animate__animated text_content">
           <template #legend>
             <div class="flex align-items-center pl-2">
               <Avatar :image="kenaiAvatar" shape="circle" />
@@ -427,10 +436,7 @@ onMounted(() => {
       </div>
     </section>
 
-    {{ scrollStore.scrollPosition }}
-
     <!-- Modelo -->
-
     <section id="modelo" class="secciones">
       <div class=" text_content">
         <span :class="modParallax ? 'animate__fadeInUp' : 'animate__fadeOut'"
@@ -460,9 +466,7 @@ onMounted(() => {
       </div>
     </section>
 
-    {{ scrollStore.scrollPosition }}
     <!-- Aplicaciones -->
-
     <section id="aplicaciones" class="secciones">
       <div class=" text_content">
         <span class="title_text_content">Descubre Cómo Usar KenAI
@@ -492,6 +496,7 @@ onMounted(() => {
             </template>
           </Card>
         </div>
+        {{scrollStore.scrollPosition }}
         <div :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated gradient-border">
           <Card :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated custom__card">
             <template #header>
@@ -507,6 +512,7 @@ onMounted(() => {
             </template>
           </Card>
         </div>
+        {{scrollStore.scrollPosition }}
         <div :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated gradient-border">
           <Card :class="appParallax ? 'animate__fadeInUp' : 'animate__fadeOut '" class="animate__animated custom__card">
             <template #header>
@@ -522,12 +528,12 @@ onMounted(() => {
             </template>
           </Card>
         </div>
+        {{scrollStore.scrollPosition }}
       </div>
     </section>
-
-    {{ scrollStore.scrollPosition }}
+   
     <!-- Contenido -->
-
+    {{scrollStore.scrollPosition }}
     <section id="contenido" class="secciones">
       <div class=" text_content">
         <span :class="contentParallax ? 'animate__fadeInUp' : 'animate__fadeOutDown '"
@@ -579,7 +585,8 @@ onMounted(() => {
         </div>
       </div>
     </section>
-    {{ scrollStore.scrollPosition }}
+    {{scrollStore.scrollPosition }}
+   
     <footer class="footer__content">
       <div class="firts__column">
         <h2>IT Solutions </h2>
@@ -599,6 +606,5 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-/* Style Home */
-@import '@/assets/home.scss';
+  @import '@/assets/home.scss';
 </style>
