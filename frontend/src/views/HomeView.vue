@@ -42,7 +42,7 @@ const appParallax = computed(() => {
   else if (scrollStore.upScrolling) return scrollStore.scrollPosition >= 2150 && scrollStore.scrollPosition <= 3450; // Aparece
 });
 const contentParallax = computed(() => {
-  return scrollStore.scrollPosition >= 3350;
+  return scrollStore.scrollPosition >= 3050;
 });
 
 // Animacion en el carrusel
@@ -206,6 +206,7 @@ const responsiveOptions = ref([
 // Funciones reservadas
 onMounted(() => {
   scrollStore.initScrollWatch();
+  navbarStore.loadNavbar();
   animationKenaiClass.value = 'animate__animated animate__fadeInUp'
   setTimeout(() => {
     animationKenaiClass.value = 'kenai-glow__animation'
@@ -319,16 +320,17 @@ onMounted(() => {
 
 
 <template>
-  <main>
+  <main class="main-home">
+
+    <div class="title-lights">
+        <figure id="firt-light"></figure>
+      </div>
     <Button v-if="mobileStore.isMobile" @click="navbarStore.toggleExtended()" severity="secondary" text rounded
       aria-label="Menu" size="large" class="fixed-button">
       <span class="material-icons menu-icon">menu</span>
     </Button>
     <!-- Title -->
     <section class="title__section" id="kenai">
-      <div class="title-lights">
-        <figure id="firt-light"></figure>
-      </div>
       <div class="title__container">
 
         <h1>
@@ -603,8 +605,13 @@ onMounted(() => {
 
         <Divider v-if="!mobileStore.isMobile" layout="vertical" />
         <div class="terms">
-          <Button size="small">Politicas de Privacidad</Button>
-          <Button size="small">Terminos y Condiciones</Button>
+          <a href="https://llama.meta.com/llama3/license/" target="_blank">
+            <Button size="small" severity="secondary" text>Politicas de Privacidad</Button>
+          </a>
+
+          <a href="https://llama.meta.com/llama3/license/" target="_blank">
+            <Button size="small" severity="secondary" text>Terminos y Condiciones</Button>
+          </a>
         </div>
       </div>
     </footer>
