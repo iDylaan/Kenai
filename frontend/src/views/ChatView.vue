@@ -217,8 +217,7 @@
       <div class="chat__body">
         <div class="firt-chat" :class="fistChatClasses" v-if="
           (chatStore.getActiveChatID() === null ||
-            chatStore.isNewChat ||
-            chatStore.chatHistory.length === 0) &&
+            chatStore.isNewChat) &&
           !chatStore.getChatLoading() &&
           !chatStore.newMessageSent
         ">
@@ -402,27 +401,27 @@ const lastChatIndex = ref(0);
 const fistChatClasses = ref("");
 const presets = ref([
   {
-    prompt_title: "Hola, como estás?",
+    prompt_title: "Explicame como funcionan los verbos en pasado simple.",
     level: 0,
   },
   {
-    prompt_title: "Hola, me ayudas a practicar?",
+    prompt_title: "Enseñame a conjugar con voz pasiva.",
     level: 1,
   },
   {
-    prompt_title: "Hola, por que el cielo es azul?",
+    prompt_title: "Podemos simular una entrevista laboral.",
     level: 2,
   },
   {
-    prompt_title: "Hola, como aprend verbos irregulares?",
+    prompt_title: "¿Cuáles son los verbos irregulares?",
     level: 0,
   },
   {
-    prompt_title: "Hola, quiero practicar ingles",
+    prompt_title: "Vamos a simular una conversación de un cliente y un mesero.",
     level: 1,
   },
   {
-    prompt_title: "Hola, Nivel B2, simulacion de entrevista laboral",
+    prompt_title: "Juguemos a \"Palabras Encadenadas\"",
     level: 2,
   },
 ]);

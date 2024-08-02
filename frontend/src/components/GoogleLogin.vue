@@ -62,9 +62,13 @@ const callback = async (response) => {
 
 
       <section class="footer__container" :style="[{ flexDirection: mobileStore.isMobile ? 'column' : '' }]">
-        <Button class="footer-btn" :label="t('auth.privacy_policy')" severity="secondary" text size="small" />
+        <a href="https://llama.meta.com/llama3/license/" target="_blank">
+          <Button class="footer-btn" :label="t('auth.privacy_policy')" severity="secondary" text size="small" />
+        </a>
         <Divider layout="vertical" v-if="!mobileStore.isMobile" />
-        <Button class="footer-btn" :label="t('auth.terms_of_service')" severity="secondary" text size="small" />
+        <a href="https://llama.meta.com/llama3/license/" target="_blank">
+          <Button class="footer-btn" :label="t('auth.terms_of_service')" severity="secondary" text size="small" />
+        </a>
       </section>
     </div>
   </main>

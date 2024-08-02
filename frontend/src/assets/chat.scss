@@ -56,6 +56,61 @@
     justify-content: flex-end;
 }
 
+@media (height < 740px) {
+    .firt-chat {
+        width: 100%;
+        max-width: 900px;
+        overflow-y: auto;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-direction: column;
+
+
+        .title_new-chat__container {
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-content: space-between;
+            height: 100%;
+        }
+
+        .presets {
+            width: 100%;
+            padding: 0;
+
+            .animate__animated .animate__fadeIn {
+                animation-name: fadeIn;
+                animation-duration: 500ms;
+                animation-delay: 1500ms;
+            }
+
+            .presets-label {
+                margin-bottom: 20px;
+                font-weight: 500;
+                font-size: 1rem;
+                color: #8f8f8f;
+                padding-left: 40px;
+            }
+
+            .carrousel {
+                width: 100%;
+
+                .pre-prompt__container {
+                    width: calc(100% - 20px);
+                    height: 150px;
+                    display: grid;
+                    place-content: center;
+                    position: relative;
+                }
+            }
+        }
+    }
+}
+
 .firt-chat {
     width: 100%;
     max-width: 900px;
