@@ -16,10 +16,6 @@
 /* Animate.css */
 @import 'animate.css';
 
-/* Style Home */
-@import './home.css';
-
-
 
 *::-webkit-scrollbar {
     max-height: 10px;
