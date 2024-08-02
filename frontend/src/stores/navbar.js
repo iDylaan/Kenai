@@ -15,9 +15,15 @@ export const useNavbarStore = defineStore('navbar', () => {
         localStorage.setItem('kenai_navbar_extended', JSON.stringify(extended.value));
     }
 
+    const closeExtended = () => {
+        extended.value = false;
+        localStorage.setItem('kenai_navbar_extended', JSON.stringify(false));
+    }
+
     return {
         extended,
         loadNavbar,
-        toggleExtended
+        toggleExtended,
+        closeExtended
     }
 });
