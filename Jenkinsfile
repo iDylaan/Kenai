@@ -68,8 +68,15 @@ pipeline {
         stage('Restart Flask App') {
             steps {
                 dir("${DEPLOY_DIR}") {
-                    // Detener el servidor existente (si es necesario)
-                    powershell 'Get-Process -Name "python" | Stop-Process -Force || exit 0'
+                    // Detener el servidor existente (si es necesario) usando try/catch para evitar errores si no existe
+                    powershell '''
+                        try {
+                            $process = Get-Process -Name "python" -ErrorAction Stop
+                            Stop-Process -InputObject $process -Force
+                        } catch {
+                            Write-Host "No Python process found, skipping stop."
+                        }
+                    '''
                     // Levantar la aplicación de Flask usando el Python del entorno virtual
                     powershell """
                         ${PYTHON_PATH} -m ${FLASK_RUN_COMMAND}
