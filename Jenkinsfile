@@ -80,9 +80,11 @@ pipeline {
                             Write-Host "No Python process found, skipping stop."
                         }
                     '''
-                    // Iniciar la aplicación Flask con Waitress en segundo plano
+                    // Iniciar la aplicación Flask con Waitress en segundo plano usando Start-Job
                     powershell """
-                        Start-Process -NoNewWindow -FilePath ${PYTHON_PATH} -ArgumentList '-m waitress --host=${HOST} --port=${PORT} ${APP_MODULE}' -RedirectStandardOutput '${DEPLOY_DIR}/waitress.log' -RedirectStandardError '${DEPLOY_DIR}/waitress_error.log'
+                        Start-Job -ScriptBlock {
+                            & ${PYTHON_PATH} -m waitress --host=${HOST} --port=${PORT} ${APP_MODULE}
+                        }
                     """
                 }
             }
