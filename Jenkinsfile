@@ -6,7 +6,7 @@ pipeline {
         BRANCH = 'main'
         DEPLOY_DIR = 'C:/Users/danie/OneDrive/Documentos/GitHub/Kenai'
         VENV_DIR = "${DEPLOY_DIR}/venv" // Directorio de tu entorno virtual
-        FLASK_RUN_COMMAND = 'flask run --host=0.0.0.0' // Asegúrate de especificar el host correcto
+        FLASK_RUN_COMMAND = 'flask run --host=0.0.0.0 --port=5000' // Configuración para escuchar en todas las interfaces
         PYTHON_PATH = "${VENV_DIR}/Scripts/python.exe" // Ruta al Python del entorno virtual
         PIP_PATH = "${VENV_DIR}/Scripts/pip.exe" // Ruta al pip del entorno virtual
     }
@@ -75,14 +75,24 @@ pipeline {
                             Write-Host "No Python process found, skipping stop."
                         }
                     '''
-                    // Levantar la aplicación de Flask como un trabajo en segundo plano
+                    // Levantar la aplicación de Flask como un trabajo en segundo plano y redirigir la salida a un archivo de log
                     powershell """
                         Start-Job -ScriptBlock {
-                            & ${PYTHON_PATH} -m ${FLASK_RUN_COMMAND}
+                            & ${PYTHON_PATH} -m ${FLASK_RUN_COMMAND} *> ${DEPLOY_DIR}/flask.log
                         }
                     """
                 }
             }
+        }
+    }
+    
+    post {
+        always {
+            // Mostrar el contenido del log de Flask después de la ejecución del pipeline
+            echo "Flask log output:"
+            powershell """
+                Get-Content ${DEPLOY_DIR}/flask.log -Tail 10
+            """
         }
     }
 }
