@@ -8,18 +8,22 @@ pipeline {
         VENV_DIR = "${DEPLOY_DIR}/venv" // Directorio de tu entorno virtual
         FLASK_RUN_COMMAND = 'flask run'
     }
-    
+
+
     stages {
         stage('Checkout') {
-            steps {
-                // Clona el repositorio o actualiza si ya existe
-                script {
+            // Usa git para clonar o actualizar el repositorio
+            script {
+                dir("${DEPLOY_DIR}") {
+                    // Agregar el directorio como seguro para Git
+                    bat "git config --global --add safe.directory ${DEPLOY_DIR}"
+                    
                     if (fileExists("${DEPLOY_DIR}")) {
-                        dir("${DEPLOY_DIR}") {
-                            bat 'git pull origin ${BRANCH}'
-                        }
+                        // Si el directorio existe, hacer pull
+                        bat 'git pull origin main'
                     } else {
-                        bat "git clone -b ${BRANCH} ${REPO_URL} ${DEPLOY_DIR}"
+                        // Si no existe, clonar el repositorio
+                        bat "git clone https://github.com/iDylaan/Kenai ${DEPLOY_DIR}"
                     }
                 }
             }
