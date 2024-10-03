@@ -7,6 +7,8 @@ pipeline {
         DEPLOY_DIR = 'C:/Users/danie/OneDrive/Documentos/GitHub/Kenai'
         VENV_DIR = "${DEPLOY_DIR}/venv" // Directorio de tu entorno virtual
         FLASK_RUN_COMMAND = 'flask run'
+        PYTHON_PATH = "${VENV_DIR}/Scripts/python.exe" // Ruta al Python del entorno virtual
+        PIP_PATH = "${VENV_DIR}/Scripts/pip.exe" // Ruta al pip del entorno virtual
     }
 
     stages {
@@ -55,10 +57,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir("${DEPLOY_DIR}") {
-                    // Activar el entorno virtual y luego instalar dependencias
+                    // Usar el pip del entorno virtual para instalar dependencias
                     powershell """
-                        ${VENV_DIR}/Scripts/activate
-                        pip install -r requirements.txt
+                        ${PIP_PATH} install -r requirements.txt
                     """
                 }
             }
@@ -69,10 +70,9 @@ pipeline {
                 dir("${DEPLOY_DIR}") {
                     // Detener el servidor existente (si es necesario)
                     powershell 'Get-Process -Name "python" | Stop-Process -Force || exit 0'
-                    // Levantar la aplicación de Flask
+                    // Levantar la aplicación de Flask usando el Python del entorno virtual
                     powershell """
-                        ${VENV_DIR}/Scripts/activate
-                        ${FLASK_RUN_COMMAND}
+                        ${PYTHON_PATH} -m ${FLASK_RUN_COMMAND}
                     """
                 }
             }
