@@ -56,12 +56,12 @@ pipeline {
                 dir("${DEPLOY_DIR}") {
                     // Instalar dependencias del archivo requirements.txt
                     powershell """
-                        ${PIP_PATH} install -r requirements.txt
+                        & ${PIP_PATH} install -r requirements.txt
                     """
                     // Instalar waitress si no está presente
                     powershell """
-                        if (-not (pip show waitress)) {
-                            ${PIP_PATH} install waitress
+                        if (-not (& ${PIP_PATH} show waitress)) {
+                            & ${PIP_PATH} install waitress
                         }
                     """
                 }
