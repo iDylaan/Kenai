@@ -4,7 +4,7 @@ pipeline {
     environment {
         REPO_URL = 'https://github.com/iDylaan/Kenai'
         BRANCH = 'main'
-        DEPLOY_DIR = 'C:\Users\danie\OneDrive\Documentos\GitHub\Kenai'
+        DEPLOY_DIR = 'C:/Users/danie/OneDrive/Documentos/GitHub/Kenai'
         VENV_DIR = "${DEPLOY_DIR}/venv" // Directorio de tu entorno virtual
         FLASK_RUN_COMMAND = 'flask run'
     }
