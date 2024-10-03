@@ -5,22 +5,21 @@ pipeline {
         REPO_URL = 'https://github.com/iDylaan/Kenai'
         BRANCH = 'main'
         DEPLOY_DIR = 'C:/Users/danie/OneDrive/Documentos/GitHub/Kenai'
-        VENV_DIR = "${DEPLOY_DIR}/venv" // Directorio de tu entorno virtual
-        FLASK_RUN_COMMAND = 'flask run --host=0.0.0.0 --port=5000' // Configuración para escuchar en todas las interfaces
-        PYTHON_PATH = "${VENV_DIR}/Scripts/python.exe" // Ruta al Python del entorno virtual
-        PIP_PATH = "${VENV_DIR}/Scripts/pip.exe" // Ruta al pip del entorno virtual
-        FLASK_LOG = "${DEPLOY_DIR}/flask.log" // Archivo de log para la salida de Flask
+        VENV_DIR = "${DEPLOY_DIR}/venv"
+        PYTHON_PATH = "${VENV_DIR}/Scripts/python.exe"
+        PIP_PATH = "${VENV_DIR}/Scripts/pip.exe"
+        HOST = '0.0.0.0'
+        PORT = '8000'
+        APP_MODULE = 'app:app' // Ajusta según la estructura de tu aplicación (ej. app.py -> 'app:app')
     }
 
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    // Agregar el directorio como seguro para Git
                     bat "git config --global --add safe.directory ${DEPLOY_DIR.replace('\\', '/')}"
-                    
+
                     dir("${DEPLOY_DIR}") {
-                        // Si el directorio existe, hacer pull; de lo contrario, clonar el repositorio
                         script {
                             if (fileExists("${DEPLOY_DIR}/.git")) {
                                 echo "Updating repository..."
@@ -38,7 +37,6 @@ pipeline {
         stage('Setup Virtual Environment') {
             steps {
                 dir("${DEPLOY_DIR}") {
-                    // Verificar si el entorno virtual existe, y crearlo si no
                     script {
                         if (!fileExists("${VENV_DIR}/Scripts/activate")) {
                             echo "Creating virtual environment..."
@@ -56,18 +54,22 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir("${DEPLOY_DIR}") {
-                    // Usar el pip del entorno virtual para instalar dependencias
+                    // Instalar dependencias del archivo requirements.txt
                     powershell """
                         ${PIP_PATH} install -r requirements.txt
+                    """
+                    // Instalar waitress si no está presente
+                    powershell """
+                        ${PIP_PATH} show waitress | Out-Null; if ($LASTEXITCODE -ne 0) { ${PIP_PATH} install waitress }
                     """
                 }
             }
         }
         
-        stage('Restart Flask App') {
+        stage('Restart Flask App with Waitress') {
             steps {
                 dir("${DEPLOY_DIR}") {
-                    // Detener el servidor existente (si es necesario)
+                    // Detener cualquier instancia existente de la aplicación
                     powershell '''
                         try {
                             $process = Get-Process -Name "python" -ErrorAction Stop
@@ -76,26 +78,10 @@ pipeline {
                             Write-Host "No Python process found, skipping stop."
                         }
                     '''
-                    // Levantar la aplicación de Flask y redirigir la salida estándar y de error al archivo de log
+                    // Iniciar la aplicación Flask con Waitress en segundo plano
                     powershell """
-                        Start-Process -NoNewWindow -FilePath ${PYTHON_PATH} -ArgumentList '-m flask run --host=0.0.0.0 --port=5000 > ${FLASK_LOG} 2>&1'
+                        Start-Process -NoNewWindow -FilePath ${PYTHON_PATH} -ArgumentList '-m waitress --host=${HOST} --port=${PORT} ${APP_MODULE}' -RedirectStandardOutput '${DEPLOY_DIR}/waitress.log' -RedirectStandardError '${DEPLOY_DIR}/waitress_error.log'
                     """
-                }
-            }
-        }
-    }
-    
-    post {
-        always {
-            // Verificar si el archivo de log existe antes de intentar leerlo
-            script {
-                if (fileExists("${FLASK_LOG}")) {
-                    echo "Flask log output:"
-                    powershell """
-                        Get-Content ${FLASK_LOG} -Tail 10
-                    """
-                } else {
-                    echo "No log file found at ${FLASK_LOG}."
                 }
             }
         }
