@@ -77,7 +77,7 @@ pipeline {
                     '''
                     // Levantar la aplicación de Flask en segundo plano
                     powershell """
-                        Start-Process -FilePath ${PYTHON_PATH} -ArgumentList '-m flask run' -NoNewWindow -PassThru
+                        Start-Process -FilePath ${PYTHON_PATH} -ArgumentList '-m flask run' -WindowStyle Hidden
                     """
                 }
             }
