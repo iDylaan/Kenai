@@ -60,7 +60,9 @@ pipeline {
                     """
                     // Instalar waitress si no está presente
                     powershell """
-                        ${PIP_PATH} show waitress | Out-Null; if ($LASTEXITCODE -ne 0) { ${PIP_PATH} install waitress }
+                        if (-not (pip show waitress)) {
+                            ${PIP_PATH} install waitress
+                        }
                     """
                 }
             }
