@@ -9,21 +9,26 @@ pipeline {
         FLASK_RUN_COMMAND = 'flask run'
     }
 
-
     stages {
         stage('Checkout') {
-            // Usa git para clonar o actualizar el repositorio
-            script {
-                dir("${DEPLOY_DIR}") {
+            steps {
+                script {
                     // Agregar el directorio como seguro para Git
-                    bat "git config --global --add safe.directory ${DEPLOY_DIR}"
+                    bat "git config --global --add safe.directory ${DEPLOY_DIR.replace('\\', '/')}"
                     
-                    if (fileExists("${DEPLOY_DIR}")) {
-                        // Si el directorio existe, hacer pull
-                        bat 'git pull origin main'
-                    } else {
-                        // Si no existe, clonar el repositorio
-                        bat "git clone https://github.com/iDylaan/Kenai ${DEPLOY_DIR}"
+                    dir("${DEPLOY_DIR}") {
+                        // Si el directorio existe, hacer pull; de lo contrario, clonar el repositorio
+                        script {
+                            if (fileExists("${DEPLOY_DIR}/.git")) {
+                                // Si el directorio existe, hacer pull
+                                echo "Updating repository..."
+                                bat "git pull origin ${BRANCH}"
+                            } else {
+                                // Si no existe, clonar el repositorio
+                                echo "Cloning repository..."
+                                bat "git clone ${REPO_URL} ${DEPLOY_DIR}"
+                            }
+                        }
                     }
                 }
             }
@@ -48,7 +53,7 @@ pipeline {
         }
         
         stage('Install Dependencies') {
-           steps {
+            steps {
                 dir("${DEPLOY_DIR}") {
                     // Activar el entorno virtual y luego instalar dependencias
                     powershell """
@@ -63,7 +68,7 @@ pipeline {
             steps {
                 dir("${DEPLOY_DIR}") {
                     // Detener el servidor existente (si es necesario)
-                    powershell  'Get-Process -Name "python" | Stop-Process -Force || exit 0'
+                    powershell 'Get-Process -Name "python" | Stop-Process -Force || exit 0'
                     // Levantar la aplicación de Flask
                     powershell """
                         ${VENV_DIR}/Scripts/activate
