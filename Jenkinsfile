@@ -6,7 +6,7 @@ pipeline {
         BRANCH = 'main'
         DEPLOY_DIR = 'C:/Users/danie/OneDrive/Documentos/GitHub/Kenai'
         VENV_DIR = "${DEPLOY_DIR}/venv" // Directorio de tu entorno virtual
-        FLASK_RUN_COMMAND = 'flask run'
+        FLASK_RUN_COMMAND = 'flask run --host=0.0.0.0' // Asegúrate de especificar el host correcto
         PYTHON_PATH = "${VENV_DIR}/Scripts/python.exe" // Ruta al Python del entorno virtual
         PIP_PATH = "${VENV_DIR}/Scripts/pip.exe" // Ruta al pip del entorno virtual
     }
@@ -22,11 +22,9 @@ pipeline {
                         // Si el directorio existe, hacer pull; de lo contrario, clonar el repositorio
                         script {
                             if (fileExists("${DEPLOY_DIR}/.git")) {
-                                // Si el directorio existe, hacer pull
                                 echo "Updating repository..."
                                 bat "git pull origin ${BRANCH}"
                             } else {
-                                // Si no existe, clonar el repositorio
                                 echo "Cloning repository..."
                                 bat "git clone ${REPO_URL} ${DEPLOY_DIR}"
                             }
@@ -68,7 +66,7 @@ pipeline {
         stage('Restart Flask App') {
             steps {
                 dir("${DEPLOY_DIR}") {
-                    // Detener el servidor existente (si es necesario) usando try/catch para evitar errores si no existe
+                    // Detener el servidor existente (si es necesario)
                     powershell '''
                         try {
                             $process = Get-Process -Name "python" -ErrorAction Stop
@@ -77,9 +75,11 @@ pipeline {
                             Write-Host "No Python process found, skipping stop."
                         }
                     '''
-                    // Levantar la aplicación de Flask usando el Python del entorno virtual
+                    // Levantar la aplicación de Flask como un trabajo en segundo plano
                     powershell """
-                        ${PYTHON_PATH} -m ${FLASK_RUN_COMMAND}
+                        Start-Job -ScriptBlock {
+                            & ${PYTHON_PATH} -m ${FLASK_RUN_COMMAND}
+                        }
                     """
                 }
             }
