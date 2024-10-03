@@ -9,8 +9,8 @@ pipeline {
         PYTHON_PATH = "${VENV_DIR}/Scripts/python.exe"
         PIP_PATH = "${VENV_DIR}/Scripts/pip.exe"
         HOST = '0.0.0.0'
-        PORT = '8000'
-        APP_MODULE = 'app:app' // Ajusta según la estructura de tu aplicación (ej. app.py -> 'app:app')
+        PORT = '5000'
+        APP_MODULE = 'APP:app' // Ajusta según la estructura de tu aplicación (ej. app.py -> 'app:app')
     }
 
     stages {
