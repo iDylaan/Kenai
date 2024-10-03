@@ -16,10 +16,10 @@ pipeline {
                 script {
                     if (fileExists("${DEPLOY_DIR}")) {
                         dir("${DEPLOY_DIR}") {
-                            sh 'git pull origin ${BRANCH}'
+                            bat 'git pull origin ${BRANCH}'
                         }
                     } else {
-                        sh "git clone -b ${BRANCH} ${REPO_URL} ${DEPLOY_DIR}"
+                        bat "git clone -b ${BRANCH} ${REPO_URL} ${DEPLOY_DIR}"
                     }
                 }
             }
