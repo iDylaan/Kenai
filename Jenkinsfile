@@ -76,9 +76,9 @@ pipeline {
                             Write-Host "No Python process found, skipping stop."
                         }
                     '''
-                    // Levantar la aplicación de Flask y redirigir la salida a un archivo de log
+                    // Levantar la aplicación de Flask y redirigir la salida estándar y de error al archivo de log
                     powershell """
-                        Start-Process -NoNewWindow -FilePath ${PYTHON_PATH} -ArgumentList '-m flask run --host=0.0.0.0 --port=5000' -RedirectStandardOutput ${FLASK_LOG} -RedirectStandardError ${FLASK_LOG}
+                        Start-Process -NoNewWindow -FilePath ${PYTHON_PATH} -ArgumentList '-m flask run --host=0.0.0.0 --port=5000 > ${FLASK_LOG} 2>&1'
                     """
                 }
             }
