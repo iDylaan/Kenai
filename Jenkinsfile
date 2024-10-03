@@ -22,11 +22,9 @@ pipeline {
                         // Si el directorio existe, hacer pull; de lo contrario, clonar el repositorio
                         script {
                             if (fileExists("${DEPLOY_DIR}/.git")) {
-                                // Si el directorio existe, hacer pull
                                 echo "Updating repository..."
                                 bat "git pull origin ${BRANCH}"
                             } else {
-                                // Si no existe, clonar el repositorio
                                 echo "Cloning repository..."
                                 bat "git clone ${REPO_URL} ${DEPLOY_DIR}"
                             }
@@ -77,9 +75,9 @@ pipeline {
                             Write-Host "No Python process found, skipping stop."
                         }
                     '''
-                    // Levantar la aplicación de Flask usando el Python del entorno virtual
+                    // Levantar la aplicación de Flask en segundo plano
                     powershell """
-                        ${PYTHON_PATH} -m ${FLASK_RUN_COMMAND}
+                        Start-Process -FilePath ${PYTHON_PATH} -ArgumentList '-m flask run' -NoNewWindow -PassThru
                     """
                 }
             }
