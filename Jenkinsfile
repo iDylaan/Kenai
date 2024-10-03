@@ -9,6 +9,7 @@ pipeline {
         FLASK_RUN_COMMAND = 'flask run --host=0.0.0.0 --port=5000' // Configuración para escuchar en todas las interfaces
         PYTHON_PATH = "${VENV_DIR}/Scripts/python.exe" // Ruta al Python del entorno virtual
         PIP_PATH = "${VENV_DIR}/Scripts/pip.exe" // Ruta al pip del entorno virtual
+        FLASK_LOG = "${DEPLOY_DIR}/flask.log" // Archivo de log para la salida de Flask
     }
 
     stages {
@@ -75,11 +76,9 @@ pipeline {
                             Write-Host "No Python process found, skipping stop."
                         }
                     '''
-                    // Levantar la aplicación de Flask como un trabajo en segundo plano y redirigir la salida a un archivo de log
+                    // Levantar la aplicación de Flask y redirigir la salida a un archivo de log
                     powershell """
-                        Start-Job -ScriptBlock {
-                            & ${PYTHON_PATH} -m ${FLASK_RUN_COMMAND} *> ${DEPLOY_DIR}/flask.log
-                        }
+                        Start-Process -NoNewWindow -FilePath ${PYTHON_PATH} -ArgumentList '-m flask run --host=0.0.0.0 --port=5000' -RedirectStandardOutput ${FLASK_LOG} -RedirectStandardError ${FLASK_LOG}
                     """
                 }
             }
@@ -88,11 +87,17 @@ pipeline {
     
     post {
         always {
-            // Mostrar el contenido del log de Flask después de la ejecución del pipeline
-            echo "Flask log output:"
-            powershell """
-                Get-Content ${DEPLOY_DIR}/flask.log -Tail 10
-            """
+            // Verificar si el archivo de log existe antes de intentar leerlo
+            script {
+                if (fileExists("${FLASK_LOG}")) {
+                    echo "Flask log output:"
+                    powershell """
+                        Get-Content ${FLASK_LOG} -Tail 10
+                    """
+                } else {
+                    echo "No log file found at ${FLASK_LOG}."
+                }
+            }
         }
     }
 }
