@@ -4,7 +4,8 @@ pipeline {
     environment {
         REPO_URL = 'https://github.com/iDylaan/Kenai'
         BRANCH = 'main'
-        DEPLOY_DIR = 'C:/Users/danie/OneDrive/Documentos/GitHub/Kenai'
+        // DEPLOY_DIR = 'C:/Users/danie/OneDrive/Documentos/GitHub/Kenai'
+        DEPLOY_DIR = 'C:/Proyecto/Kenai'
         VENV_DIR = "${DEPLOY_DIR}/venv"
         PYTHON_PATH = "${VENV_DIR}/Scripts/python.exe"
         PIP_PATH = "${VENV_DIR}/Scripts/pip.exe"
