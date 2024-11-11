@@ -53,6 +53,6 @@ class Sql_Strings():
         FROM prompts
         WHERE id_chat = %(chat_id)s
         ORDER BY id DESC
-        LIMIT 10 OFFSET 0
+        LIMIT 15 OFFSET 0
         '''
     )

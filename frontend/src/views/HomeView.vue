@@ -150,32 +150,32 @@ onUnmounted(() => {
 const slides = ref([
   {
     description: 'KenAI fue reforzado mediante Fine-Tuning mediante materiales nativos en inglés de conversaciones y transcripciones de clases y reuniones de trabajo.',
-    src: 'https://media.discordapp.net/attachments/915663431120609300/1268864818253922375/Kenai_Logo.png?ex=66adf9f3&is=66aca873&hm=6610eb188391f4f43d1055b968a6248b3a208c93608d82623e0a5c64265c22e6&=&format=webp&quality=lossless&width=912&height=671',
+    src: '/imgs/Kenai-Logo.png',
     alt: 'KenAI Logo',
   },
   {
     description: 'El reforzamiento se ha realizado gracias a datasets obtenidos en Hugging Face y Kaggle, estos datasets se enfocaron en la interacción nativa en inglés e interpretación de emociones con emojis😁🌞.',
-    src: 'https://miro.medium.com/v2/resize:fit:1358/1*fX7vpC0o6pxy08AGlL60Yg.png',
+    src: '/imgs/HuggingFaceCarousel.png',
     alt: 'Hugging Face',
   },
   {
     description: 'KenAI utiliza LLaMA3, el último Large Language Model (LLM) liberado por Meta. Este modelo avanzado es el núcleo de su funcionamiento, permitiendo ofrecer una experiencia de aprendizaje de alta calidad.',
-    src: 'https://www.mlwires.com/wp-content/uploads/2024/04/Llama_3_featured_image-fs8.png',
+    src: '/imgs/Llama3Carousel.png',
     alt: 'LLaMA3'
   },
   {
     description: 'Las tecnologías web con las que se ha llevado acabo el proyecto son Flask para el backend y Vue.Js en el frontend, con Python para el proceso de entrenamiento y comunicación con el modelo KenAI.',
-    src: 'https://images.velog.io/images/ba93love/post/d596a6bf-dcaf-42ff-bc19-3bab2840270d/news.png',
+    src: '/imgs/Flask-Vue-Carousel.png',
     alt: 'Flask & Vue.js'
   },
   {
     description: '¡KenAI está en la nube! El sistema se ejecuta sobre una instancia de una Virtual Machine (VM) y esto con el apoyo de la plataforma de Oracle Cloud Infraestructure (OCI).',
-    src: 'https://www.tecnovait.com/wp-content/uploads/2023/11/oracle-servicio-cloud.png',
+    src: '/imgs/OCICarousel.png',
     alt: 'OCI'
   },
   {
     description: '!Ahora disponible con Alexa! Se ha creado una skill para amazon alexa la cual nos permite comunicarnos con KenAI desde la comodida de nuestros dispositivos inteligentes Echo, simplemente diciendo "Alexa, abre kenai chat".',
-    src: 'https://ds6yc8t7pnx74.cloudfront.net/es-ES/alexa/alexa-skills-kit.thumb.800.480.png?ck=1595957409',
+    src: '/imgs/AWSCarousel.png',
     alt: 'Amazon Alexa'
   },
 ]);
@@ -430,7 +430,7 @@ onMounted(() => {
                   <h3>{{ slotProps.data.description }}</h3>
                 </div>
                 <div class="image-content" :class="animateImage">
-                  <img :src="slotProps.data.src" :alt="slotProps.data.alt" class="carousel-image" />
+                  <Image :src="slotProps.data.src" :alt="slotProps.data.alt" class="carousel-image" />
                 </div>
               </div>
             </div>

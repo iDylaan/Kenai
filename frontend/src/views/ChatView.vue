@@ -192,15 +192,55 @@
     <section class="chat__container">
       <div class="chat__header">
         <router-link to="/" v-if="!mobileStore.isMobile">
-          <Button severity="secondary" text>
-            <h1 style="padding: 0; margin: 0">KenAI</h1>
-          </Button>
+          <SplitButton severity="secondary" text :model="modelsList">
+            <h1 style="padding: 0; margin: 0">{{ modelsName[modelSelected] }}</h1>
+            <template #item="slotProps">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="label_area"
+                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 10px; cursor: pointer">
+                  <span style="font-size: 1.1rem; font-weight: 500;">{{ slotProps.item.label }}</span>
+                  <!-- Si necesitas mostrar la descripción adicional -->
+                  <span v-if="slotProps.item.description" style="font-size: 0.7rem; opacity: 0.7; margin-top: -5px">
+                    {{ slotProps.item.description }}
+                  </span>
+                </div>
+
+                <div class="check_area" style="display: grid; place-content: center; width: 40px; cursor: pointer"
+                  v-show="slotProps.item.number === modelSelected">
+                  <span class="material-icons-outlined" style="font-size: 1rem; opacity: 0.8">check_circle</span>
+                </div>
+              </div>
+            </template>
+          </SplitButton>
         </router-link>
-        <Button v-else @click="navbarStore.toggleExtended()" v-tooltip="{
-          value: navbarStore.extended ? t('chat.collapse_menu') : t('chat.expand_menu'),
-        }" severity="secondary" text rounded aria-label="Menu" size="large">
-          <span class="material-icons menu-icon">menu</span>
-        </Button>
+        <div style="margin-left: -30px;" v-else>
+          <Button @click="navbarStore.toggleExtended()" v-tooltip="{
+            value: navbarStore.extended ? t('chat.collapse_menu') : t('chat.expand_menu'),
+          }" severity="secondary" text rounded aria-label="Menu" size="large">
+            <span class="material-icons menu-icon">menu</span>
+          </Button>
+
+          <SplitButton severity="secondary" text :model="modelsList">
+            <h1 style="padding: 0; margin: 0">{{ modelsName[modelSelected] }}</h1>
+            <template #item="slotProps">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="label_area"
+                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 10px; cursor: pointer">
+                  <span style="font-size: 1.1rem; font-weight: 500;">{{ slotProps.item.label }}</span>
+                  <!-- Si necesitas mostrar la descripción adicional -->
+                  <span v-if="slotProps.item.description" style="font-size: 0.7rem; opacity: 0.7; margin-top: -5px">
+                    {{ slotProps.item.description }}
+                  </span>
+                </div>
+
+                <div class="check_area" style="display: grid; place-content: center; width: 40px; cursor: pointer"
+                  v-show="slotProps.item.number === modelSelected">
+                  <span class="material-icons-outlined" style="font-size: 1rem; opacity: 0.8">check_circle</span>
+                </div>
+              </div>
+            </template>
+          </SplitButton>
+        </div>
 
         <div class="profile__container">
           <Skeleton shape="circle" size="3rem" v-if="pageLoading"></Skeleton>
@@ -347,8 +387,7 @@
           <template #center>
             <Skeleton height="35px" style="margin-bottom: 7px" v-if="pageLoading"></Skeleton>
             <Textarea type="text" @input="handleInput" v-else @keydown.enter="handleEnter"
-              :placeholder="t('chat.type_a_message')" v-model="prompt" :disabled="promptFetching" size="small"
-              variant="filled" rows="1" />
+              :placeholder="t('chat.type_a_message')" v-model="prompt" size="small" variant="filled" rows="1" />
             <div class="char-counter">{{ charCount }}/{{ promptMaxLenght }}</div>
           </template>
 
@@ -369,7 +408,7 @@
 
 <script setup>
 // IMPORTACIONES
-import { ref, watch, computed, onMounted, onUnmounted, reactive } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted, reactive, h } from "vue";
 import kenaiAvatar from "@/assets/imgs/Kenai-Logo.png";
 import defaultAvatar from "@/assets/imgs/profile-pic-default.svg";
 import { sendPrompt } from "@/api/kenai.js";
@@ -399,6 +438,39 @@ const renameTitle = reactive({
 });
 const lastChatIndex = ref(0);
 const fistChatClasses = ref("");
+const modelSelected = ref(0);
+const modelsName = [
+  'KenAI Nano',
+  'KenAI Mini',
+  'KenAI',
+  'KenAI Pro'
+]
+const modelsList = [
+  {
+    label: modelsName[3],
+    description: 'Mejor razonamiento, pero más lento',
+    number: 3,
+    command: () => modelSelected.value = 3,
+  },
+  {
+    label: modelsName[2],
+    description: 'Modelo normal',
+    number: 2,
+    command: () => modelSelected.value = 2,
+  },
+  {
+    label: modelsName[1],
+    description: 'Modelo mini, más rápido',
+    number: 1,
+    command: () => modelSelected.value = 1,
+  },
+  {
+    label: modelsName[0],
+    description: 'Modelo nano, el más veloz',
+    number: 0,
+    command: () => modelSelected.value = 0,
+  },
+]
 const presets = ref([
   {
     prompt_title: "Explicame como funcionan los verbos en pasado simple.",
@@ -621,7 +693,7 @@ const handleSendPrompt = async () => {
     chatStore.desactivateNewChat();
   }
 
-  if (prompt.value.length > 0) {
+  if (prompt.value.length > 0 && !promptFetching.value) {
     promptFetching.value = true;
 
     const userPrompt = prompt.value.replace(/\n/g, "<br>");
@@ -657,6 +729,7 @@ const handleSendPrompt = async () => {
         user_id: sessionStore.isAuthenticated ? sessionStore.user.id : null,
         username: sessionStore.isAuthenticated ? sessionStore.user.username : null,
         chat_id: chatStore.getActiveChatID(),
+        model: modelSelected.value
       });
 
       chatRow.kenai.loading = false;
