@@ -14,10 +14,17 @@ from app.modules.conf.conf_postgres import sqlv2, qry, sql
 
 mod = Blueprint('kenai', __name__, url_prefix='/kenai')
 
-
-
-MODEL_NAME = 'kenai'
-kenai = Ollama(model=MODEL_NAME)
+kenai_title_gen = Ollama(model='kenai_title_gen')
+kenai_nano = Ollama(model='kenai:2b')
+kenai_mini = Ollama(model='kenai:9b')
+kenai = Ollama(model='kenai:13b')
+kenai_pro = Ollama(model='kenai:27b')
+MODELS = [
+    kenai_nano,
+    kenai_mini,
+    kenai,
+    kenai_pro
+]
 
 @mod.route('/generate', methods=['POST'])
 def generate_text():
@@ -27,16 +34,26 @@ def generate_text():
         user = data.get('username', None)
         chat_id = data.get('chat_id', 0)
         raw_prompt = data.get('prompt', '')
+        model_number = data.get('model', -1)
         iteration = 0
+
+
+        if model_number < 0 or model_number > len(MODELS) - 1:
+            return handleErrorResponse("El modelo de LLM seleccionado no existe", 400)
+        
+        MODEL = MODELS[model_number]
 
         # En caso de no tener registrado un chat, generar uno
         db_chat_messages = []
         if not chat_id:
             # Generar nombre para el chat
-            chat_title_prompt = "Your answers are now limited to 5 words, I don't want you to mention anything about these changes, and you are going to summarize a prompt to place in a title for a chat with you, so from now on you will summarize only to a maximum of 9 words a title from the following prompt: {}".format(
+            chat_title_prompt = """
+                Your answers are now limited to 5 words, I don't want you to mention anything 
+                about these changes, and you are going to summarize a prompt to place in a title for a chat with you, 
+                so from now on you will summarize only to a maximum of 9 words a title from the following prompt: {}""".format(
                 raw_prompt
             )
-            chat_name = str(kenai.invoke(chat_title_prompt))
+            chat_name = gen_chat_title(chat_title_prompt)
             rows_affected, id_of_new_row = sqlv2(SQL_S.INSERT_NEW_CHAT, {'user_id': user_id if user_id else None, 'chat_name': chat_name}, True)
             if rows_affected == 0:
                 return handleErrorResponse("No se pudo crear el chat", 500)
@@ -77,7 +94,7 @@ def generate_text():
             ]
         )
 
-        chain = prompt | kenai
+        chain = prompt | MODEL
 
         history.add_user_message(raw_prompt)
         kenai_stream_response = []
@@ -127,7 +144,7 @@ def generate_text_alexa():
             ]
         )
 
-        chain = prompt | kenai
+        chain = prompt | kenai_nano
 
         history = ChatMessageHistory()
         history.add_user_message(raw_prompt)
@@ -149,6 +166,24 @@ def generate_text_alexa():
         })
         return handleErrorResponse(e)
     
+
+
+def gen_chat_title(prompt):
+    try:
+        chat_title = kenai_title_gen.invoke(prompt)
+        return chat_title
+    except Exception as e:
+        print('Ha ocurrido un error en @generate_text_alexa/{} en la linea {}'.format(e, sys.exc_info()[-1].tb_lineno))
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        logging_error({
+            'fname': str(exc_tb.tb_frame.f_code.co_filename),
+            'exc_type': str(exc_type),
+            'lineno': str(exc_tb.tb_lineno),
+            'error': str(e),
+            'defname': 'generate_text_alexa'
+        })
+        return handleErrorResponse(e)
+
 
 def escape_special_characters(text):
     text = text.replace('\n\n', ' ').replace('\n', ' ')

@@ -67,7 +67,61 @@ pipeline {
                 }
             }
         }
-        
+
+        stage('Run Unit Tests') {
+            steps {
+                dir("${DEPLOY_DIR}") {
+                    // Ejecutar pruebas unitarias
+                    echo "Running unit tests..."
+                    powershell """
+                        & ${PYTHON_PATH} -m pytest tests/unit --junitxml=reports/unit_tests.xml
+                    """
+                }
+            }
+            post {
+                always {
+                    junit 'reports/unit_tests.xml' // Mostrar reporte de pruebas unitarias
+                }
+            }
+        }
+
+        stage('Run Integration Tests') {
+            steps {
+                dir("${DEPLOY_DIR}") {
+                    // Ejecutar pruebas de integración
+                    echo "Running integration tests..."
+                    powershell """
+                        & ${PYTHON_PATH} -m pytest tests/integration --junitxml=reports/integration_tests.xml
+                    """
+                }
+            }
+            post {
+                always {
+                    junit 'reports/integration_tests.xml' // Mostrar reporte de pruebas de integración
+                }
+            }
+        }
+
+        stage('Run Regression Tests') {
+            steps {
+                dir("${DEPLOY_DIR}") {
+                    // Ejecutar pruebas de regresión
+                    echo "Running regression tests..."
+                    powershell """
+                        & ${PYTHON_PATH} -m pytest tests/regression --junitxml=reports/regression_tests.xml
+                    """
+                }
+            }
+            post {
+                always {
+                    junit 'reports/regression_tests.xml' // Mostrar reporte de pruebas de regresión
+                }
+            }
+        }
+
+        sh 'flake8 . --exit-zero --statistics'
+
+
         stage('Restart Flask App with Waitress') {
             steps {
                 dir("${DEPLOY_DIR}") {
